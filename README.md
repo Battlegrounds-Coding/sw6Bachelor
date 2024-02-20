@@ -1,0 +1,1 @@
+# sw6Bachelor
