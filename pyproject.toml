@@ -1,0 +1,19 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "hellop"
+authors = [{name = "Simon Thrane", email = "sthra21@student.aau.dk"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+requires-python = ">=3.8.1"
+dynamic = ["version", "description"]
+
+[project.urls]
+Home = "https://github.com/DenFlyvendeGed/sw6Bachelor"
+
+
+[tool.flit.module]
+name = "python_package"
