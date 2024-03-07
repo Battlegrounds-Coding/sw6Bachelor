@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "hellop"
+name = "sw6-water-sensor"
 authors = [{name = "Simon Thrane", email = "sthra21@student.aau.dk"}]
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -11,9 +11,22 @@ classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.8.1"
 dynamic = ["version", "description"]
 
+dependencies = [
+    "numpy >=1.26.4",
+]
+
 [project.urls]
 Home = "https://github.com/DenFlyvendeGed/sw6Bachelor"
 
+
+
+[project.optional-dependencies]
+
+test = [
+    "pytest >=2.7.3",
+    "pytest-cov",
+    "numpy >=1.26.4"
+]
 
 [tool.flit.module]
 name = "python_package"
