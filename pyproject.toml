@@ -25,7 +25,7 @@ Home = "https://github.com/DenFlyvendeGed/sw6Bachelor"
 test = [
     "pytest >=2.7.3",
     "pytest-cov",
-    "numpy >=1.26.4"
+
 ]
 
 [tool.flit.module]

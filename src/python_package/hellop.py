@@ -1,9 +1,16 @@
-"""
-Your module's verbose yet thorough docstring.
-"""
-import numpy as np
-##test+##
-msg = "Roll a dice"
-print(msg)
 
-print(np.random.randint(1,9))
+def hello_world(i: int = 0) -> str:
+    """Function description"""
+    print("hello world")
+    return f"string-{i}"
+
+
+def good_night() -> str:
+    """Function description"""
+    print("good night")
+    return "string"
+
+
+def hello_goodbye():
+    hello_world(1)
+    good_night()
