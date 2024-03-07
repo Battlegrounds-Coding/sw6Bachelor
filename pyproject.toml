@@ -34,7 +34,8 @@ format = [
 
 lint = [
     "flake8",
-    "pylint"
+    "pylint",
+    "bandit",
 ]
 
 [tool.flit.module]
