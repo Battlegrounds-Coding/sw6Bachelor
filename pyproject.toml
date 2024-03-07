@@ -28,5 +28,10 @@ test = [
 
 ]
 
+format = [
+    "flake8",
+    "pylint"
+]
+
 [tool.flit.module]
 name = "python_package"
