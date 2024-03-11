@@ -34,6 +34,7 @@ format = [
 
 lint = [
     "flake8",
+    "flake8-pyproject",
     "pylint",
     "bandit",
 ]
@@ -50,12 +51,12 @@ line-length = 120
 
 [tool.flake8]
 max-line-length = 120
-select = "F,E,W,B,B901,B902,B903"
-exclude = [
-    "tests",
-    "__pycache__",
-    "venv"
+extend-exclude = [
+    ".venv"
 ]
+count = true
+show-source = true
+statistics = true
 ignore = [
     "E722",
     "B001",
