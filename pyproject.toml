@@ -42,5 +42,5 @@ lint = [
 name = "python_package"
 
 [tool.bandit]
-exclude_dirs = ["build","dist","tests","scripts"]
+exclude_dirs = ["build","dist","tests","scripts","venv"]
 targets = ["src"]
