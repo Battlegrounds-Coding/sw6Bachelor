@@ -55,4 +55,4 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install .[lint]
-        bandit ./src
+        bandit -c pyproject.toml -r .
