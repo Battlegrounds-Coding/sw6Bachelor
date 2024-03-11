@@ -40,3 +40,7 @@ lint = [
 
 [tool.flit.module]
 name = "python_package"
+
+[tool.bandit]
+exclude_dirs = ["build","dist","tests","scripts"]
+targets = ["src"]
