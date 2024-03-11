@@ -8,7 +8,8 @@ from __future__ import annotations
 __version__ = "0.0.2"
 
 import numpy as np
+
 msg = "Roll a dice"
 print(msg)
 
-print(np.random.randint(1,9))
+print(np.random.randint(1, 9))

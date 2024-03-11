@@ -44,3 +44,21 @@ name = "python_package"
 [tool.bandit]
 exclude_dirs = ["build","dist","tests","scripts","venv"]
 targets = ["src"]
+
+[tool.black]
+line-length = 120
+
+[tool.flake8]
+max-line-length = 120
+select = "F,E,W,B,B901,B902,B903"
+exclude = [
+    "tests",
+    "__pycache__",
+    "venv"
+]
+ignore = [
+    "E722",
+    "B001",
+    "W503",
+    "E203"
+]

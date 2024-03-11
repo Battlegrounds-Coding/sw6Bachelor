@@ -2,9 +2,10 @@
 This is a file for testing functions from the source code.
 using pytest https://docs.pytest.org/en/8.0.x/
 """
-#from __future__ import annotations
 
-from python_package.hellop import hello_world,hello_goodbye
+# from __future__ import annotations
+
+from python_package.hellop import hello_world, hello_goodbye
 
 
 def hello_test():
@@ -22,8 +23,10 @@ def test_hello(unit_test_mocks: None):
     """
     hello_test()
 
+
 def test_goodbye():
     hello_goodbye()
+
 
 def test_int_hello():
     """
@@ -32,9 +35,11 @@ def test_int_hello():
     """
     hello_test()
 
+
 def test_assert():
     """Test example"""
     assert 1 == 1
+
 
 def test_string():
     """More test"""
