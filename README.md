@@ -7,11 +7,17 @@ pytest
 To get packages:
 flit install
 
+Format with:
+black .
+
 To get packages in venv: (venv will build with all deppendencies found in pyproject.toml ad default)
 py -m pip install .[package_name fx test]
 
 Libraries used:
 -  testing = pytest
+-  linting = flake8 + [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+-  format = [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 
 
 When creating tests.
