@@ -63,3 +63,45 @@ ignore = [
     "W503",
     "E203"
 ]
+
+[tool.pylint]
+ignore-patterns="test.*?py,conftest.py"
+init-hook='import sys; sys.setrecursionlimit(8 * sys.getrecursionlimit())'
+jobs=0
+recursive = true
+
+[tool.pylint.'MESSAGES CONTROL']
+enable="c-extension-no-member"
+
+[tool.pylint.'REPORTS']
+evaluation="10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)"
+output-format="text"
+reports="yes"
+score="yes"
+
+[tool.pylint.'BASIC']
+include-naming-hint="yes"
+
+[tool.pylint.'FORMAT']
+ignore-long-lines="^\\s*(# )?.*['\"]?<?https?://\\S+>?"
+max-line-length=120
+
+[tool.pylint.'SIMILARITIES']
+min-similarity-lines=5
+
+[tool.pylint.'SPELLING']
+max-spelling-suggestions=8
+
+[tool.pylint.'STRING']
+check-str-concat-over-line-jumps="yes"
+
+[tool.pylint.'TYPECHECK']
+generated-members=""
+ignored-classes="optparse.Values,thread._local,_thread._local,numpy"
+
+
+[tool.pylint.'EXCEPTIONS']
+overgeneral-exceptions= [
+    "BaseException",
+    "Exception"
+]
