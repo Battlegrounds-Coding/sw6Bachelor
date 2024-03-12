@@ -98,10 +98,3 @@ check-str-concat-over-line-jumps="yes"
 [tool.pylint.'TYPECHECK']
 generated-members=""
 ignored-classes="optparse.Values,thread._local,_thread._local,numpy"
-
-
-[tool.pylint.'EXCEPTIONS']
-overgeneral-exceptions= [
-    "BaseException",
-    "Exception"
-]

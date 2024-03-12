@@ -1,3 +1,4 @@
+"""This is a docstring for a dummy file :)"""
 def hello_world(i: int = 0) -> str:
     """Function description"""
     print("hello world")
@@ -11,5 +12,6 @@ def good_night() -> str:
 
 
 def hello_goodbye():
+    """Function description"""
     hello_world(1)
     good_night()

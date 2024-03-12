@@ -9,7 +9,7 @@ __version__ = "0.0.2"
 
 import numpy as np
 
-msg = "Roll a dice"
-print(msg)
+MSG = "Roll a dice"
+print(MSG)
 
 print(np.random.randint(1, 9))
