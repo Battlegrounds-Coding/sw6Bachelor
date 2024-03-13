@@ -1,9 +1,8 @@
-from .result import Ok
 from typing import Generic, TypeVar, Callable
 from log import Log, LogLevel, PrintLogger
 
-T = TypeVar('T')
-U = TypeVar('U')
+T = TypeVar("T")
+U = TypeVar("U")
 
 
 class Result(Generic[T]):
@@ -14,7 +13,7 @@ class Result(Generic[T]):
         else:
             return None
 
-    def map(self, fn: Callable[[T], U]) -> Ok[U] | None:
+    def map(self, fn: Callable[[T], U]) -> "Ok[U] | None":
         """If the result is Ok then maps the value of the result"""
         if self is Ok[T]:
             return self.map(fn)
@@ -27,7 +26,7 @@ class Ok(Generic[T], Result[T]):
         """Creates a new result of type Ok"""
         self._value = value
 
-    def map(self, fn: Callable[[T], U]) -> Ok[U]:
+    def map(self, fn: Callable[[T], U]) -> "Ok[U]":
         """Maps the value to a different value using fn"""
         return Ok(fn(self._value))
 
@@ -72,8 +71,7 @@ class ValveError(Error):
         Sets message to "Inccorect valve adjustment,
         leading to unexpecded sensor error"
         """
-        self.msg = "Incorrect valve adjustment "\
-            "leading to unexpected sensor reading"
+        self.msg = "Incorrect valve adjustment " "leading to unexpected sensor reading"
         return self
 
 

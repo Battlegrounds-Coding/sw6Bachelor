@@ -25,7 +25,7 @@ class Log:
     level = LogLevel.NOT_CIRITCAL
 
     def log(self, msg):
-        """"Logs the method"""
+        """ "Logs the method"""
         match self.level:
             case LogLevel.CRITICAL_ERROR:
                 self._critical_error(msg)
@@ -49,3 +49,6 @@ class PrintLogger(Log):
 
     def _not_critical(self, msg):
         print(f"{msg}")
+
+
+DEFAULT_LOG = PrintLogger()

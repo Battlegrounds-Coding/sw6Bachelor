@@ -8,7 +8,7 @@ class Data:
 
 class ErrorCheker:
     @abstractmethod
-    def check(self, pond: Data, virtual_pond: Data) -> Result[None]: 
+    def check(self, pond: Data, virtual_pond: Data) -> Result[None]:
         """Checks the power  t"""
         ...
 
