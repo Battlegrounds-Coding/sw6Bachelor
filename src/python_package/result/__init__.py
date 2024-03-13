@@ -1,27 +1,35 @@
+"""
+Contains a super class Result that can be used if a function might return an Error
+Return Ok(value) or a class derived from it if function is a success
+Return Error or a class derived from it if function is a failure
+"""
+
 from typing import Generic, TypeVar, Callable
-from log import Log, LogLevel, PrintLogger
+from ..log import Log, LogLevel, PrintLogger
 
 T = TypeVar("T")
 U = TypeVar("U")
 
 
 class Result(Generic[T]):
+    "Can either be an Ok or an Error"
+
     def unwrap(self) -> T | None:
         """Returns the value if Result is Ok else returns None"""
         if self is Ok[T]:
-            return self.value()
-        else:
-            return None
+            return self.value()  # pylint: disable=E1101
+        return None
 
     def map(self, fn: Callable[[T], U]) -> "Ok[U] | None":
         """If the result is Ok then maps the value of the result"""
         if self is Ok[T]:
             return self.map(fn)
-        else:
-            return None
+        return None
 
 
 class Ok(Generic[T], Result[T]):
+    "A success result"
+
     def __init__(self, value: T = None) -> None:
         """Creates a new result of type Ok"""
         self._value = value
@@ -36,6 +44,8 @@ class Ok(Generic[T], Result[T]):
 
 
 class Error(Result):
+    "An Failed Result"
+
     msg = "Error Not Defined"
 
     def __init__(self, logger: Log = PrintLogger()) -> None:
@@ -57,6 +67,8 @@ class Error(Result):
 
 
 class ValveError(Error):
+    "A Valve Error"
+
     def __init__(self, logger: Log = PrintLogger()) -> None:
         """Creates a new Valve Error"""
         super().__init__(logger)
@@ -71,11 +83,13 @@ class ValveError(Error):
         Sets message to "Inccorect valve adjustment,
         leading to unexpecded sensor error"
         """
-        self.msg = "Incorrect valve adjustment " "leading to unexpected sensor reading"
+        self.msg = "Incorrect valve adjustment leading to unexpected sensor reading"
         return self
 
 
 class ControllerError(Error):
+    "A Controller Error"
+
     def __init__(self, logger: Log = PrintLogger()) -> None:
         """Creates a new Controller Error"""
         super().__init__(logger)
@@ -97,6 +111,8 @@ class ControllerError(Error):
 
 
 class SensorError(Error):
+    "A Sensor Error"
+
     def __init__(self, logger: Log = PrintLogger()) -> None:
         """Creates a new Sensor Error"""
         super().__init__(logger)
