@@ -10,6 +10,11 @@ flit install
 Format with:
 black .
 
+Linting with:
+pylit: pylint $(git ls-files '*.py')
+flake8: flake8
+bandit: bandit -c pyproject.toml -r .
+
 To get packages in venv: (venv will build with all deppendencies found in pyproject.toml ad default)
 py -m pip install .[package_name fx test]
 
