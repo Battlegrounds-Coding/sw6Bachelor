@@ -5,7 +5,7 @@ Return Error or a class derived from it if function is a failure
 """
 
 from typing import Generic, TypeVar, Callable
-from log import Log, LogLevel, PrintLogger
+from ..log import Log, LogLevel, PrintLogger
 
 T = TypeVar("T")
 U = TypeVar("U")

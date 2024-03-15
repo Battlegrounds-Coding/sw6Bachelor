@@ -4,7 +4,7 @@ Contains basic supertypes for an error checker
 """
 
 from abc import abstractmethod
-from result import Result, Ok
+from ..result import Result, Ok
 
 
 class Data:  # pylint: disable=R0903
