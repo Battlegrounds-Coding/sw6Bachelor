@@ -10,12 +10,9 @@ class Radar:
 
     def test(self) -> None:
         "Tests the system"
-        x = self._f.keys()
-        print(*x, sep = ', ')
+        x = self._f['dataset1']['data1']['data']
+        print(type(x), x)
 
     def __del__(self) -> None:
         "Destryies the radar object"
         self._f.close()
-
-
-
