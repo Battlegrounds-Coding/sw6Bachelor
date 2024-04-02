@@ -6,12 +6,12 @@ class Radar:
 
     def __init__(self) -> None:
         "Creates a new radar object"
-        self._f = h5.File("/home/kamya/AAU/Projecter/P6/DMI/dk.com.202311231405.500_max.h5");
+        self._f = h5.File("/home/kamya/AAU/Projekt/P6/DMI/dk.com.202311231405.500_max.h5")
 
     def test(self) -> None:
         "Tests the system"
-        x = self._f['dataset1']['data1']['data']
-        print(type(x), x)
+        a = self._f["where"].attrs["LL_lat"]
+        print(a)
 
     def __del__(self) -> None:
         "Destryies the radar object"
