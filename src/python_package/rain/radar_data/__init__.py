@@ -25,6 +25,8 @@ class Radar(Rain):
 
 
 class RadarData:
+    "RadarData"
+
     def __init__(self):
         "Creats new radardata"
         self._f = h5.File("/home/kamya/AAU/Projekt/P6/DMI/dk.com.202311231405.500_max.h5")
