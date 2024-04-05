@@ -3,7 +3,7 @@
 import math
 
 
-class PondData: # pylint: disable=R0903
+class PondData:  # pylint: disable=R0903
     """Data from the virtual pond"""
 
     def __init__(self, height_over_min, height_overall, overflow):
@@ -15,7 +15,23 @@ class PondData: # pylint: disable=R0903
 class VirtualPond:
     """Virtual pond class"""
 
-    def calculate_water_volume(self, discharge_coeficent, surface_reaction_factor) -> float:
+    def __init__(
+        self,
+        urban_catchment_area,
+        surface_reaction_factor,
+        discharge_coeficent,
+        pond_area,
+        water_level_min,
+        water_level_max,
+    ):
+        self.urban_catchment_area = urban_catchment_area
+        self.surface_reaction_factor = surface_reaction_factor
+        self.discharge_coeficent = discharge_coeficent
+        self.pond_area = pond_area
+        self.water_level_min = water_level_min
+        self.water_level_max = water_level_max
+
+    def calculate_water_volume(self) -> float:
         """
         Calculate water volume in pond.
         Returns m^3.
@@ -23,15 +39,14 @@ class VirtualPond:
 
         # Get weather forcast from DMI API
         forcast = self.get_rain_data()
-        urban_catchment_area = self.get_rain_area()
 
         # Get values from previous stradegy
         water_level = self.get_previous_water_level()
         orifice = self.get_previous_orifice()
 
         # Water volume in cm^3
-        volume_in = self.water_in(surface_reaction_factor, forcast, urban_catchment_area)
-        volume_out = self.water_out(discharge_coeficent, orifice, water_level)
+        volume_in = self.water_in(self.surface_reaction_factor, forcast, self.urban_catchment_area)
+        volume_out = self.water_out(self.discharge_coeficent, orifice, water_level)
 
         water_volume = volume_in - volume_out
 
@@ -76,34 +91,22 @@ class VirtualPond:
 
         return rain_mm
 
-    def get_rain_area(self) -> float:
-        """
-        Get rain catchment area.
-        Return ha.
-        """
-        # Peter code
-
-        # placeholder
-        area = 0.59
-
-        return area
-
-    def generate_virtual_sensor_reading(self, water_volume, pond_area, min_water_level, max_water_level) -> PondData:
+    def generate_virtual_sensor_reading(self, water_volume) -> PondData:
         """
         Genereate the virtual value of expected water level.
         Returns height_over_min, height_overall in cm and overflow bool.
         """
 
-        height_cm = (water_volume / pond_area) * 100
+        height_cm = (water_volume / self.pond_area) * 100
 
         height_cm = max(height_cm, 0)
 
         height_over_min = height_cm
-        height_overall = height_over_min + min_water_level
+        height_overall = height_over_min + self.water_level_min
 
         overflow = False
 
-        if height_overall > max_water_level:
+        if height_overall > self.water_level_max:
             overflow = True
 
         pond_data = PondData(height_over_min, height_overall, overflow)

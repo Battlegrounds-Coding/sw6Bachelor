@@ -2,6 +2,12 @@
 
 from python_package.virtual_pond_module import VirtualPond
 
+URBAN_CATCHMENT_AREA = 0.59
+DISCHARGE_COEFICENT = 0.6
+POND_AREA = 5572
+SURFACE_REACTION_FACTOR = 0.25
+WATER_LEVEL_MIN = 100
+WATER_LEVEL_MAX = 300
 
 def test_water_in():
     """
@@ -12,7 +18,7 @@ def test_water_in():
     water_in returns m^3.
     """
 
-    virtual_pond = VirtualPond()
+    virtual_pond = VirtualPond(URBAN_CATCHMENT_AREA,SURFACE_REACTION_FACTOR,DISCHARGE_COEFICENT,POND_AREA,WATER_LEVEL_MIN, WATER_LEVEL_MAX)
 
     k = 0.25
     s = 20
@@ -32,7 +38,8 @@ def test_water_out():
     water_out returns m^3.
     """
 
-    virtual_pond = VirtualPond()
+    virtual_pond = VirtualPond(URBAN_CATCHMENT_AREA,SURFACE_REACTION_FACTOR,DISCHARGE_COEFICENT,POND_AREA,WATER_LEVEL_MIN, WATER_LEVEL_MAX)
+
 
     c = 0.6
     d = 15
@@ -53,20 +60,17 @@ def test_generate_virtual_sensor_reading():
     generate_virtual_sensor_reading return height in cm.
     """
 
-    virtual_pond = VirtualPond()
-
-    min_water_level = 100
-    max_water_level = 300
+    pond_area = 400
+    
+    virtual_pond = VirtualPond(URBAN_CATCHMENT_AREA,SURFACE_REACTION_FACTOR,DISCHARGE_COEFICENT,pond_area,WATER_LEVEL_MIN, WATER_LEVEL_MAX)
 
     volume_in = 45
     volume_out = 15
-    pond_area = 400
+    
 
     water_volume = volume_in - volume_out
 
-    virtual_pond_data = virtual_pond.generate_virtual_sensor_reading(
-        water_volume, pond_area, min_water_level, max_water_level
-    )
+    virtual_pond_data = virtual_pond.generate_virtual_sensor_reading(water_volume)
 
     assert virtual_pond_data.height_over_min == 7.5
     assert virtual_pond_data.height_overall == 107.5
