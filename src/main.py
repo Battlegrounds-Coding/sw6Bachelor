@@ -1,6 +1,5 @@
 "THIS IS THE MAIN FILE"
 
-import python_package.radar_data
+import python_package.rain.radar_data as radar_data
 
-python_package.radar_data.Radar().test()
-
+radar_data.Radar().test()
