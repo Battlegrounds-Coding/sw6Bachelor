@@ -2,7 +2,14 @@
 
 import math
 
-from python_package.virtual_pond_module.data import data
+
+class PondData: # pylint: disable=R0903
+    """Data from the virtual pond"""
+
+    def __init__(self, height_over_min, height_overall, overflow):
+        self.height_over_min = height_over_min
+        self.height_overall = height_overall
+        self.overflow = overflow
 
 
 class VirtualPond:
@@ -81,9 +88,7 @@ class VirtualPond:
 
         return area
 
-    def generate_virtual_sensor_reading(
-        self, water_volume, pond_area, min_water_level, max_water_level
-    ) -> data.PondData:
+    def generate_virtual_sensor_reading(self, water_volume, pond_area, min_water_level, max_water_level) -> PondData:
         """
         Genereate the virtual value of expected water level.
         Returns height_over_min, height_overall in cm and overflow bool.
@@ -101,7 +106,7 @@ class VirtualPond:
         if height_overall > max_water_level:
             overflow = True
 
-        pond_data = data.PondData(height_over_min, height_overall, overflow)
+        pond_data = PondData(height_over_min, height_overall, overflow)
 
         return pond_data
 

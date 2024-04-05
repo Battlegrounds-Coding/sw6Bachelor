@@ -1,7 +1,6 @@
 """Testing of virtual pond module"""
 
 from python_package.virtual_pond_module import VirtualPond
-from python_package.virtual_pond_module.data import data
 
 
 def test_water_in():
