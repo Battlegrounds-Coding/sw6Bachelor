@@ -54,7 +54,8 @@ class ArtificialVariableRain(Rain):
 
         while True:
             now = self._simulation.get_prediction(index)
-            after = self._simulation.get_prediction(++index)
+            index += 1
+            after = self._simulation.get_prediction(index)
             if after:
                 after_time, _ = after
             else:
