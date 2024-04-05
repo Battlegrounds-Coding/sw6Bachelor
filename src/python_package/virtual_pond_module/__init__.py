@@ -2,39 +2,17 @@
 
 import math
 
-
-def main():
-    """Placeholde for test"""
-    # Surface reaction factor
-    surface_reaction_factor = 0.25
-
-    # Discharge coeficent
-    discharge_coeficent = 0.6
-
-    # Pond area in m^2
-    pond_area = 5572
-
-    # Minimum and maximum water level in cm
-    max_water_level = 300
-    min_water_level = 100
-
-    pond = VirtualPond()
-
-    water_volume = pond.calculate_water_volume(discharge_coeficent, surface_reaction_factor)
-
-    height_over_min, height_overall = pond.generate_virtual_sensor_reading(
-        water_volume, pond_area, min_water_level, max_water_level
-    )
-
-    print(f"Height over min: {height_over_min} cm.")
-    print(f"Height overall: {height_overall} cm.")
+from python_package.virtual_pond_module.data import data
 
 
 class VirtualPond:
     """Virtual pond class"""
 
     def calculate_water_volume(self, discharge_coeficent, surface_reaction_factor) -> float:
-        """Calculate water volume in pond"""
+        """
+        Calculate water volume in pond.
+        Returns m^3.
+        """
 
         # Get weather forcast from DMI API
         forcast = self.get_rain_data()
@@ -53,8 +31,10 @@ class VirtualPond:
         return water_volume
 
     def get_previous_water_level(self) -> float:
-        """Get previous water level from stradegy
-        water_level in cm"""
+        """
+        Get previous water level from stradegy.
+        Returns cm.
+        """
 
         # Placeholder
         water_level = 200
@@ -62,8 +42,10 @@ class VirtualPond:
         return water_level
 
     def get_previous_orifice(self) -> float:
-        """Get previous orifice value from stradegy
-        orifice oppening in cm diameter"""
+        """
+        Get previous orifice value from stradegy.
+        Returns cm.
+        """
 
         # Placeholder
         orifice_max = 17.5
@@ -75,7 +57,10 @@ class VirtualPond:
         return orifice
 
     def get_rain_data(self) -> float:
-        "Get weather forcast from DMI api"
+        """
+        Get weather forcast from DMI api.
+        Returns mm.
+        """
 
         # Peters code
 
@@ -85,7 +70,10 @@ class VirtualPond:
         return rain_mm
 
     def get_rain_area(self) -> float:
-        """Get rain catchment area in Ha"""
+        """
+        Get rain catchment area.
+        Return ha.
+        """
         # Peter code
 
         # placeholder
@@ -95,29 +83,36 @@ class VirtualPond:
 
     def generate_virtual_sensor_reading(
         self, water_volume, pond_area, min_water_level, max_water_level
-    ) -> tuple[float, float]:
-        "Genereate the virtual value of expected water level"
+    ) -> data.PondData:
+        """
+        Genereate the virtual value of expected water level.
+        Returns height_over_min, height_overall in cm and overflow bool.
+        """
 
         height_cm = (water_volume / pond_area) * 100
 
-        if height_cm < 0:
-            height_cm = 0
+        height_cm = max(height_cm, 0)
 
         height_over_min = height_cm
         height_overall = height_over_min + min_water_level
 
-        if height_overall >= max_water_level:
-            height_overall = max_water_level
+        overflow = False
 
-        return height_over_min, height_overall
+        if height_overall > max_water_level:
+            overflow = True
+
+        pond_data = data.PondData(height_over_min, height_overall, overflow)
+
+        return pond_data
 
     def water_in(self, k, s, a_uc) -> float:
-        """Water going into the pond
+        """
+        Water going into the pond.
         Q_in = kSA_(uc)
-        k: Urban surface reaction factor, in paper 0.25 (offline example)
-        S: Difference between the rain falling into the urban area and the storm water leaving it
-        A_uc : Urban catchment surface area, in paper 0.59 ha (offline example)
-        Returns m^3
+        k: Urban surface reaction factor.
+        S: Difference between the rain falling into the urban area and the storm water leaving it in mm.
+        A_uc : Urban catchment surface area in ha.
+        Returns m^3.
         """
 
         # Convert mm to m
@@ -131,13 +126,14 @@ class VirtualPond:
         return q_in
 
     def water_out(self, c, d, w) -> float:
-        """Water going out of the pond
+        """
+        Water going out of the pond.
         Q_out = C(Pi/4)d^2 *sqrt(2gw)
-        c: Discharge coefficient
-        d: Chosen diameter of the orifice in cm
-        w: Water level in cm
-        g: gravitational acceleration (only valid if the orifice is fully submarged ie w >= d)
-        Returns m^3
+        c: Discharge coefficient.
+        d: Chosen diameter of the orifice in cm.
+        w: Water level in cm.
+        g: gravitational acceleration (only valid if the orifice is fully submarged ie w >= d), constant of 9.81.
+        Returns m^3.
         """
 
         g = 9.81
@@ -149,7 +145,3 @@ class VirtualPond:
         q_out = c * (math.pi / 4) * (math.pow(d, 2)) * math.sqrt(2 * g * w)
 
         return q_out
-
-
-if __name__ == "__main__":
-    main()

@@ -1,14 +1,16 @@
 """Testing of virtual pond module"""
 
 from python_package.virtual_pond_module import VirtualPond
+from python_package.virtual_pond_module.data import data
 
 
 def test_water_in():
-    """Test water going into the pond
-    k: Urban surface reaction factor, in paper 0.25 (offline example)
-    S: Difference between the rain falling into the urban area and the storm water leaving it
-    A_uc : Urban catchment surface area, in paper 0.59 ha (offline example)
-    water_in returns m^3
+    """
+    Test water going into the pond.
+    k: Urban surface reaction factor.
+    S: Difference between the rain falling into the urban area and the storm water leaving it.
+    A_uc : Urban catchment surface area.
+    water_in returns m^3.
     """
 
     virtual_pond = VirtualPond()
@@ -23,11 +25,13 @@ def test_water_in():
 
 
 def test_water_out():
-    """Test water going out of the pond
-    c: Discharge coefficient
-    d: Chosen diameter of the orifice in cm
-    w: Water level in cm
-    water_out returns m^3"""
+    """
+    Test water going out of the pond.
+    c: Discharge coefficient.
+    d: Chosen diameter of the orifice in cm.
+    w: Water level in cm.
+    water_out returns m^3.
+    """
 
     virtual_pond = VirtualPond()
 
@@ -42,11 +46,13 @@ def test_water_out():
 
 
 def test_generate_virtual_sensor_reading():
-    """Test generating the water level in the pond
-    volume_in in m^3
-    volume_out in m^3
-    pond_area in m^2
-    generate_virtual_sensor_reading return height in cm"""
+    """
+    Test generating the water level in the pond.
+    volume_in in m^3.
+    volume_out in m^3.
+    pond_area in m^2.
+    generate_virtual_sensor_reading return height in cm.
+    """
 
     virtual_pond = VirtualPond()
 
@@ -59,12 +65,13 @@ def test_generate_virtual_sensor_reading():
 
     water_volume = volume_in - volume_out
 
-    height_over_min, height_overall = virtual_pond.generate_virtual_sensor_reading(
+    virtual_pond_data = virtual_pond.generate_virtual_sensor_reading(
         water_volume, pond_area, min_water_level, max_water_level
     )
 
-    assert height_over_min == 7.5
-    assert height_overall == 107.5
+    assert virtual_pond_data.height_over_min == 7.5
+    assert virtual_pond_data.height_overall == 107.5
+    assert virtual_pond_data.overflow == False
 
 
 def test_tba():
