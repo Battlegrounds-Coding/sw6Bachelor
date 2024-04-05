@@ -1,6 +1,6 @@
 "THIS IS THE MAIN FILE"
 
-from python_package.virtual_pond_module import VirtualPond
+from python_package.virtual_pond import VirtualPond
 
 URBAN_CATCHMENT_AREA = 0.59
 SURFACE_REACTION_FACTOR = 0.25

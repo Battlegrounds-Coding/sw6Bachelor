@@ -17,13 +17,13 @@ class VirtualPond:
 
     def __init__(
         self,
-        urban_catchment_area,
-        surface_reaction_factor,
-        discharge_coeficent,
-        pond_area,
-        water_level_min,
-        water_level_max,
-    ):
+        urban_catchment_area: float,
+        surface_reaction_factor: float,
+        discharge_coeficent: float,
+        pond_area: float,
+        water_level_min: float,
+        water_level_max: float,
+    ):  # pylint: disable=R0913
         self.urban_catchment_area = urban_catchment_area
         self.surface_reaction_factor = surface_reaction_factor
         self.discharge_coeficent = discharge_coeficent
@@ -91,7 +91,7 @@ class VirtualPond:
 
         return rain_mm
 
-    def generate_virtual_sensor_reading(self, water_volume) -> PondData:
+    def generate_virtual_sensor_reading(self, water_volume: float) -> PondData:
         """
         Genereate the virtual value of expected water level.
         Returns height_over_min, height_overall in cm and overflow bool.
@@ -113,7 +113,7 @@ class VirtualPond:
 
         return pond_data
 
-    def water_in(self, k, s, a_uc) -> float:
+    def water_in(self, k: float, s: float, a_uc: float) -> float:
         """
         Water going into the pond.
         Q_in = kSA_(uc)
@@ -133,7 +133,7 @@ class VirtualPond:
 
         return q_in
 
-    def water_out(self, c, d, w) -> float:
+    def water_out(self, c: float, d: float, w: float) -> float:
         """
         Water going out of the pond.
         Q_out = C(Pi/4)d^2 *sqrt(2gw)
