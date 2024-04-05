@@ -41,11 +41,12 @@ class NorthboundRectangle(Area):
         """
         Is the coordinate located within the Rectangle
         """
-        return \
-            coordinate.lat < max(self._c1.lat, self._c2.lat) and \
-            coordinate.lat > min(self._c1.lat, self._c2.lat) and \
-            coordinate.lon < max(self._c1.lon, self._c2.lon) and \
-            coordinate.lon > min(self._c1.lon, self._c2.lon)
+        return (
+            coordinate.lat < max(self._c1.lat, self._c2.lat)
+            and coordinate.lat > min(self._c1.lat, self._c2.lat)
+            and coordinate.lon < max(self._c1.lon, self._c2.lon)
+            and coordinate.lon > min(self._c1.lon, self._c2.lon)
+        )
 
     def calc_area(self) -> float:
         "Calculates the area of the Reactangle in m³"
@@ -59,5 +60,3 @@ class NorthboundRectangle(Area):
         d_lon = (lon_max - lon_min) * distance_between_deg_in_m
 
         return d_lat * d_lon
-
-

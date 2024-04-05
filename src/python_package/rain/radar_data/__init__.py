@@ -3,8 +3,8 @@
 from datetime import datetime
 from typing import Self
 import h5py as h5
-from .. import Rain 
-from ..area import Area 
+from .. import Rain
+from ..area import Area
 
 
 class Radar(Rain):
@@ -37,10 +37,3 @@ class RadarData:
         "Tests the system"
         a = self._f["where"].attrs["LL_lat"]
         print(a)
-
-
-
-
-
-
-

@@ -36,7 +36,7 @@ class ArtificialVariableRain(Rain):
     "This is an artificial created rain simulation"
 
     def __init__(self, begining_of_time: datetime, simulation: ArtificialVariableRainPrediction):
-        """"
+        """ "
         Creates a new ArtificialVariableRain,
         requires a begining_of_time from where the timedeltas in the ArtificialVariableRainPrediction are calculated
         """
