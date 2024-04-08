@@ -76,6 +76,10 @@ recursive = true
 
 [tool.pylint.'MESSAGES CONTROL']
 enable="c-extension-no-member"
+disable = """
+    too-few-public-methods,
+    too-many-locals
+"""
 
 [tool.pylint.'REPORTS']
 evaluation="10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)"
