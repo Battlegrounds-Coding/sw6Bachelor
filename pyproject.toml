@@ -8,7 +8,7 @@ authors = [{name = "Simon Thrane", email = "sthra21@student.aau.dk"}]
 readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
-requires-python = ">=3.8.1"
+requires-python = ">=3.11.1"
 dynamic = ["version", "description"]
 
 dependencies = [
