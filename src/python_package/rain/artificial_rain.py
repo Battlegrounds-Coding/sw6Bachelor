@@ -3,10 +3,10 @@ Contains an artificial rain implementation
 """
 
 from datetime import datetime, timedelta
-from . import Rain
-from .area import Area
 from typing import List, Self, Tuple
 import bisect
+from . import Rain
+from .area import Area
 
 
 class ArtificialVariableRainPrediction:
@@ -21,12 +21,13 @@ class ArtificialVariableRainPrediction:
         bisect.insort(self._prediction, (time, rain), key=lambda x: x[0])
         return self
 
-    def get_closest_index(self, timedelta) -> int:
+    def get_closest_index(self, time: timedelta) -> int:
         "Gets the closes lower bounded time to the timedelta"
-        index = bisect.bisect_left(self._prediction, timedelta, key=lambda x: x[0])
+        index = bisect.bisect_left(self._prediction, time, key=lambda x: x[0])
         return index
 
     def get_prediction(self, index: int) -> None | Tuple[timedelta, float]:
+        "Gets the prediction at index, returns none if it doesn't exist"
         if len(self._prediction) > index:
             return None
         return self._prediction[index]
@@ -36,26 +37,26 @@ class ArtificialVariableRain(Rain):
     "This is an artificial created rain simulation"
 
     def __init__(self, begining_of_time: datetime, simulation: ArtificialVariableRainPrediction):
-        """ "
+        """
         Creates a new ArtificialVariableRain,
         requires a begining_of_time from where the timedeltas in the ArtificialVariableRainPrediction are calculated
         """
-        self._begining = begining_of_time
-        self._simulation = simulation
+        self.begining = begining_of_time
+        self.simulation = simulation
 
     def get_rain_fall(self, area: Area, start_time: datetime, end_time: datetime) -> float:
         """
         Gets the averge rainfall within the given start_time and end_time
         """
         rain_time: List[Tuple[timedelta, float]] = []
-        start_stamp = start_time - self._begining
-        end_stamp = end_time - self._begining
-        index = self._simulation.get_closest_index(start_stamp)
+        start_stamp = start_time - self.begining
+        end_stamp = end_time - self.begining
+        index = self.simulation.get_closest_index(start_stamp)
 
         while True:
-            now = self._simulation.get_prediction(index)
+            now = self.simulation.get_prediction(index)
             index += 1
-            after = self._simulation.get_prediction(index)
+            after = self.simulation.get_prediction(index)
             if after:
                 after_time, _ = after
             else:
@@ -80,11 +81,12 @@ class ArtificialVariableRain(Rain):
 
         if total_time.total_seconds() == 0:
             return 0.0
-        else:
-            return total_rain / total_time.total_seconds()
+        return total_rain / total_time.total_seconds()
 
 
 class ArtificialConstRain(Rain):
+    "An rainpredicter that predicts constant rain"
+
     def __init__(self, rain: float):
         "Creates a new ArtificialConstRain"
         self._rain = rain
