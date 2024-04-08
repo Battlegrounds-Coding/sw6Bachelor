@@ -6,7 +6,7 @@ import math
 class PondData:  # pylint: disable=R0903
     """Data from the virtual pond"""
 
-    def __init__(self, height_over_min, height_overall, overflow):
+    def __init__(self, height_over_min: float, height_overall: float, overflow: bool):
         self.height_over_min = height_over_min
         self.height_overall = height_overall
         self.overflow = overflow
