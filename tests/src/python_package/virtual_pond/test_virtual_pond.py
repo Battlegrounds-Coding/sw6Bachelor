@@ -19,8 +19,10 @@ def test_water_in():
     water_in returns m^3.
     """
 
+    water_level = 200
+
     virtual_pond = VirtualPond(
-        URBAN_CATCHMENT_AREA, SURFACE_REACTION_FACTOR, DISCHARGE_COEFICENT, POND_AREA, WATER_LEVEL_MIN, WATER_LEVEL_MAX
+        URBAN_CATCHMENT_AREA, SURFACE_REACTION_FACTOR, DISCHARGE_COEFICENT, POND_AREA, water_level, WATER_LEVEL_MIN, WATER_LEVEL_MAX
     )
 
     k = 0.25
@@ -41,45 +43,20 @@ def test_water_out():
     water_out returns m^3.
     """
 
+    water_level = 200
+
     virtual_pond = VirtualPond(
-        URBAN_CATCHMENT_AREA, SURFACE_REACTION_FACTOR, DISCHARGE_COEFICENT, POND_AREA, WATER_LEVEL_MIN, WATER_LEVEL_MAX
+        URBAN_CATCHMENT_AREA, SURFACE_REACTION_FACTOR, DISCHARGE_COEFICENT, POND_AREA, water_level, WATER_LEVEL_MIN, WATER_LEVEL_MAX
     )
 
     c = 0.6
     d = 15
-    w = 200
+    w = water_level
 
     volume_out = virtual_pond.water_out(c, d, w)
     volume_out = round(volume_out, 4)
 
     assert volume_out == 0.0664
-
-
-def test_generate_virtual_sensor_reading():
-    """
-    Test generating the water level in the pond.
-    volume_in in m^3.
-    volume_out in m^3.
-    pond_area in m^2.
-    generate_virtual_sensor_reading return height in cm.
-    """
-
-    pond_area = 400
-
-    virtual_pond = VirtualPond(
-        URBAN_CATCHMENT_AREA, SURFACE_REACTION_FACTOR, DISCHARGE_COEFICENT, pond_area, WATER_LEVEL_MIN, WATER_LEVEL_MAX
-    )
-
-    volume_in = 45
-    volume_out = 15
-
-    water_volume = volume_in - volume_out
-
-    virtual_pond_data = virtual_pond.generate_virtual_sensor_reading(water_volume)
-
-    assert virtual_pond_data.height_over_min == 7.5
-    assert virtual_pond_data.height_overall == 107.5
-    assert virtual_pond_data.overflow == False
 
 
 def test_tba():

@@ -10,20 +10,27 @@ WATER_LEVEL_MIN = 100
 WATER_LEVEL_MAX = 300
 
 
+
 def main():
     """Main"""
+    water_level = 100
+    x = 0
 
-    virtual_pond = VirtualPond(
-        URBAN_CATCHMENT_AREA, SURFACE_REACTION_FACTOR, DISCHARGE_COEFICENT, POND_AREA, WATER_LEVEL_MIN, WATER_LEVEL_MAX
-    )
+    while x < 20:
 
-    water_volume = virtual_pond.calculate_water_volume()
+        virtual_pond = VirtualPond(
+            URBAN_CATCHMENT_AREA, SURFACE_REACTION_FACTOR, DISCHARGE_COEFICENT, POND_AREA, water_level, WATER_LEVEL_MIN, WATER_LEVEL_MAX
+        )
 
-    pond_data = virtual_pond.generate_virtual_sensor_reading(water_volume)
+        pond_data = virtual_pond.generate_virtual_sensor_reading()
 
-    print(f"Height over min: {pond_data.height_over_min} cm.")
-    print(f"Height overall: {pond_data.height_overall} cm.")
-    print(f"Overflow: {pond_data.overflow}")
+        water_level = pond_data.height
+        #print(f"Volume in: {pond_data.volume_in} m^3/s")
+        #print(f"Volume out: {pond_data.volume_out} m^3/s")
+        print(f"Height: {pond_data.height} cm.")
+        #print(f"Overflow: {pond_data.overflow}")
+
+        x += 1
 
 
 if __name__ == "__main__":
