@@ -13,7 +13,8 @@ class SerialCom:
     """Serial comunication class"""
 
     arduino = serial.Serial(port=COM, baudrate=BAUDRATE, timeout=10)
-    #TODO: set debug false
+
+    # TODO: set debug false
     def __init__(self, debug=True) -> None:
         self.debug = debug
 
@@ -45,7 +46,7 @@ class SerialCom:
 
         self.write("P" + str(value))
         rtn = self.read_all()
-        if(self.debug):
+        if self.debug:
             for i in rtn:
                 print(i)
 
@@ -53,7 +54,7 @@ class SerialCom:
         """Sends a msg with the string 'S' which tells the connected device to return sensor readings"""
         self.write("S")
         rtn = self.read_all()
-        if(self.debug):
+        if self.debug:
             for i in rtn:
                 print(i)
         return int(rtn.pop(-1))
