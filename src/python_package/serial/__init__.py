@@ -13,7 +13,7 @@ class SerialCom:
     """Serial comunication class"""
 
     arduino = serial.Serial(port=COM, baudrate=BAUDRATE, timeout=10)
-
+    #TODO: set debug false
     def __init__(self, debug=True) -> None:
         self.debug = debug
 
@@ -45,14 +45,18 @@ class SerialCom:
 
         self.write("P" + str(value))
         rtn = self.read_all()
-        if rtn.pop(-1) == "Please apply a new value:":
-            print("Invalid value, Out of bounds [0..255]")
-            raise serial_exceptions.exceptions.PUMP_VALUE_OUT_OF_BOUNDS
+        if(self.debug):
+            for i in rtn:
+                print(i)
 
     def read_sensor(self) -> int:
         """Sends a msg with the string 'S' which tells the connected device to return sensor readings"""
         self.write("S")
-        return int(self.read_all().pop(-1))
+        rtn = self.read_all()
+        if(self.debug):
+            for i in rtn:
+                print(i)
+        return int(rtn.pop(-1))
 
     def read_all(self) -> list[str]:
         """Wait for up to 5 seconds for response from connected device,
