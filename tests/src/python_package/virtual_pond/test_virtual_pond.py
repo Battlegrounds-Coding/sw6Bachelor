@@ -12,7 +12,6 @@ WATER_LEVEL_MAX = 300
 rain_data = rain.Rain()
 
 
-
 def test_water_in():
     """
     Test water going into the pond.
@@ -23,7 +22,7 @@ def test_water_in():
     """
 
     water_level = 200
-    
+
     virtual_pond = VirtualPond(
         URBAN_CATCHMENT_AREA,
         SURFACE_REACTION_FACTOR,
@@ -32,7 +31,7 @@ def test_water_in():
         water_level,
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
-        rain_data
+        rain_data,
     )
 
     k = 0.25
@@ -63,7 +62,7 @@ def test_water_out():
         water_level,
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
-        rain_data
+        rain_data,
     )
 
     c = 0.6

@@ -1,7 +1,6 @@
 "THIS IS THE MAIN FILE"
 
 from python_package.virtual_pond import VirtualPond
-from python_package import rain
 from python_package.rain import artificial_rain
 
 
