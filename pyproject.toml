@@ -8,11 +8,12 @@ authors = [{name = "Simon Thrane", email = "sthra21@student.aau.dk"}]
 readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
-requires-python = ">=3.8.1"
+requires-python = ">=3.11.1"
 dynamic = ["version", "description"]
 
 dependencies = [
     "numpy >=1.24.1",
+    "h5py >=3.10.0",
 ]
 
 [project.urls]
@@ -62,7 +63,9 @@ ignore = [
     "B001",
     "W503",
     "E203",
-    "E704"
+    "E704",
+    "R914",
+    "R903",
 ]
 
 [tool.pylint]
@@ -73,6 +76,10 @@ recursive = true
 
 [tool.pylint.'MESSAGES CONTROL']
 enable="c-extension-no-member"
+disable = """
+    too-few-public-methods,
+    too-many-locals
+"""
 
 [tool.pylint.'REPORTS']
 evaluation="10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)"
