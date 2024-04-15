@@ -1,6 +1,9 @@
 """Virtual pond module"""
 
 import math
+from datetime import datetime, timedelta
+from python_package import rain
+from python_package.rain import area
 
 
 class PondData:  # pylint: disable=R0903
@@ -13,7 +16,7 @@ class PondData:  # pylint: disable=R0903
         self.volume_out = volume_out
 
 
-class VirtualPond:
+class VirtualPond:  # pylint: disable=R0902
     """Virtual pond class"""
 
     def __init__(
@@ -25,6 +28,7 @@ class VirtualPond:
         water_level: float,
         water_level_min: float,
         water_level_max: float,
+        rain_data: rain.Rain,
     ):  # pylint: disable=R0913
         self.urban_catchment_area = urban_catchment_area
         self.surface_reaction_factor = surface_reaction_factor
@@ -33,6 +37,7 @@ class VirtualPond:
         self.water_level = water_level
         self.water_level_min = water_level_min
         self.water_level_max = water_level_max
+        self.rain_data = rain_data
 
     def calculate_water_volume(self) -> tuple[float, float, float]:
         """
@@ -130,8 +135,6 @@ class VirtualPond:
 
         return q_out
 
-
-    #TODO: get orifice data
     def get_previous_orifice(self) -> float:
         """
         Get previous orifice value from stradegy.
@@ -147,16 +150,14 @@ class VirtualPond:
 
         return orifice
 
-    #TODO: get rain data from peter
     def get_rain_data(self) -> float:
         """
         Get weather forcast from DMI api.
         Returns mm.
         """
 
-        # Peters code
-
-        # placeholder
-        rain_mm = 20
+        rain_mm = self.rain_data.get_rain_fall(
+            area.EmptyArea(self.urban_catchment_area * 10000), datetime.now(), datetime.now() + timedelta(seconds=1)
+        )
 
         return rain_mm

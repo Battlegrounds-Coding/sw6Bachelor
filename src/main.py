@@ -1,6 +1,8 @@
 "THIS IS THE MAIN FILE"
 
 from python_package.virtual_pond import VirtualPond
+from python_package import rain
+
 
 URBAN_CATCHMENT_AREA = 0.59
 SURFACE_REACTION_FACTOR = 0.25
@@ -10,27 +12,30 @@ WATER_LEVEL_MIN = 100
 WATER_LEVEL_MAX = 300
 
 
-
 def main():
     """Main"""
+
+    rain_data = rain.Rain()
+
     water_level = 100
-    x = 0
 
-    while x < 20:
+    virtual_pond = VirtualPond(
+        URBAN_CATCHMENT_AREA,
+        SURFACE_REACTION_FACTOR,
+        DISCHARGE_COEFICENT,
+        POND_AREA,
+        water_level,
+        WATER_LEVEL_MIN,
+        WATER_LEVEL_MAX,
+        rain_data,
+    )
 
-        virtual_pond = VirtualPond(
-            URBAN_CATCHMENT_AREA, SURFACE_REACTION_FACTOR, DISCHARGE_COEFICENT, POND_AREA, water_level, WATER_LEVEL_MIN, WATER_LEVEL_MAX
-        )
+    pond_data = virtual_pond.generate_virtual_sensor_reading()
 
-        pond_data = virtual_pond.generate_virtual_sensor_reading()
-
-        water_level = pond_data.height
-        #print(f"Volume in: {pond_data.volume_in} m^3/s")
-        #print(f"Volume out: {pond_data.volume_out} m^3/s")
-        print(f"Height: {pond_data.height} cm.")
-        #print(f"Overflow: {pond_data.overflow}")
-
-        x += 1
+    # print(f"Volume in: {pond_data.volume_in} m^3/s")
+    # print(f"Volume out: {pond_data.volume_out} m^3/s")
+    print(f"Height: {pond_data.height} cm.")
+    # print(f"Overflow: {pond_data.overflow}")
 
 
 if __name__ == "__main__":

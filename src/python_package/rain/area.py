@@ -20,7 +20,7 @@ class Area:
 
     @abstractmethod
     def calc_area(self) -> float:
-        "Calculates the area in m3"
+        "Calculates the area in m2"
 
     def calc_area_ha(self) -> float:
         "Calculates the area en hectar"
@@ -60,3 +60,22 @@ class NorthboundRectangle(Area):
         d_lon = (lon_max - lon_min) * distance_between_deg_in_m
 
         return d_lat * d_lon
+
+
+class EmptyArea(Area):
+    """Empty rain arae"""
+
+    def __init__(self, area: float) -> None:
+        self.area = area
+
+    def contains(self, coordinate: Coordinate) -> bool:
+        "Is the point within the area"
+        return False
+
+    def calc_area(self) -> float:
+        "Calculates the area in m2"
+        return self.area
+
+    def calc_area_ha(self) -> float:
+        "Calculates the area en hectar"
+        return self.calc_area() / 10000
