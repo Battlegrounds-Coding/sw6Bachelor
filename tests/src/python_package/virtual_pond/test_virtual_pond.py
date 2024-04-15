@@ -1,6 +1,7 @@
 """Testing of virtual pond module"""
 
 from python_package.virtual_pond import VirtualPond
+from python_package import rain
 
 URBAN_CATCHMENT_AREA = 0.59
 DISCHARGE_COEFICENT = 0.6
@@ -8,6 +9,8 @@ POND_AREA = 5572
 SURFACE_REACTION_FACTOR = 0.25
 WATER_LEVEL_MIN = 100
 WATER_LEVEL_MAX = 300
+rain_data = rain.Rain()
+
 
 
 def test_water_in():
@@ -20,7 +23,7 @@ def test_water_in():
     """
 
     water_level = 200
-
+    
     virtual_pond = VirtualPond(
         URBAN_CATCHMENT_AREA,
         SURFACE_REACTION_FACTOR,
@@ -29,6 +32,7 @@ def test_water_in():
         water_level,
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
+        rain_data
     )
 
     k = 0.25
@@ -59,6 +63,7 @@ def test_water_out():
         water_level,
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
+        rain_data
     )
 
     c = 0.6
