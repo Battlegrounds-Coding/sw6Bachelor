@@ -29,6 +29,11 @@ class SerialCom:
             if time.time() > timeout:
                 raise serial_exceptions.exceptions.NO_RESPONSE
         string = self.arduino.read_until(b"\r").decode()
+        if string.find("Error"):
+            print("Controller error " + string)
+            string.replace("Error:", "")
+            raise serial_exceptions.exceptions(int(string[0]))
+
         if self.debug:
             print(string)
 

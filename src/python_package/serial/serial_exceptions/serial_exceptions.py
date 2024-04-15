@@ -6,5 +6,9 @@ from enum import Enum
 class exceptions(Exception, Enum):
     """Exeption class with enums for specifing error"""
 
-    NO_RESPONSE = 1
+    NO_RESPONSE = 0
+
+    # Controller errors:
+    INCORECT_DISTANCE_READING = 1
     PUMP_VALUE_OUT_OF_BOUNDS = 2
+    NO_SENSOR_READINGS = 3
