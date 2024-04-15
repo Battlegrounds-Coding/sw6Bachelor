@@ -58,16 +58,8 @@ class SerialCom:
         """Wait for up to 5 seconds for response from connected device,
         either trhow exception or read all responses into an array"""
         string_array: list[str] = []
-        timeout = time.time() + 5  # 5 seconds from now
-        while not self.arduino.in_waiting:
-            if time.time() > timeout:
-                raise serial_exceptions.exceptions.NO_RESPONSE
-
         while self.arduino.in_waiting:
-            string = self.arduino.read_until(b"\r").decode()
-            if self.debug:
-                print(string)  # print all lines
-            string_array.append(string)
+            string_array.append(self.read())
         return string_array
 
     # def write_read(self, x):
