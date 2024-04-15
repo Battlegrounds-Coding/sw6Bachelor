@@ -1,5 +1,7 @@
 "THIS IS THE MAIN FILE"
 
+from datetime import timedelta
+
 from python_package.virtual_pond import VirtualPond
 from python_package.rain import artificial_rain
 
@@ -14,6 +16,8 @@ WATER_LEVEL_MAX = 300
 
 def main():
     """Main"""
+
+    time = timedelta(seconds=10)
 
     rain_data = artificial_rain.ArtificialConstRain(20)
 
@@ -30,12 +34,12 @@ def main():
         rain_data,
     )
 
-    pond_data = virtual_pond.generate_virtual_sensor_reading()
+    pond_data = virtual_pond.generate_virtual_sensor_reading(time)
 
-    # print(f"Volume in: {pond_data.volume_in} m^3/s")
-    # print(f"Volume out: {pond_data.volume_out} m^3/s")
+    print(f"Volume in: {pond_data.volume_in} m^3/s")
+    print(f"Volume out: {pond_data.volume_out} m^3/s")
     print(f"Height: {pond_data.height} cm.")
-    # print(f"Overflow: {pond_data.overflow}")
+    print(f"Overflow: {pond_data.overflow}")
 
 
 if __name__ == "__main__":

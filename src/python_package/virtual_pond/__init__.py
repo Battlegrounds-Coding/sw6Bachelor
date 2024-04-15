@@ -70,27 +70,41 @@ class VirtualPond:  # pylint: disable=R0902
 
         return water_volume, volume_in, volume_out
 
-    def generate_virtual_sensor_reading(self) -> PondData:
+    def generate_virtual_sensor_reading(self, time:timedelta) -> PondData:
         """
         Genereate the virtual value of expected water level.
         Returns height_over_min, height in cm and overflow bool.
         """
+        volume_in_median = 0
+        volume_out_median = 0
 
-        water_volume, volume_in, volume_out = self.calculate_water_volume()
+        for x in range(int(time.total_seconds())):
+            water_volume, volume_in, volume_out = self.calculate_water_volume()
 
-        overflow = False
+            volume_in_median = volume_in_median + volume_in
+            volume_out_median = volume_out_median + volume_out
 
-        height_cm = (water_volume / self.pond_area) * 100
+            overflow = False
 
-        height_cm = max(height_cm, 0)
+            height_cm = (water_volume / self.pond_area) * 100
 
-        if height_cm > self.water_level_max:
-            overflow = True
-            height_cm = self.water_level_max
-        elif height_cm <= self.water_level_min:
-            height_cm = self.water_level_min
+            height_cm = max(height_cm, 0)
 
-        pond_data = PondData(height_cm, overflow, volume_in, volume_out)
+            if height_cm > self.water_level_max:
+                overflow = True
+                height_cm = self.water_level_max
+            elif height_cm <= self.water_level_min:
+                height_cm = self.water_level_min
+
+
+            self.water_level = height_cm
+            x = x + 1
+
+
+        volume_in_median = (volume_in_median/int(time.total_seconds()))
+        volume_out_median = (volume_out_median/int(time.total_seconds()))
+
+        pond_data = PondData(height_cm, overflow, volume_in_median, volume_out_median)
 
         return pond_data
 
