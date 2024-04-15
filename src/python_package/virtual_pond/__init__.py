@@ -21,23 +21,23 @@ class VirtualPond:  # pylint: disable=R0902
 
     def __init__(
         self,
-        urban_catchment_area: float,
+        urban_catchment_area_ha: float,
         surface_reaction_factor: float,
         discharge_coeficent: float,
-        pond_area: float,
-        water_level: float,
-        water_level_min: float,
-        water_level_max: float,
-        rain_data: rain.Rain,
+        pond_area_m2: float,
+        water_level_cm: float,
+        water_level_min_cm: float,
+        water_level_max_cm: float,
+        rain_data_mm: rain.Rain,
     ):  # pylint: disable=R0913
-        self.urban_catchment_area = urban_catchment_area
+        self.urban_catchment_area = urban_catchment_area_ha
         self.surface_reaction_factor = surface_reaction_factor
         self.discharge_coeficent = discharge_coeficent
-        self.pond_area = pond_area
-        self.water_level = water_level
-        self.water_level_min = water_level_min
-        self.water_level_max = water_level_max
-        self.rain_data = rain_data
+        self.pond_area = pond_area_m2
+        self.water_level = water_level_cm
+        self.water_level_min = water_level_min_cm
+        self.water_level_max = water_level_max_cm
+        self.rain_data = rain_data_mm
 
     def calculate_water_volume(self) -> tuple[float, float, float]:
         """
