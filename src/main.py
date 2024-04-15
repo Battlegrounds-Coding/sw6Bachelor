@@ -2,6 +2,7 @@
 
 from python_package.virtual_pond import VirtualPond
 from python_package import rain
+from python_package.rain import artificial_rain
 
 
 URBAN_CATCHMENT_AREA = 0.59
@@ -15,7 +16,7 @@ WATER_LEVEL_MAX = 300
 def main():
     """Main"""
 
-    rain_data = rain.Rain()
+    rain_data = artificial_rain.ArtificialConstRain(20)
 
     water_level = 100
 

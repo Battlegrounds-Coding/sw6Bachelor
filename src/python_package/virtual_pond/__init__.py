@@ -103,7 +103,6 @@ class VirtualPond:  # pylint: disable=R0902
         A_uc : Urban catchment surface area in ha.
         Returns m^3.
         """
-
         # Convert mm to m
         s = s / 1000
 
