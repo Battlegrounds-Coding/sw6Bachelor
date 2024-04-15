@@ -131,6 +131,7 @@ class VirtualPond:
         return q_out
 
 
+    #TODO: get orifice data
     def get_previous_orifice(self) -> float:
         """
         Get previous orifice value from stradegy.
@@ -146,6 +147,7 @@ class VirtualPond:
 
         return orifice
 
+    #TODO: get rain data from peter
     def get_rain_data(self) -> float:
         """
         Get weather forcast from DMI api.
