@@ -24,7 +24,7 @@ class TestMessurementData(f.MessurementData):
 
 
 def test_filter_case_temperature():
-    filter = f.Kalman (np.float64(60), np.float64(100**2), delta=timedelta(seconds=5))
+    filter = f.Kalman(np.float64(60), np.float64(100**2), delta=timedelta(seconds=5))
     data = np.array(
         [
             [49.986, 49.986],
