@@ -41,9 +41,9 @@ class Kalman:
         print("state: " + str(state))
 
         # Predict
-        predict_state = predict_data.height() + self.noice
+        predict_state = state 
         print("predicted state: " + str(predict_state))
-        predict_variance = variance
+        predict_variance = variance + self.noice
         print("predicted variance: " + str(predict_variance))
 
         self.state = state
