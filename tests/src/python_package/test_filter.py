@@ -1,5 +1,5 @@
-from datetime import timedelta 
-from python_package import filter as f
+from datetime import timedelta
+import python_package.filter as f
 import numpy as np
 
 
