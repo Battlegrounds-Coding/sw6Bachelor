@@ -7,7 +7,7 @@ from datetime import timedelta
 
 class Data:
     @abstractmethod
-    def height(self) -> np.float32:
+    def height(self) -> np.float64:
         "Returns the current height above min"
 
 
@@ -15,15 +15,15 @@ class MessurementData(Data):
     "An abstract class for defining messurements, implements Data and adds a variance function"
 
     @abstractmethod
-    def variance_height(self) -> np.float32:
+    def variance_height(self) -> np.float64:
         "Returns the variance of the messurements"
 
 
 class Kalman:
-    def __init__(self, initial_state: np.float32, initial_variance: np.float32, delta: timedelta, noice: np.float32 = np.float32(0.0)):
+    def __init__(self, initial_state: np.float64, initial_variance: np.float64, delta: timedelta, noice: np.float64 = np.float64(0.0)):
         self.state = initial_state
         self.variance = initial_variance
-        self.delta = np.float32(delta.total_seconds())
+        self.delta = np.float64(delta.total_seconds())
         self.noice = noice
 
         self.predict_state = self.state
@@ -51,7 +51,7 @@ class Kalman:
         self.predict_state = predict_state
         self.predict_variance = predict_variance
 
-    def current_state(self) -> np.float32:
+    def current_state(self) -> np.float64:
         return self.state
 
 

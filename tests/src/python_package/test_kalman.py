@@ -4,27 +4,27 @@ import numpy as np
 
 
 class TestData(f.Data):
-    def __init__(self, data: np.float32) -> None:
+    def __init__(self, data: np.float64) -> None:
         self.data = data
 
-    def height(self) -> np.float32:
+    def height(self) -> np.float64:
         return self.data
 
 
 class TestMessurementData(f.MessurementData):
-    def __init__(self, data: np.float32, variance: np.float32) -> None:
+    def __init__(self, data: np.float64, variance: np.float64) -> None:
         self.data = data
         self.variance = variance
 
-    def height(self) -> np.float32:
+    def height(self) -> np.float64:
         return self.data
 
-    def variance_height(self) -> np.float32:
+    def variance_height(self) -> np.float64:
         return self.variance
 
 
 def test_filter_case_temperature():
-    filter = f.Kalman (np.float32(60), np.float32(100**2), delta=timedelta(seconds=5))
+    filter = f.Kalman (np.float64(60), np.float64(100**2), delta=timedelta(seconds=5))
     data = np.array(
         [
             [49.986, 49.986],
@@ -38,15 +38,15 @@ def test_filter_case_temperature():
             [49.965, 49.982],
             [50.114, 49.999]
         ],
-        dtype=np.float32
+        dtype=np.float64
     )
-    variance = np.float32(0.01)
+    variance = np.float64(0.01)
 
     for messurement, estimate in data:
         filter.step(TestData(filter.state), TestMessurementData(messurement, variance))
-        a = np.abs(filter.state - estimate, dtype=np.float32)
+        a = np.abs(filter.state - estimate, dtype=np.float64)
         print("abs: " + str(a))
-        assert a < np.float32(1e-3)
+        assert a < np.float64(1e-3)
 
 
 
