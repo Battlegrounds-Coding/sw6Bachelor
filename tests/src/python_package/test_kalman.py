@@ -1,5 +1,5 @@
 from datetime import timedelta
-import python_package.filter as f
+import python_package.kalman as f
 import numpy as np
 
 
@@ -24,7 +24,7 @@ class TestMessurementData(f.MessurementData):
 
 
 def test_filter_case_temperature():
-    filter = f.Filter(np.float32(60), np.float32(100**2), delta=timedelta(seconds=5))
+    filter = f.Kalman (np.float32(60), np.float32(100**2), delta=timedelta(seconds=5))
     data = np.array(
         [
             [49.986, 49.986],

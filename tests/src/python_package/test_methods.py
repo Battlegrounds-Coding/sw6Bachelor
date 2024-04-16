@@ -6,7 +6,6 @@ using pytest https://docs.pytest.org/en/8.0.x/
 # from __future__ import annotations
 
 from python_package.hellop import hello_world, hello_goodbye
-from python_package.xqwz import Xqwz 
 
 
 def hello_test():

@@ -19,7 +19,7 @@ class MessurementData(Data):
         "Returns the variance of the messurements"
 
 
-class Xqwz:
+class Kalman:
     def __init__(self, initial_state: np.float32, initial_variance: np.float32, delta: timedelta, noice: np.float32 = np.float32(0.0)):
         self.state = initial_state
         self.variance = initial_variance
