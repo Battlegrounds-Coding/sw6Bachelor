@@ -50,14 +50,16 @@ class SerialCom:
             for i in rtn:
                 print(i)
 
-    def read_sensor(self) -> int:
+    def read_sensor(self) -> tuple[int, int]:
         """Sends a msg with the string 'S' which tells the connected device to return sensor readings"""
         self.write("S")
         rtn = self.read_all()
-        if self.debug:
-            for i in rtn:
-                print(i)
-        return int(rtn.pop(-1))
+        invariance = 0
+        for string in rtn:
+            if string.find("invariance:"):
+                invariance = int(string)
+        #TODO: test that the sensor value is always the last one, this is a bit greedy
+        return int(rtn.pop(-1)), invariance
 
     def read_all(self) -> list[str]:
         """Wait for up to 5 seconds for response from connected device,
