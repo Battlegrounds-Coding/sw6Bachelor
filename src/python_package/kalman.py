@@ -32,19 +32,12 @@ class Kalman:
     def step(self, predict_data: Data, messured_data: MessurementData):
         # Update
         kalman_gain = self.predict_variance / (self.predict_variance + messured_data.variance_height())
-        print("kalman_gain: " + str(kalman_gain))
-
         variance = (1 - kalman_gain) * self.variance
-        print("variance: " + str(variance))
-
         state = self.predict_state + kalman_gain * (messured_data.height() - self.predict_state)
-        print("state: " + str(state))
 
         # Predict
-        predict_state = state 
-        print("predicted state: " + str(predict_state))
+        predict_state = state
         predict_variance = variance + self.noice
-        print("predicted variance: " + str(predict_variance))
 
         self.state = state
         self.variance = variance
