@@ -44,7 +44,10 @@ def test_filter_case_temperature():
 
     for messurement, estimate in data:
         filter.step(TestData(filter.state), TestMessurementData(messurement, variance))
-        assert np.abs(filter.state - estimate, dtype=np.float32) < np.float32(10e-6)
+        a = np.abs(filter.state - estimate, dtype=np.float32)
+        print("abs: " + a)
+        
+        assert  a < np.float32(10e-6)
 
 
 
