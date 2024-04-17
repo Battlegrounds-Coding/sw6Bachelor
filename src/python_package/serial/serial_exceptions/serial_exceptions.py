@@ -7,6 +7,8 @@ class exceptions(Exception, Enum):
     """Exeption class with enums for specifing error"""
 
     NO_RESPONSE = 0
+    INCORRECT_INPUT = 4
+    CONVERSION_ERROR = 5
 
     # Controller errors:
     INCORECT_DISTANCE_READING = 1
