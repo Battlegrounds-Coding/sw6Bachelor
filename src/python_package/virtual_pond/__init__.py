@@ -6,7 +6,7 @@ from python_package import rain
 from python_package.rain import area
 
 
-class PondData:  # pylint: disable=R0903
+class PondData:
     """Data from the virtual pond"""
 
     def __init__(self, height: float, overflow: bool, volume_in: float, volume_out: float):
@@ -16,7 +16,7 @@ class PondData:  # pylint: disable=R0903
         self.volume_out = volume_out
 
 
-class VirtualPond:  # pylint: disable=R0902
+class VirtualPond:
     """Virtual pond class"""
 
     def __init__(
@@ -29,7 +29,7 @@ class VirtualPond:  # pylint: disable=R0902
         water_level_min_cm: float,
         water_level_max_cm: float,
         rain_data_mm: rain.Rain,
-    ):  # pylint: disable=R0913
+    ):
         self.urban_catchment_area = urban_catchment_area_ha
         self.surface_reaction_factor = surface_reaction_factor
         self.discharge_coeficent = discharge_coeficent
@@ -91,6 +91,7 @@ class VirtualPond:  # pylint: disable=R0902
             height_cm = max(height_cm, 0)
 
             if height_cm > self.water_level_max:
+                # TODO: call alarm
                 overflow = True
                 height_cm = self.water_level_max
             elif height_cm <= self.water_level_min:
