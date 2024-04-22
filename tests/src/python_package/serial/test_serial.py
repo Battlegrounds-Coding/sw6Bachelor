@@ -10,7 +10,6 @@ test = SerialCom()
 
 class ow_arduino(serial.Serial):
     def __init__(self) -> None:
-        # self._timeout = 1
         self._buffer = []
 
     @property
@@ -30,8 +29,6 @@ class ow_arduino(serial.Serial):
         return 1
 
     def read_until(self, size=1) -> bytes:
-        # if(self.in_waiting):
-        #     self.in_waiting -= 1
         s: str = self.buffer.pop(0)
         output: bytes = bytes(s + "\r", "utf-8")
         return output
@@ -45,7 +42,6 @@ test.arduino = custom_serial
 
 def test_read():
     custom_serial.buffer = ["test"]
-    # test.arduino.buffer = ["test"]
     assert test.read() == "test"
 
     custom_serial.buffer = ["1", "2"]
