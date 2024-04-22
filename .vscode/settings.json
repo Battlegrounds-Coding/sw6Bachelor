@@ -12,7 +12,5 @@
     "python.testing.pytestArgs": [
         "tests"
     ],
-    "python.analysis.extraPaths": [
-        "./src/python_package/virtual_pond_module"
-    ]
+    
 }

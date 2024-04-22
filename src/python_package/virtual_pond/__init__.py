@@ -73,16 +73,16 @@ class VirtualPond:  # pylint: disable=R0902
     def generate_virtual_sensor_reading(self, time: timedelta) -> PondData:
         """
         Genereate the virtual value of expected water level.
-        Returns height in cm, overflow bool, volume_in over time and volume_out over time.
+        Returns height in cm, overflow bool, volume_in avrage and volume_out avrage.
         """
-        volume_in_median = 0
-        volume_out_median = 0
+        volume_in_avg = 0
+        volume_out_avg = 0
 
         for x in range(int(time.total_seconds())):
             water_volume, volume_in, volume_out = self.calculate_water_volume()
 
-            volume_in_median = volume_in_median + volume_in
-            volume_out_median = volume_out_median + volume_out
+            volume_in_avg = volume_in_avg + volume_in
+            volume_out_avg = volume_out_avg + volume_out
 
             overflow = False
 
@@ -99,10 +99,10 @@ class VirtualPond:  # pylint: disable=R0902
             self.water_level = height_cm
             x = x + 1
 
-        volume_in_median = volume_in_median / int(time.total_seconds())
-        volume_out_median = volume_out_median / int(time.total_seconds())
+        volume_in_avg = volume_in_avg / int(time.total_seconds())
+        volume_out_avg = volume_out_avg / int(time.total_seconds())
 
-        pond_data = PondData(height_cm, overflow, volume_in_median, volume_out_median)
+        pond_data = PondData(height_cm, overflow, volume_in_avg, volume_out_avg)
 
         return pond_data
 
@@ -148,7 +148,7 @@ class VirtualPond:  # pylint: disable=R0902
 
     def get_previous_orifice(self) -> float:
         """
-        Get previous orifice value from stradegy.
+        Get previous orifice value from strategy.
         Returns cm.
         """
 
@@ -163,7 +163,7 @@ class VirtualPond:  # pylint: disable=R0902
 
     def get_rain_data(self) -> float:
         """
-        Get weather forcast from DMI api.
+        Get weather forcast.
         Returns mm.
         """
 

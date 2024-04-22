@@ -1,7 +1,11 @@
 """Testing of virtual pond module"""
 
+from datetime import timedelta
+
 from python_package.virtual_pond import VirtualPond
 from python_package import rain
+from python_package.rain import artificial_rain
+
 
 URBAN_CATCHMENT_AREA = 0.59
 DISCHARGE_COEFICENT = 0.6
@@ -9,7 +13,6 @@ POND_AREA = 5572
 SURFACE_REACTION_FACTOR = 0.25
 WATER_LEVEL_MIN = 100
 WATER_LEVEL_MAX = 300
-rain_data = rain.Rain()
 
 
 def test_water_in():
@@ -22,6 +25,7 @@ def test_water_in():
     """
 
     water_level = 200
+    rain_data = rain.Rain()
 
     virtual_pond = VirtualPond(
         URBAN_CATCHMENT_AREA,
@@ -53,6 +57,7 @@ def test_water_out():
     """
 
     water_level = 200
+    rain_data = rain.Rain()
 
     virtual_pond = VirtualPond(
         URBAN_CATCHMENT_AREA,
@@ -75,5 +80,53 @@ def test_water_out():
     assert volume_out == 0.0664
 
 
-def test_tba():
-    """TBA"""
+def test_generate_virtual_sensor_reading():
+    """Test generate_virtual_sensor_reading"""
+    water_level = 200
+
+    time = timedelta(seconds=10)
+
+    rain_data = artificial_rain.ArtificialConstRain(20)
+
+    virtual_pond = VirtualPond(
+        URBAN_CATCHMENT_AREA,
+        SURFACE_REACTION_FACTOR,
+        DISCHARGE_COEFICENT,
+        POND_AREA,
+        water_level,
+        WATER_LEVEL_MIN,
+        WATER_LEVEL_MAX,
+        rain_data,
+    )
+
+    pond_data = virtual_pond.generate_virtual_sensor_reading(time)
+    height = round(pond_data.height, 4)
+
+    assert height == 205.278
+
+
+def test_calculate_water_volume():
+    """Test calculate_water_volume"""
+
+    water_level = 100
+
+    time = timedelta(seconds=10)
+
+    rain_data = artificial_rain.ArtificialConstRain(20)
+
+    virtual_pond = VirtualPond(
+        URBAN_CATCHMENT_AREA,
+        SURFACE_REACTION_FACTOR,
+        DISCHARGE_COEFICENT,
+        POND_AREA,
+        water_level,
+        WATER_LEVEL_MIN,
+        WATER_LEVEL_MAX,
+        rain_data,
+    )
+
+    volume = virtual_pond.calculate_water_volume()
+
+    volume = round(volume[0], 4)
+
+    assert volume == 5601.4361
