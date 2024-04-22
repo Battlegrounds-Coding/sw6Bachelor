@@ -6,7 +6,6 @@ from enum import Enum
 class exceptions(Exception, Enum):
     """Exeption class with enums for specifing error"""
 
-    # def __init__(self,value):
     #     return enu
     NO_RESPONSE = 0
     """Comunication timed oud"""
