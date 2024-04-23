@@ -1,12 +1,12 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
 from typing import List, Callable, Self
-import numpy as np
 from .kalman import Kalman, MeasurementData, Data
 from datetime import timedelta
+import numpy as np
 
 
 class KalmanBank:
-    "A bank of Kalman filters with faults defined by the user. When initialized, all filters are identical. Faults are defined as a Callable[[MeasurementData], MeasurementData]"
+    "A bank of Kalman filters with faults defined by the user. When initialized, all filters are identical."
 
     def __init__(
         self,
@@ -20,21 +20,24 @@ class KalmanBank:
         self.kalman_bank: List[Kalman] = []
 
         # create a kalman filter for each fault and append in kalman_bank
-        for f in faults:
+        for _ in faults:
             self.kalman_bank.append(Kalman(initial_state, initial_variance, delta, noice))
 
     def __eq__(self, other: Self) -> bool:
-        return self.faults == other.get_faults() and self.kalman_bank == other.get_kalman_bank()
+        return self.faults == other.get_faults and self.kalman_bank == other.get_kalman_bank
 
+    @property
     def get_kalman_bank(self) -> List[Kalman]:
         "returns the List of Kalman filters"
         return self.kalman_bank
 
+    @property
     def get_faults(self) -> List[Callable[[MeasurementData], MeasurementData]]:
         "returns the list of faults"
         return self.faults
 
     def print_bank(self):
+        "Prints the field variables of each filter in the KalmanBank"
         for f in self.kalman_bank:
             f.print_kalman_filter()
             # print_bank is broken somewhere

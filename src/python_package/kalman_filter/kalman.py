@@ -2,11 +2,12 @@
 
 from abc import abstractmethod
 from typing import Self
-import numpy as np
 from datetime import timedelta
+import numpy as np
 
 
 class Data:
+    "An abstract class that contains data from Kalman filters"
     def __eq__(self, other: Self) -> bool:
         return self.height() == other.height()
 
@@ -27,6 +28,7 @@ class MeasurementData(Data):
 
 
 class Kalman:
+    "Kalman filter class"
     def __init__(
         self,
         initial_state: np.float64,
@@ -38,36 +40,32 @@ class Kalman:
         self.variance = initial_variance
         self.delta = np.float64(delta.total_seconds())
         self.noice = noice
-
         self.predict_state = self.state
         self.predict_variance = self.variance
 
     def __eq__(self, other: Self) -> bool:
+        "Equals function. Checks if all the data between two filters are the same"
         return (
-            self.state == other.get_state()
-            and self.variance == other.get_variance()
-            and self.delta == other.get_delta()
-            and self.noice == other.get_noice()
-            and self.predict_state == other.get_predict_state()
-            and self.predict_variance == other.get_predict_variance()
+            self.state == other.get_state
+            and self.variance == other.get_variance
+            and self.delta == other.get_delta
+            and self.noice == other.get_noice
+            and self.predict_state == other.get_predict_state
+            and self.predict_variance == other.get_predict_variance
         )
 
     def step(self, predict_data: Data, messured_data: MeasurementData):
+        "Steps a kalman filter using pridicted data and measured data"
         # Update
         kalman_gain = self.predict_variance / (self.predict_variance + messured_data.variance_height())
-        print("kalman_gain: " + str(kalman_gain))
 
         variance = (1 - kalman_gain) * self.variance
-        print("variance: " + str(variance))
 
         state = self.predict_state + kalman_gain * (messured_data.height() - self.predict_state)
-        print("state: " + str(state))
 
         # Predict
         predict_state = state
-        print("predicted state: " + str(predict_state))
         predict_variance = variance + self.noice
-        print("predicted variance: " + str(predict_variance))
 
         self.state = state
         self.variance = variance
@@ -75,6 +73,7 @@ class Kalman:
         self.predict_variance = predict_variance
 
     def print_kalman_filter(self) -> None:
+        "Prints all properties of a Kalman class"
         print(
             "State: "
             + str(self.state)
@@ -95,23 +94,31 @@ class Kalman:
             + str(self.predict_variance)
         )
 
+    @property
     def current_state(self) -> np.float64:
         return self.state
 
+    @property
     def get_state(self) -> np.float64:
         return self.state
 
+    @property
     def get_variance(self) -> np.float64:
         return self.variance
 
+    @property
     def get_delta(self) -> np.float64:
         return self.delta
 
+    @property
     def get_noice(self) -> np.float64:
         return self.noice
 
+    @property
     def get_predict_state(self) -> np.float64:
         return self.predict_state
 
+    @property
     def get_predict_variance(self) -> np.float64:
         return self.predict_variance
+    

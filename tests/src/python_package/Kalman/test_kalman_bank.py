@@ -43,7 +43,7 @@ def test_kalman_constructor_create_bank():
 
     bank_one = b.KalmanBank(faults_one, np.float64(60), np.float64(100**2), delta=timedelta(seconds=5))
 
-    assert len(faults_one) == len(bank_one.get_kalman_bank())
+    assert len(faults_one) == len(bank_one.get_kalman_bank)
 
     new_faults: List[Callable[[filter.MeasurementData], filter.MeasurementData]] = [
         lambda data: TestMeasurementData(data.height() + 10, data.variance_height()),
@@ -51,11 +51,11 @@ def test_kalman_constructor_create_bank():
     ]
 
     bank_one.add_faults(new_faults, np.float64(50), np.float64(200**2), delta=timedelta(seconds=6))
-    assert len(faults_one) == len(bank_one.get_kalman_bank()) and len(bank_one.get_faults()) == 4
+    assert len(faults_one) == len(bank_one.get_kalman_bank) and len(bank_one.get_faults) == 4
 
     # Tests that the add_faults function does not create filters with existing faults
     bank_one.add_faults(new_faults, np.float64(50), np.float64(200**2), delta=timedelta(seconds=6))
-    assert len(faults_one) == len(bank_one.get_kalman_bank()) and not len(bank_one.get_faults()) == 5
+    assert len(faults_one) == len(bank_one.get_kalman_bank) and not len(bank_one.get_faults) == 5
 
 
 def test_step_filters():
@@ -67,11 +67,11 @@ def test_step_filters():
 
     test_bank = b.KalmanBank(faults, np.float64(60), np.float64(100**2), delta=timedelta(seconds=5))
 
-    assert test_bank.get_kalman_bank()[0] == test_bank.get_kalman_bank()[1]
-    assert test_bank.get_kalman_bank()[0] == test_bank.get_kalman_bank()[2]
-    assert test_bank.get_kalman_bank()[1] == test_bank.get_kalman_bank()[2]
+    assert test_bank.get_kalman_bank[0] == test_bank.get_kalman_bank[1]
+    assert test_bank.get_kalman_bank[0] == test_bank.get_kalman_bank[2]
+    assert test_bank.get_kalman_bank[1] == test_bank.get_kalman_bank[2]
 
     test_bank.step_filters(TestData(np.float64(3)), TestMeasurementData(np.float64(2), np.float64(4)))
-    assert test_bank.get_kalman_bank()[0] != test_bank.get_kalman_bank()[1]
-    assert test_bank.get_kalman_bank()[0] != test_bank.get_kalman_bank()[2]
-    assert test_bank.get_kalman_bank()[1] != test_bank.get_kalman_bank()[2]
+    assert test_bank.get_kalman_bank[0] != test_bank.get_kalman_bank[1]
+    assert test_bank.get_kalman_bank[0] != test_bank.get_kalman_bank[2]
+    assert test_bank.get_kalman_bank[1] != test_bank.get_kalman_bank[2]
