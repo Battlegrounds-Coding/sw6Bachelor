@@ -4,7 +4,6 @@ import numpy as np
 from data import TestData, TestMeasurementData
 
 
-
 def test_filter_case_temperature():
     filter = f.Kalman(np.float64(60), np.float64(100**2), delta=timedelta(seconds=5))
     data = np.array(
@@ -18,9 +17,9 @@ def test_filter_case_temperature():
             [49.938, 49.978],
             [49.858, 49.985],
             [49.965, 49.982],
-            [50.114, 49.999]
+            [50.114, 49.999],
         ],
-        dtype=np.float64
+        dtype=np.float64,
     )
     variance = np.float64(0.01)
 
@@ -29,7 +28,3 @@ def test_filter_case_temperature():
         a = np.abs(filter.state - estimate, dtype=np.float64)
         print("abs: " + str(a))
         assert a < np.float64(1e-1)
-
-
-
-

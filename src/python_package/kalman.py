@@ -20,7 +20,13 @@ class MessurementData(Data):
 
 
 class Kalman:
-    def __init__(self, initial_state: np.float64, initial_variance: np.float64, delta: timedelta, noice: np.float64 = np.float64(0.0)):
+    def __init__(
+        self,
+        initial_state: np.float64,
+        initial_variance: np.float64,
+        delta: timedelta,
+        noice: np.float64 = np.float64(0.0),
+    ):
         self.state = initial_state
         self.variance = initial_variance
         self.delta = np.float64(delta.total_seconds())
@@ -41,7 +47,7 @@ class Kalman:
         print("state: " + str(state))
 
         # Predict
-        predict_state = state 
+        predict_state = state
         print("predicted state: " + str(predict_state))
         predict_variance = variance + self.noice
         print("predicted variance: " + str(predict_variance))
@@ -53,5 +59,3 @@ class Kalman:
 
     def current_state(self) -> np.float64:
         return self.state
-
-
