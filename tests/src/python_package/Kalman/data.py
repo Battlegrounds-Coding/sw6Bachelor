@@ -1,0 +1,21 @@
+import numpy as np
+import python_package.kalman_filter.kalman as f
+
+class TestData(f.Data):
+    def __init__(self, data: np.float64) -> None:
+        self.data = data
+
+    def height(self) -> np.float64:
+        return self.data
+
+
+class TestMeasurementData(f.MeasurementData):
+    def __init__(self, data: np.float64, variance: np.float64) -> None:
+        self.data = data
+        self.variance = variance
+
+    def height(self) -> np.float64:
+        return self.data
+
+    def variance_height(self) -> np.float64:
+        return self.variance

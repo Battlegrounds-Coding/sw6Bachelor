@@ -1,26 +1,8 @@
 from datetime import timedelta
-import python_package.kalman as f
+import python_package.kalman_filter.kalman as f
 import numpy as np
+from data import TestData, TestMeasurementData
 
-
-class TestData(f.Data):
-    def __init__(self, data: np.float64) -> None:
-        self.data = data
-
-    def height(self) -> np.float64:
-        return self.data
-
-
-class TestMessurementData(f.MessurementData):
-    def __init__(self, data: np.float64, variance: np.float64) -> None:
-        self.data = data
-        self.variance = variance
-
-    def height(self) -> np.float64:
-        return self.data
-
-    def variance_height(self) -> np.float64:
-        return self.variance
 
 
 def test_filter_case_temperature():
@@ -43,7 +25,7 @@ def test_filter_case_temperature():
     variance = np.float64(0.01)
 
     for messurement, estimate in data:
-        filter.step(TestData(filter.state), TestMessurementData(messurement, variance))
+        filter.step(TestData(filter.state), TestMeasurementData(messurement, variance))
         a = np.abs(filter.state - estimate, dtype=np.float64)
         print("abs: " + str(a))
         assert a < np.float64(1e-1)
