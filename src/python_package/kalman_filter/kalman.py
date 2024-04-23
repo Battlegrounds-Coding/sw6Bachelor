@@ -8,6 +8,7 @@ import numpy as np
 
 class Data:
     "An abstract class that contains data from Kalman filters"
+
     def __eq__(self, other: Self) -> bool:
         return self.height() == other.height()
 
@@ -29,6 +30,7 @@ class MeasurementData(Data):
 
 class Kalman:
     "Kalman filter class"
+
     def __init__(
         self,
         initial_state: np.float64,
@@ -121,4 +123,3 @@ class Kalman:
     @property
     def get_predict_variance(self) -> np.float64:
         return self.predict_variance
-    

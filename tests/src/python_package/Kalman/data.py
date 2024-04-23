@@ -4,6 +4,7 @@ import python_package.kalman_filter.kalman as f
 
 class TestData(f.Data):
     "Mockdata for unit tests"
+
     def __init__(self, data: np.float64) -> None:
         self.data = data
 
@@ -15,6 +16,7 @@ class TestData(f.Data):
 
 class TestMeasurementData(f.MeasurementData):
     "Mock measurement data for unit tests"
+
     def __init__(self, data: np.float64, variance: np.float64) -> None:
         self.data = data
         self.variance = variance
