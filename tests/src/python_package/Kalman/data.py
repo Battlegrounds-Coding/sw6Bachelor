@@ -7,6 +7,8 @@ class TestData(f.Data):
 
     def height(self) -> np.float64:
         return self.data
+    
+    __test__ = False
 
 
 class TestMeasurementData(f.MeasurementData):
@@ -19,3 +21,5 @@ class TestMeasurementData(f.MeasurementData):
 
     def variance_height(self) -> np.float64:
         return self.variance
+    
+    __test__ = False
