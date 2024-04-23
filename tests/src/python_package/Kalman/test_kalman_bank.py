@@ -1,9 +1,9 @@
 from datetime import timedelta
 from typing import List, Callable
+from data import TestData, TestMeasurementData
 import python_package.kalman_filter.kalman_bank as b
 import python_package.kalman_filter.kalman as filter
 import numpy as np
-from data import TestData, TestMeasurementData
 
 
 def fault_one(data: filter.MeasurementData) -> filter.MeasurementData:

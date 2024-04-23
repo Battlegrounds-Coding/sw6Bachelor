@@ -1,7 +1,7 @@
 from datetime import timedelta
+from data import TestData, TestMeasurementData
 import python_package.kalman_filter.kalman as f
 import numpy as np
-from data import TestData, TestMeasurementData
 
 
 def test_filter_case_temperature():

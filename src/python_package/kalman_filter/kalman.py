@@ -10,17 +10,20 @@ class Data:
     "An abstract class that contains data from Kalman filters"
 
     def __eq__(self, other: Self) -> bool:
+        "Equals function checks if data measures the same height"
         return self.height() == other.height()
 
     @abstractmethod
     def height(self) -> np.float64:
         "Returns the current height above min"
+    # pylint: disable=locally-disabled, multiple-statements, fixme, too-few-public-methods
 
 
 class MeasurementData(Data):
     "An abstract class for defining measurements, implements Data and adds a variance function"
 
     def __eq__(self, other: Self) -> bool:
+        "Equals function checks if the measured height is the same between two objects"
         return super().__eq__(other) and self.variance_height() == other.variance_height()
 
     @abstractmethod
@@ -38,6 +41,7 @@ class Kalman:
         delta: timedelta,
         noice: np.float64 = np.float64(0.0),
     ):
+        "Constructor for Kalman filter class"
         self.state = initial_state
         self.variance = initial_variance
         self.delta = np.float64(delta.total_seconds())
@@ -97,29 +101,36 @@ class Kalman:
         )
 
     @property
-    def current_state(self) -> np.float64:
+    def get_current_state(self) -> np.float64:
+        "Getter method for cuttent_state"
         return self.state
 
     @property
     def get_state(self) -> np.float64:
+        "Getter method for state"
         return self.state
 
     @property
     def get_variance(self) -> np.float64:
+        "Getter method for variance"
         return self.variance
 
     @property
     def get_delta(self) -> np.float64:
+        "Getter method for delta"
         return self.delta
 
     @property
     def get_noice(self) -> np.float64:
+        "Getter method for noice"
         return self.noice
 
     @property
     def get_predict_state(self) -> np.float64:
+        "Getter method for predict_state"
         return self.predict_state
 
     @property
     def get_predict_variance(self) -> np.float64:
+        "Getter method for predict_variance"
         return self.predict_variance

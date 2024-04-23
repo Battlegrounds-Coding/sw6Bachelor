@@ -52,7 +52,7 @@ class KalmanBank:
     ):
         "Adds new faults and creates filters for them."
         for f in new_faults:
-            if not f in self.faults:
+            if f not in self.faults:
                 self.faults.append(f)
                 # create kalman filter with f and append in kalman_bank
                 self.kalman_bank.append(Kalman(initial_state, initial_variance, delta, noice))

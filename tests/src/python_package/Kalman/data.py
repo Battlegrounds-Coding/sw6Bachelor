@@ -1,3 +1,4 @@
+"THIS FILE CONTAINS MOCKCLASSES USED TO SAVE MOCKDATA FOR UNIT TESTS"
 import numpy as np
 import python_package.kalman_filter.kalman as f
 
@@ -12,6 +13,8 @@ class TestData(f.Data):
         return self.data
 
     __test__ = False
+
+    # pylint: disable=locally-disabled, multiple-statements, fixme, too-few-public-methods
 
 
 class TestMeasurementData(f.MeasurementData):
