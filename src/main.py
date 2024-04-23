@@ -34,6 +34,8 @@ def main():
         rain_data,
     )
 
+    virtual_pond.set_orifice("max")
+
     pond_data = virtual_pond.generate_virtual_sensor_reading(time)
     print(f"Volume in: {pond_data.volume_in} m^3/s")
     print(f"Volume out: {pond_data.volume_out} m^3/s")

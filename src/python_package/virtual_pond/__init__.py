@@ -38,6 +38,7 @@ class VirtualPond:
         self.water_level_min = water_level_min_cm
         self.water_level_max = water_level_max_cm
         self.rain_data = rain_data_mm
+        self.orifice = 0
 
     def calculate_water_volume(self) -> tuple[float, float, float]:
         """
@@ -48,12 +49,9 @@ class VirtualPond:
         # Get weather forcast from DMI API
         forcast = self.get_rain_data()
 
-        # Get values from previous stradegy
-        orifice = self.get_previous_orifice()
-
         # Water volume change in cm^3
         volume_in = self.water_in(self.surface_reaction_factor, forcast, self.urban_catchment_area)
-        volume_out = self.water_out(self.discharge_coeficent, orifice, self.water_level)
+        volume_out = self.water_out(self.discharge_coeficent, self.orifice, self.water_level)
 
         # Find the change in volume in the pond
         water_volume_change = volume_in - volume_out
@@ -147,20 +145,25 @@ class VirtualPond:
 
         return q_out
 
-    def get_previous_orifice(self) -> float:
+    def set_orifice(self, orifice_state: str) -> float:
         """
-        Get previous orifice value from strategy.
-        Returns cm.
+        Choose orifice, set defualt to max
+        Return orifice diameter in cm
         """
 
-        # Placeholder
         orifice_max = 17.5
-        # orifice_med = orifice_max * (4 / 7)
-        # orifice_min = orifice_max * (1 / 7)
 
-        orifice = orifice_max
+        match orifice_state:
+            case "max":
+                self.orifice = orifice_max
+            case "med":
+                self.orifice = orifice_max * (4 / 7)
+            case "min":
+                self.orifice = orifice_max * (1 / 7)
+            case _:
+                self.orifice = orifice_max
 
-        return orifice
+        return self.orifice
 
     def get_rain_data(self) -> float:
         """

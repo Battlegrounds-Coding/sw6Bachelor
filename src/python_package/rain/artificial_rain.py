@@ -22,7 +22,7 @@ class ArtificialVariableRainPrediction:
         return self
 
     def get_closest_index(self, time: timedelta) -> int:
-        "Gets the closes lower bounded time to the timedelta"
+        "Gets the closest lower bounded time to the timedelta"
         index = bisect.bisect_left(self._prediction, time, key=lambda x: x[0])
         return index
 

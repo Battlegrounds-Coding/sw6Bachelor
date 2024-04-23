@@ -49,7 +49,7 @@ class NorthboundRectangle(Area):
         )
 
     def calc_area(self) -> float:
-        "Calculates the area of the Reactangle in m³"
+        "Calculates the area of the Reactangle in m2"
         distance_between_deg_in_m = 111_120
         lat_max = max(self._c1.lat, self._c2.lat)
         lat_min = min(self._c1.lat, self._c2.lat)
@@ -63,7 +63,7 @@ class NorthboundRectangle(Area):
 
 
 class EmptyArea(Area):
-    """Empty rain arae"""
+    """Empty rain area"""
 
     def __init__(self, area: float) -> None:
         self.area = area

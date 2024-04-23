@@ -70,6 +70,9 @@ def test_water_out():
         rain_data,
     )
 
+    # Set orifice oppening to max
+    virtual_pond.set_orifice("max")
+
     c = 0.6
     d = 15
     w = water_level
@@ -99,6 +102,9 @@ def test_generate_virtual_sensor_reading():
         rain_data,
     )
 
+    # Set orifice oppening to max
+    virtual_pond.set_orifice("max")
+
     pond_data = virtual_pond.generate_virtual_sensor_reading(time)
     height = round(pond_data.height, 4)
 
@@ -109,8 +115,6 @@ def test_calculate_water_volume():
     """Test calculate_water_volume"""
 
     water_level = 100
-
-    time = timedelta(seconds=10)
 
     rain_data = artificial_rain.ArtificialConstRain(20)
 
@@ -124,6 +128,9 @@ def test_calculate_water_volume():
         WATER_LEVEL_MAX,
         rain_data,
     )
+
+    # Set orifice oppening to max
+    virtual_pond.set_orifice("max")
 
     volume = virtual_pond.calculate_water_volume()
 
