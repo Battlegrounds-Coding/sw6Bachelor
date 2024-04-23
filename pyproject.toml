@@ -78,7 +78,9 @@ recursive = true
 enable="c-extension-no-member"
 disable = """
     too-few-public-methods,
-    too-many-locals
+    too-many-locals,
+    too-many-instance-attributes,
+    too-many-arguments,
 """
 
 [tool.pylint.'REPORTS']
