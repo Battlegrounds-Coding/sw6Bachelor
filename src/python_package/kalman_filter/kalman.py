@@ -16,6 +16,7 @@ class Data:
     @abstractmethod
     def height(self) -> np.float64:
         "Returns the current height above min"
+
     # pylint: disable=locally-disabled, multiple-statements, fixme, too-few-public-methods
 
 
