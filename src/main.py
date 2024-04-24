@@ -1,12 +1,47 @@
 "THIS IS THE MAIN FILE"
 
-import numpy as np
-from python_package.result import Ok
+from datetime import timedelta
 
-print(Ok(3).value())
+from python_package.virtual_pond import VirtualPond
+from python_package.rain import artificial_rain
 
 
-MSG = "Roll a dice"
-print(MSG)
+URBAN_CATCHMENT_AREA = 0.59
+SURFACE_REACTION_FACTOR = 0.25
+DISCHARGE_COEFICENT = 0.6
+POND_AREA = 5572
+WATER_LEVEL_MIN = 100
+WATER_LEVEL_MAX = 300
 
-print(np.random.randint(1, 9))
+
+def main():
+    """Main"""
+
+    time = timedelta(seconds=10)
+
+    rain_data = artificial_rain.ArtificialConstRain(20)
+
+    water_level = 100
+
+    virtual_pond = VirtualPond(
+        URBAN_CATCHMENT_AREA,
+        SURFACE_REACTION_FACTOR,
+        DISCHARGE_COEFICENT,
+        POND_AREA,
+        water_level,
+        WATER_LEVEL_MIN,
+        WATER_LEVEL_MAX,
+        rain_data,
+    )
+
+    virtual_pond.set_orifice("max")
+
+    pond_data = virtual_pond.generate_virtual_sensor_reading(time)
+    print(f"Volume in: {pond_data.volume_in} m^3/s")
+    print(f"Volume out: {pond_data.volume_out} m^3/s")
+    print(f"Height: {pond_data.height} cm.")
+    print(f"Overflow: {pond_data.overflow}")
+
+
+if __name__ == "__main__":
+    main()
