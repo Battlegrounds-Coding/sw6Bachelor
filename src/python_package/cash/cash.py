@@ -73,7 +73,6 @@ class FileCache(Cache):
     def _get_index_at_end_of_file(self):
         self._file.seek(0, io.SEEK_END)
         end = self._file.tell()
-        print(end)
         if end <= 2:
             return 0
 
@@ -85,6 +84,7 @@ class FileCache(Cache):
                 return 1
             self._file.seek(new_pos)
         last = self._file.read()
+        print(last.split('#')[0])
         return int(last.split('#')[0])
 
     def insert(self, data: CacheData):

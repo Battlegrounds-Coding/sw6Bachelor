@@ -58,17 +58,17 @@ def test_read():
 def test_controller_exception():
     custom_serial.buffer = [
         "Error:1 distance reading: -999",
-        "Error:2 Pump value out of bounds [0..100]: 420",
-        "Error:3 sensor did not read",
     ]
     with pytest.raises(Exception) as excinfo:
         test.read()
     assert excinfo.value is serial_exceptions.exceptions.INCORECT_DISTANCE_READING
 
+    custom_serial.buffer = ["Error:2 Pump value out of bounds [0..100]: 420"]
     with pytest.raises(Exception) as excinfo:
         test.read()
     assert excinfo.value is serial_exceptions.exceptions.PUMP_VALUE_OUT_OF_BOUNDS
 
+    custom_serial.buffer = ["Error:3 sensor did not read"]
     with pytest.raises(Exception) as excinfo:
         test.read()
     assert excinfo.value is serial_exceptions.exceptions.NO_SENSOR_READINGS
