@@ -39,7 +39,7 @@ class VirtualPond:
         self.water_level_min = water_level_min_cm
         self.water_level_max = water_level_max_cm
         self.rain_data = rain_data_mm
-        self.orifice = 0
+        self.orifice = 17.5
 
     def __eq__(self, other: Self):
         """
