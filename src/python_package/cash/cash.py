@@ -1,7 +1,7 @@
 
 from abc import abstractmethod
 from datetime import datetime
-from typing import List, Self
+from typing import Any, List, Self
 import numpy as np
 import io
 
@@ -9,8 +9,8 @@ DATE_STRING_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 class CacheData:
-    def __init__(self, id: int, time: datetime, filters: List[np.float64]):
-        self.filters = filters
+    def __init__(self, id: int, time: datetime, data_list: List[Any]):
+        self.data_list = data_list
         self.time = time
 
 
@@ -90,7 +90,7 @@ class FileCache(Cache):
     def insert(self, data: CacheData):
         self._index += 1
         self._file.seek(0, io.SEEK_END)
-        file_data = ';'.join([str(x) for x in data.filters])
+        file_data = ';'.join([str(x) for x in data.data_list])
         self._file.write(f'{self._index}#{data.time.strftime(DATE_STRING_FORMAT)}#{file_data}\n')
 
     def get(self, id: int) -> CacheData | None:
@@ -101,7 +101,7 @@ class FileCache(Cache):
                 return CacheData(
                     id,
                     datetime.strptime(s[1], DATE_STRING_FORMAT),
-                    [np.float64(x) for x in s[2].split(';')])
+                    s[2].split(';'))
 
     def get_nearest_before(self, time: datetime) -> CacheData | None:
         self._file.seek(0)
@@ -115,7 +115,7 @@ class FileCache(Cache):
                     return CacheData(
                         int(before_line[0]),
                         datetime.strptime(before_line[1], DATE_STRING_FORMAT),
-                        [np.float64(x) for x in before_line[2].split(';')])
+                        before_line[2].split(';'))
                 else:
                     return None
             before_line = s
@@ -127,7 +127,7 @@ class FileCache(Cache):
             s = line.split('#')
             time_now = datetime.strptime(s[1], DATE_STRING_FORMAT)
             if time <= time_now:
-                return CacheData(int(s[0]), time_now, [np.float64(x) for x in s[2].split(';')])
+                return CacheData(int(s[0]), time_now, s[2].split(';'))
 
     def get_nearest(self, time: datetime) -> CacheData | None:
         self._file.seek(0)
@@ -141,9 +141,9 @@ class FileCache(Cache):
                 time_after = datetime.strptime(s_after[1], DATE_STRING_FORMAT)
 
                 if abs((time_after - time).total_seconds() > abs((time_now - time).total_seconds())):
-                    return CacheData(int(s[0]), time_now, [np.float64(x) for x in s[2].split(';')])
+                    return CacheData(int(s[0]), time_now, s[2].split(';'))
                 else:
-                    return CacheData(int(s_after[0]), time_after, [np.float64(x) for x in s_after[2].split(';')])
+                    return CacheData(int(s_after[0]), time_after, s_after[2].split(';'))
 
 
 class FileCacheIter(CacheIter):
@@ -156,5 +156,5 @@ class FileCacheIter(CacheIter):
         return CacheData(
             int(s[0]),
             datetime.strptime(s[1], DATE_STRING_FORMAT),
-            [np.float64(x) for x in s[2].split(';')])
+            s[2].split(';'))
 
