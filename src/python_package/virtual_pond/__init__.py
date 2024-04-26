@@ -1,6 +1,7 @@
 """Virtual pond module"""
 
 import math
+from typing import Self
 from datetime import datetime, timedelta
 from python_package import rain
 from python_package.rain import area
@@ -39,6 +40,21 @@ class VirtualPond:
         self.water_level_max = water_level_max_cm
         self.rain_data = rain_data_mm
         self.orifice = 0
+
+    def __eq__(self, other: Self):
+        """
+        Checks if all field variables are the same.
+        """
+        return (
+            self.urban_catchment_area == other.urban_catchment_area
+            and self.surface_reaction_factor == other.surface_reaction_factor
+            and self.discharge_coeficent == other.discharge_coeficent
+            and self.pond_area == other.pond_area
+            and self.water_level == other.water_level
+            and self.water_level_min == other.water_level_min
+            and self.water_level_max == other.water_level_max
+            and self.rain_data == other.rain_data
+        )
 
     def calculate_water_volume(self) -> tuple[float, float, float]:
         """
