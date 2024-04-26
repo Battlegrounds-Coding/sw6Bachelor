@@ -67,7 +67,7 @@ def test_kalman_constructor_create_bank():
         10,
     )
 
-    assert len(faults_one) == len(bank_one.get_kalman_bank)
+    assert len(bank_one.get_kalman_bank) - len(faults_one) == 1
 
     new_faults: List[Callable[[filter.MeasurementData], filter.MeasurementData]] = [
         lambda data: TestMeasurementData(data.height() + 10, data.variance_height() + 10),
@@ -75,11 +75,11 @@ def test_kalman_constructor_create_bank():
     ]
 
     bank_one.add_faults(new_faults)
-    assert len(bank_one.get_faults) == len(bank_one.get_kalman_bank) and len(bank_one.get_faults) == 4
+    assert (len(bank_one.get_kalman_bank) - len(faults_one)) == 3 and len(bank_one.get_faults) == 4
 
     # Tests that the add_faults function does not create filters with existing faults
     bank_one.add_faults(new_faults)
-    assert len(bank_one.get_faults) == len(bank_one.get_kalman_bank) and not len(bank_one.get_faults) == 6
+    assert len(bank_one.get_kalman_bank) - len(faults_one) == 3 and not len(bank_one.get_faults) == 5
 
 
 def test_step_filters():

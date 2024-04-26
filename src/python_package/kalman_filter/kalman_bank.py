@@ -18,7 +18,7 @@ class KalmanBank:
         noice: float,
     ):
         self.faults = []
-        self.kalman_bank: List[Kalman] = []
+        self.kalman_bank: List[Kalman] = [Kalman(initial_variance, time, virtual_pond, noice)]
         self.initial_variance = initial_variance
         self.time = time
         self.virtual_pond = virtual_pond
@@ -90,5 +90,5 @@ class KalmanBank:
         "Calls the step function for each filter with each fault"
         i = 0
         for k in self.kalman_bank:
-            k.step(self.faults[i](measured_data))
+            k.step(self.faults[i - 1](measured_data))
             i += 1
