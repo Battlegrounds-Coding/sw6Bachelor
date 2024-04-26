@@ -1,6 +1,5 @@
 "THIS IS THE MAIN FILE"
 
-
 from python_package.log import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from datetime import timedelta, datetime
