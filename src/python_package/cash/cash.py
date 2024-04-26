@@ -79,8 +79,8 @@ class FileCache(Cache):
                 return 1
             self._file.seek(new_pos)
         last = self._file.read()
-        print(last.split("#")[0])
-        return int(last.split("#")[0])
+        print(last.split('#')[0])
+        return int(last.split('#')[0])
 
     def insert(self, data: CacheData):
         self._index += 1
