@@ -11,17 +11,23 @@ import numpy as np
 class MeasurementData:
     "An abstract class for defining measurements, implements Data and adds a variance function"
 
-    def __eq__(self, other: Self) -> bool:
+    def __init__(self, height: float, variance: float):
+        self._height = height
+        self._variance = variance
+
+    def __eq__(self, other) -> bool:
         "Equals function checks if the measured height is the same between two objects"
-        return super().__eq__(other) and self.variance_height() == other.variance_height()
+        if other is not Self:
+            return False
+        return self.variance_height() == other.variance_height() and self.height() == other.height()
 
-    @abstractmethod
-    def variance_height(self) -> float:
-        "Returns the variance of the measurements"
-
-    @abstractmethod
     def height(self) -> float:
         "Returns the current height above min"
+        return self._height
+
+    def variance_height(self) -> float:
+        "Returns the variance of the measurements"
+        return self._variance
 
 
 class Kalman:
@@ -42,8 +48,10 @@ class Kalman:
         self.predict_variance = self.variance
         self.virtual_pond = virtual_pond
 
-    def __eq__(self, other: Self) -> bool:
+    def __eq__(self, other) -> bool:
         "Equals function. Checks if all the data between two filters are the same"
+        if other is not Self:
+            return False
         return (
             self.variance == other.get_variance
             and self.get_time.get_current_time == other.get_time.get_current_time

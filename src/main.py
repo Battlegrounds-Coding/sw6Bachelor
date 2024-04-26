@@ -2,12 +2,31 @@
 
 from python_package.log import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
+from python_package.kalman_filter.kalman_bank import KalmanBank
+from python_package.kalman_filter.kalman import MeasurementData
+from python_package.time import Time
+from python_package.virtual_pond import VirtualPond
+from python_package.rain.artificial_rain import ArtificialConstRain
 from datetime import timedelta, datetime
 import pause
 
 
-DELTA = timedelta(seconds=10)
 LOGGER = PrintLogger()
+FAULTS = [
+    lambda x: x,
+    lambda x: x + 10,
+    lambda x: x - 10,
+    lambda _: 10,
+    lambda _: -10
+]
+
+# -- POND DATA
+URBAN_CATCHMENT_AREA = 0.59
+SURFACE_REACTION_FACTOR = 0.25
+DISCHARGE_COEFICENT = 0.6
+POND_AREA = 5572
+WATER_LEVEL_MIN = 100
+WATER_LEVEL_MAX = 300
 
 
 def handle_controler_exeption(exception: serial_exceptions.exceptions):
@@ -42,6 +61,12 @@ if __name__ == '__main__':
     try:
         # SETUP
 
+        # -- TIME
+        TIME = Time(
+            current_time=timedelta(seconds=0),
+            delta=timedelta(seconds=10))
+        START = datetime.now()
+
         # -- CONTROLER
         controler = SerialCom()
         controler.begin()
@@ -50,22 +75,35 @@ if __name__ == '__main__':
         # TODO: INIT CASHE
 
         # -- KALMAN BANK
-        # TODO: INIT KALMAN BANK
-
-        # -- TIME
-        now = datetime.now()
-        START = now
+        kalman_bank = KalmanBank(
+            faults=FAULTS,
+            time=TIME,
+            initial_variance=10,
+            noice=0.1,
+            virtual_pond=VirtualPond(
+                urban_catchment_area_ha=URBAN_CATCHMENT_AREA,
+                surface_reaction_factor=SURFACE_REACTION_FACTOR,
+                discharge_coeficent=DISCHARGE_COEFICENT,
+                pond_area_m2=POND_AREA,
+                water_level_cm=100,
+                water_level_min_cm=WATER_LEVEL_MIN,
+                water_level_max_cm=WATER_LEVEL_MAX,
+                rain_data_mm=ArtificialConstRain(20)))
 
         # LOOP
         while True:
             try:
+                # READ SENSOR
                 avg_dist, invariance = controler.read_sensor()
+
+                # STEP FILTERS
+                kalman_bank.step_filters(MeasurementData(avg_dist, invariance))
             except serial_exceptions.exceptions as e:
                 handle_controler_exeption(e)
-            # TODO: Step every instance with now - START
 
-            now = max(datetime.now(), now + DELTA)
-            pause.until(now)
+            # STEP TIME AND WAIT
+            TIME.step()
+            pause.until(START + TIME.get_current_time)
     finally:
         LOGGER.log(
             "Fatal error shutting down",
