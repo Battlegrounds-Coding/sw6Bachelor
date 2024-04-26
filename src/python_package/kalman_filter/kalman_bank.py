@@ -1,9 +1,9 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
+import copy
 from typing import List, Callable, Self
 from .kalman import Kalman, MeasurementData
 from ..virtual_pond import VirtualPond
 from ..time import Time
-import copy
 
 
 class KalmanBank:

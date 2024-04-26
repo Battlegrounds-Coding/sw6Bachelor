@@ -1,9 +1,3 @@
-from datetime import timedelta
-from data import TestMeasurementData
-import python_package.kalman_filter.kalman as f
-import numpy as np
-
-
 """ def test_filter_case_temperature():
     filter = f.Kalman(np.float64(60), np.float64(100**2), delta=timedelta(seconds=5))
     data = np.array(

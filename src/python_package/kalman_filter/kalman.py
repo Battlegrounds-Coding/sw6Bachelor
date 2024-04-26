@@ -2,10 +2,8 @@
 
 from abc import abstractmethod
 from typing import Self
-from datetime import timedelta
 from ..time import Time
-from ..virtual_pond import VirtualPond, PondData
-import numpy as np
+from ..virtual_pond import VirtualPond
 
 
 class MeasurementData:
