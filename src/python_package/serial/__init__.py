@@ -50,12 +50,12 @@ class SerialCom:
     def set_pump(self, value: int) -> None:
         """set pump value for connected device, by sending a value with a prefix 'P',
         raise an exeption if incorrect value is given"""
+        r_val = -1
+        rtn = self.read_all()
+        
         if value < 0 or value > 100:
             self.log_error( serial_exceptions.exceptions.INCORRECT_INPUT,f"Attempted to set pump with value out of bounds[0..100] with value:{value}")
         self.write("P" + str(value))
-
-        r_val = -1
-        rtn = self.read_all()
 
         for i in rtn:
             if i.find("pump update:") != -1:
@@ -101,18 +101,10 @@ class SerialCom:
         return -1
 
     def log_error(self, error: serial_exceptions.exceptions, msg: str):
-        # error_str = serial_exceptions.enum(error).name
-        print(error)
-        print(error.value)
-        print(error.name)
-        print(serial_exceptions.enum(int(str(error.value))).name)
+
         
         time_now = datetime.now()
-        # time.time
-        print(str(time_now))
-        # FileCache(str(time_now))
         file = FileCache("Error-log " + error.name + " " + str(time_now).replace(":", ".."))
-        # file = FileCache(".\\Errorlog - " + error.name  + " " + str(time))
     
         data_arr = [msg]
         data = CacheData(0, time_now, data_arr)

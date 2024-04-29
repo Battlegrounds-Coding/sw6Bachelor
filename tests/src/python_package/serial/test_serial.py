@@ -97,7 +97,6 @@ def test_read_all():
     assert len(custom_serial.buffer) == 0
 
 
-# TODO: read_sensor should check bounds, though it should not be possible for the controller to send wrong values, there might be communication errors :)
 def test_read_sensor():
     custom_serial.buffer = ["invariance: 5", "Rvd:111"]
     assert test.read_sensor() == (111, 5)
@@ -132,12 +131,12 @@ def test_read_sensor():
 
 
 def test_set_pump():
-    reset_buffer()
+    custom_serial.buffer = ["pump update: 0"] #Exception is thrown before being validated
     with pytest.raises(Exception) as excinfo:
         test.set_pump(-5)
     assert excinfo.value is serial_exceptions.exceptions.INCORRECT_INPUT
 
-    reset_buffer()
+    custom_serial.buffer = ["pump update: 0"] #Exception is thrown before being validated
     with pytest.raises(Exception) as excinfo:
         test.set_pump(105)
     assert excinfo.value is serial_exceptions.exceptions.INCORRECT_INPUT
@@ -162,5 +161,3 @@ def test_set_pump():
     assert excinfo.value is serial_exceptions.exceptions.COMUNICATION_ERROR
 
 
-def reset_buffer():
-    custom_serial.buffer = ["test"]
