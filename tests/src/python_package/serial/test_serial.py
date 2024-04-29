@@ -131,12 +131,12 @@ def test_read_sensor():
 
 
 def test_set_pump():
-    custom_serial.buffer = ["pump update: 0"] #Exception is thrown before being validated
+    custom_serial.buffer = ["pump update: 0"]  # Exception is thrown before being validated
     with pytest.raises(Exception) as excinfo:
         test.set_pump(-5)
     assert excinfo.value is serial_exceptions.exceptions.INCORRECT_INPUT
 
-    custom_serial.buffer = ["pump update: 0"] #Exception is thrown before being validated
+    custom_serial.buffer = ["pump update: 0"]  # Exception is thrown before being validated
     with pytest.raises(Exception) as excinfo:
         test.set_pump(105)
     assert excinfo.value is serial_exceptions.exceptions.INCORRECT_INPUT
@@ -159,5 +159,3 @@ def test_set_pump():
     with pytest.raises(Exception) as excinfo:
         test.set_pump(10)
     assert excinfo.value is serial_exceptions.exceptions.COMUNICATION_ERROR
-
-
