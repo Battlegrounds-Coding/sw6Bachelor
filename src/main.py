@@ -114,4 +114,3 @@ if __name__ == '__main__':
             "Fatal error shutting down",
             level=LogLevel.CRITICAL_ERROR)
         exit(1)
-
