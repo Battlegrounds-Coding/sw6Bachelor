@@ -9,6 +9,7 @@ from python_package.virtual_pond import VirtualPond
 from python_package.rain.artificial_rain import ArtificialConstRain
 from datetime import timedelta, datetime
 import pause
+from python_package.args import ARGS
 
 
 LOGGER = PrintLogger()
@@ -59,6 +60,7 @@ def handle_controler_exeption(exception: serial_exceptions.exceptions):
 
 if __name__ == '__main__':
     try:
+        args = ARGS()
         # SETUP
 
         # -- TIME
@@ -98,6 +100,9 @@ if __name__ == '__main__':
 
                 # STEP FILTERS
                 kalman_bank.step_filters(MeasurementData(avg_dist, invariance))
+
+                # Analyze
+                # TODO: analyze the filters
             except serial_exceptions.exceptions as e:
                 handle_controler_exeption(e)
 
