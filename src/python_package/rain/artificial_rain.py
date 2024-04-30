@@ -28,7 +28,7 @@ class ArtificialVariableRainPrediction:
 
     def get_prediction(self, index: int) -> None | Tuple[timedelta, float]:
         "Gets the prediction at index, returns none if it doesn't exist"
-        if len(self._prediction) > index:
+        if len(self._prediction) <= index:
             return None
         return self._prediction[index]
 
