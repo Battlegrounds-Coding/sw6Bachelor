@@ -12,7 +12,7 @@ def save_rain_data(file: str) -> ArtificialVariableRainPrediction:
 
     with open(file, "r", encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile, delimiter="\t")
-        for i, line in enumerate(reader):
+        for _, line in enumerate(reader):
             line = str(line[0]).split(",")
             time = timedelta(seconds=float(line[0]))
 
