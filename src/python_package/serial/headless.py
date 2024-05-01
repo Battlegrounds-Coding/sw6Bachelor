@@ -37,7 +37,6 @@ class Headless(serial.Serial):
         return i + (-1 if self._inv else 0)
 
     def read_until(self, expected: bytes = b"\n", size: int | None = None) -> bytes:
-        print(self.in_waiting)
         self._inv = not self._inv
         if not self._inv:
             _, reading = self.buffer.pop(0)
