@@ -45,7 +45,7 @@ class KalmanBank:
         return self.kalman_bank
 
     @property
-    def get_faults(self) -> List[Callable[[MeasurementData], MeasurementData]]:
+    def get_faults(self) -> List[Fault]:
         "returns the list of faults"
         return self.faults
 
@@ -89,6 +89,7 @@ class KalmanBank:
 
     def step_filters(self, measured_data: MeasurementData):
         "Calls the step function for each filter with each fault"
+        fault_detection = self.analyze_filters(measured_data)
         i = 0
         for k in self.kalman_bank:
             if k == self.kalman_bank[0]:
@@ -96,19 +97,44 @@ class KalmanBank:
             else:
                 k.step(self.faults[i].get_fault(measured_data))
                 i += 1
-            
+        if not fault_detection:
+            if not self._analyze_higher_filters(measured_data):
+                raise Exception("Measured_data.height() is higher than the threshold in Kalman filters.")
+            elif not self._analyze_lower_filters:
+                raise Exception("Measured_data.height() is lower than the threshold in Kalman filters.")
 
-    def analyze_filters(self):
-        non_faulty_filter = self.kalman_bank[0]
+    def analyze_filters(self, measured_data) -> bool:
+        "Analyses filters in the KalmanBank. If measured_data goes past thresholds returns false, else return true"
+        return self._analyze_higher_filters(measured_data) and self._analyze_lower_filters(measured_data)
 
-    def analyze_higher_filters(self) -> bool:
+    def _analyze_higher_filters(self, measured_data: MeasurementData) -> bool:
+        """
+        Analyses the filters that are supposed to have a higher water height than the measured data.
+        If measured data height is higher than the predicted data from the filters, return False. Else return True
+        """
         higher_filters: List[Kalman] = []
-        i = -1
-        for k in self.kalman_bank:
+        for i, k in enumerate(self.kalman_bank):
             if k == self.kalman_bank[0]:
                 break
-            elif self.faults[i].get_classification == "higher":
-                higher_filters.append(self.kalman_bank[i + 1]) 
-            i += 1
-        
+            elif self.faults[i - 1].get_classification == "higher":
+                higher_filters.append(self.kalman_bank[i])
+        for f in higher_filters:
+            if f.get_predicted_state < measured_data.height():
+                return False
+        return True
+
+    def _analyze_lower_filters(self, measured_data: MeasurementData) -> bool:
+        """
+        Analyses the filters that are supposed to have a lower water height than the measured data.
+        If measured data height is lower than the predicted hight from any filter, return False, else return True
+        """
+        lower_filters: List[Kalman] = []
+        for i, k in enumerate(self.kalman_bank):
+            if k == self.kalman_bank[0]:
+                break
+            elif self.faults[i - 1].get_classification == "lower":
+                lower_filters.append(self.kalman_bank[i])
+        for f in lower_filters:
+            if f.get_predicted_state > measured_data.height():
+                return False
         return True
