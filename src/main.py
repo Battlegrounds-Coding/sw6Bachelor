@@ -4,12 +4,13 @@ from python_package.log import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.kalman_filter.kalman_bank import KalmanBank
 from python_package.kalman_filter.kalman import MeasurementData
+from python_package.serial.headless import Headless
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
 from python_package.rain.artificial_rain import ArtificialConstRain
 from datetime import timedelta, datetime
 import pause
-from python_package.args import ARGS
+from python_package.args import ARGS, Mode
 
 
 LOGGER = PrintLogger()
@@ -60,18 +61,24 @@ def handle_controler_exeption(exception: serial_exceptions.exceptions):
 
 if __name__ == '__main__':
     try:
-        args = ARGS()
         # SETUP
-
         # -- TIME
         TIME = Time(
             current_time=timedelta(seconds=0),
             delta=timedelta(seconds=10))
         START = datetime.now()
 
+        # -- ARGUMENTS
+        args = ARGS(START)
+
         # -- CONTROLER
-        controler = SerialCom()
-        controler.begin()
+        match args.mode:
+            case Mode.SERIEL:
+                controler = SerialCom()
+                controler.begin()
+            case Mode.HEADLESS:
+                controler = SerialCom()
+                controler.arduino = Headless(args.data, TIME)
 
         # -- CASHE
         # TODO: INIT CASHE
@@ -109,8 +116,9 @@ if __name__ == '__main__':
             # STEP TIME AND WAIT
             TIME.step()
             pause.until(START + TIME.get_current_time)
-    finally:
+    except Exception as e:
+        print(e)
         LOGGER.log(
             "Fatal error shutting down",
             level=LogLevel.CRITICAL_ERROR)
-        exit(1)
+        raise e

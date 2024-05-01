@@ -69,7 +69,7 @@ class Kalman:
 
         variance = (1 - kalman_gain) * self.variance
 
-        s = self.virtual_pond.generate_virtual_sensor_reading(self.time.get_current_time).height
+        s = self.virtual_pond.generate_virtual_sensor_reading(self.time.get_delta).height
         state = s + kalman_gain * (messured_data.height() - s)
 
         # Predict
