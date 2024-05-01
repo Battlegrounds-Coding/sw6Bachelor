@@ -94,8 +94,9 @@ class KalmanBank:
             if k == self.kalman_bank[0]:
                 k.step(measured_data)
             else:
-                k.step(self.faults[i](measured_data))
-            i += 1
+                k.step(self.faults[i].get_fault(measured_data))
+                i += 1
+            
 
     def analyze_filters(self):
         non_faulty_filter = self.kalman_bank[0]
