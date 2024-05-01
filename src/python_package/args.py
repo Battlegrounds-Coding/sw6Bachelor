@@ -1,45 +1,55 @@
+from datetime import datetime
+from enum import Enum
 import sys
 import tempfile
 
+from .rain import artificial_rain as ar, rain_data as rd
 
-DEFAULT_RAIN = 20
+
+DEFAULT_RAIN = 10
 DEFAULT_FILTER_CACHE = f"{tempfile.gettempdir()}/filter.cache"
 DEFAULT_CONTROLER_CACHE = f"{tempfile.gettempdir()}/controler.cache"
 
 HELP = \
-    f"""
-    USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
+    f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-r  | --rain]=/path/to/file             -- Location of the file that contains the raindata at a specific time
     [-cr | --constant-rain]=number           -- Specify a constant amount of rain in mm
                                                 (default={DEFAULT_RAIN})
 
     [-s  | --strategy]=/path/to/file         -- Location of the file that contains the strategy used by the pond
-    [-d  | --data]=/path/to/file             -- Location of the file that contains the moched data from the sensor
 
     [-fc | --filter-cache]=/path/to/file     -- Location of the file that the filter may chace to,
                                                 (default={DEFAULT_FILTER_CACHE})
     [-cc | --controler-cache]=/path/to/file  -- Location of the file that the filter may chace to,
                                                 (default={DEFAULT_CONTROLER_CACHE})
+
+    [-m  | --mode]=[headless | seriel]       -- What mode is the setup working in, headless there is no real world
+                                                connection to a setup. Seriel there is a connection to a real world
+                                                setup.
+                                                (default=seriel)
+    [-d  | --data]=/path/to/file             -- Location of the file that contains the moched data from the sensor,
+                                                If mode is headless, otherwise this is ignored
     """
 
 
+
 class ARGS:
-    def __init__(self):
+    def __init__(self, start: datetime):
         args = [x for x in sys.argv]
         args.pop(0)
         try:
             for arg in args:
                 if arg == "-h" or arg == "--help":
                     print(HELP)
-                    exit(0)
-
+                    sys.exit(0)
 
                 cmd_argument, value = arg.split("=")
                 match cmd_argument:
                     case "-r" | "--rain":
-                        self._rain_file = value
+                        rain_data = rd.save_rain_data(value)
+                        self._rain = ar.ArtificialVariableRain(start, rain_data)
                     case "-cr" | "--constant-rain":
-                        self._constant_rain = int(value)
+                        self._rain = ar.ArtificialConstRain(int(value))
                     case "-s" | "--strategy":
                         self._strategy_file = value
                     case "-d" | "--data":
@@ -48,14 +58,18 @@ class ARGS:
                         self._file_cache = value
                     case "-cc" | "--controler-cache":
                         self._controler_cache = value
+                    case "-m" | "--mode":
+                        self._mode = value
         except Exception as e:
             print(e)
-            print(HELP)
-            exit(1)
+            print("\n" + HELP)
+            sys.exit(1)
 
     @property
     def rain(self):
-        return DEFAULT_RAIN
+        if not self.rain:
+            return ar.ArtificialConstRain(DEFAULT_RAIN)
+        return self._rain
 
     @property
     def strategy(self):
@@ -85,6 +99,16 @@ class ARGS:
         else:
             return DEFAULT_CONTROLER_CACHE
 
+    @property
+    def mode(self):
+        if self._mode != "headless":
+            return Mode.SERIEL
+        return Mode.HEADLESS
+
+
+class Mode(Enum):
+    SERIEL = 0,
+    HEADLESS = 1
 
 
 
