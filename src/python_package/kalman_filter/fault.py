@@ -4,7 +4,9 @@ from .kalman import MeasurementData
 
 
 class Fault:
-    "Fault class contains a fault function and a classification of whether the fault adds or subtracts to the sensor reading"
+    """
+    Fault class contains a fault function and a classification of whether the fault adds or subtracts to the sensor reading.
+    """
 
     def __init__(self, fault: Callable[[MeasurementData], MeasurementData], classification: str) -> None:
         self._fault = fault
