@@ -28,9 +28,14 @@ class Log:  # pylint: disable=R0903
     @abstractmethod
     def _critical_error(self, msg): ...
 
-    def log(self, msg, level: LogLevel = LogLevel.NOT_CIRITCAL):
+    level = LogLevel.NOT_CIRITCAL
+
+    
+    def log(self, msg):
         """ "Logs the method"""
-        match level:
+        for subclass in Log.__subclasses__():
+            print(subclass.__name__)
+        match self.level:
             case LogLevel.CRITICAL_ERROR:
                 self._critical_error(msg)
             case LogLevel.ERROR:
@@ -58,3 +63,8 @@ class PrintLogger(Log):  # pylint: disable=R0903
 
 
 DEFAULT_LOG = PrintLogger()
+
+if __name__ == '__main__':
+    test = PrintLogger()
+    test.log("hello");
+        
