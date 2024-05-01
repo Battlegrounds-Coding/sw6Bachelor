@@ -39,36 +39,6 @@ class KalmanBank:
             and self.get_virtual_pond == other.get_virtual_pond
         )
 
-    @property
-    def get_kalman_bank(self) -> List[Kalman]:
-        "returns the List of Kalman filters"
-        return self.kalman_bank
-
-    @property
-    def get_faults(self) -> List[Fault]:
-        "returns the list of faults"
-        return self.faults
-
-    @property
-    def get_initial_variance(self) -> float:
-        "returns the initial variance as a float"
-        return self.initial_variance
-
-    @property
-    def get_time(self) -> Time:
-        "Returns the time class"
-        return self.time
-
-    @property
-    def get_virtual_pond(self) -> VirtualPond:
-        "Returns the virtual pond used to create Kalman filters"
-        return self.virtual_pond
-
-    @property
-    def get_noice(self) -> float:
-        "Returns the noice as a float"
-        return self.noice
-
     def print_bank(self):
         "Prints the field variables of each filter in the KalmanBank"
         for f in self.kalman_bank:
@@ -138,3 +108,33 @@ class KalmanBank:
             if f.get_predicted_state > measured_data.height():
                 return False
         return True
+
+    @property
+    def get_kalman_bank(self) -> List[Kalman]:
+        "returns the List of Kalman filters"
+        return self.kalman_bank
+
+    @property
+    def get_faults(self) -> List[Fault]:
+        "returns the list of faults"
+        return self.faults
+
+    @property
+    def get_initial_variance(self) -> float:
+        "returns the initial variance as a float"
+        return self.initial_variance
+
+    @property
+    def get_time(self) -> Time:
+        "Returns the time class"
+        return self.time
+
+    @property
+    def get_virtual_pond(self) -> VirtualPond:
+        "Returns the virtual pond used to create Kalman filters"
+        return self.virtual_pond
+
+    @property
+    def get_noice(self) -> float:
+        "Returns the noice as a float"
+        return self.noice
