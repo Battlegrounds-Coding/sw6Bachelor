@@ -100,3 +100,15 @@ class KalmanBank:
 
     def analyze_filters(self):
         non_faulty_filter = self.kalman_bank[0]
+
+    def analyze_higher_filters(self) -> bool:
+        higher_filters: List[Kalman] = []
+        i = -1
+        for k in self.kalman_bank:
+            if k == self.kalman_bank[0]:
+                break
+            elif self.faults[i].get_classification == "higher":
+                higher_filters.append(self.kalman_bank[i + 1]) 
+            i += 1
+        
+        return True
