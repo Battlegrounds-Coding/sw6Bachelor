@@ -1,11 +1,10 @@
 from datetime import timedelta
-from typing import List, Callable
+from typing import List
 from data import TestMeasurementData
 from python_package import rain
 from python_package.rain import artificial_rain
 import python_package.kalman_filter.fault as fault
 import python_package.kalman_filter.kalman_bank as b
-import python_package.kalman_filter.kalman as filter
 import python_package.time as time
 import python_package.virtual_pond as virtual_pond
 import copy

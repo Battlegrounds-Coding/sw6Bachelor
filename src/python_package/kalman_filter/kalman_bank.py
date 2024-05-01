@@ -1,6 +1,6 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
 import copy
-from typing import List, Callable, Self
+from typing import List, Self
 from .fault import Fault
 from .kalman import Kalman, MeasurementData
 from ..virtual_pond import VirtualPond
@@ -99,9 +99,9 @@ class KalmanBank:
                 i += 1
         if not fault_detection:
             if not self._analyze_higher_filters(measured_data):
-                raise Exception("Measured_data.height() is higher than the threshold in Kalman filters.")
-            elif not self._analyze_lower_filters:
-                raise Exception("Measured_data.height() is lower than the threshold in Kalman filters.")
+                raise ValueError("Measured_data.height() is higher than the threshold in Kalman filters.")
+            if not self._analyze_lower_filters:
+                raise ValueError("Measured_data.height() is lower than the threshold in Kalman filters.")
 
     def analyze_filters(self, measured_data) -> bool:
         "Analyses filters in the KalmanBank. If measured_data goes past thresholds returns false, else return true"
@@ -116,7 +116,7 @@ class KalmanBank:
         for i, k in enumerate(self.kalman_bank):
             if k == self.kalman_bank[0]:
                 break
-            elif self.faults[i - 1].get_classification == "higher":
+            if self.faults[i - 1].get_classification == "higher":
                 higher_filters.append(self.kalman_bank[i])
         for f in higher_filters:
             if f.get_predicted_state < measured_data.height():
@@ -132,7 +132,7 @@ class KalmanBank:
         for i, k in enumerate(self.kalman_bank):
             if k == self.kalman_bank[0]:
                 break
-            elif self.faults[i - 1].get_classification == "lower":
+            if self.faults[i - 1].get_classification == "lower":
                 lower_filters.append(self.kalman_bank[i])
         for f in lower_filters:
             if f.get_predicted_state > measured_data.height():
