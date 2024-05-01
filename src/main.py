@@ -18,7 +18,7 @@ FAULTS = [
     Fault(lambda x: x + 10, "lower"),
     Fault(lambda x: x - 10, "lower"),
     Fault(lambda _: MeasurementData(10, 0), "lower"),
-    Fault(lambda _: MeasurementData(-10, 0), "lower"),
+    Fault(lambda _: MeasurementData(0, 0), "lower"),
 ]
 
 # -- POND DATA
@@ -105,6 +105,8 @@ if __name__ == '__main__':
                 avg_dist, invariance = controler.read_sensor()
 
                 # STEP FILTERS
+                print(len(kalman_bank.get_kalman_bank))
+                print(len(kalman_bank.get_faults))
                 kalman_bank.step_filters(MeasurementData(avg_dist, invariance))
 
                 # Analyze

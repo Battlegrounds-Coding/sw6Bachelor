@@ -32,7 +32,6 @@ HELP = \
     """
 
 
-
 class ARGS:
     def __init__(self, start: datetime):
         args = [x for x in sys.argv]

@@ -45,7 +45,7 @@ class KalmanBank:
         return self.kalman_bank
 
     @property
-    def get_faults(self) -> List[Callable[[MeasurementData], MeasurementData]]:
+    def get_faults(self) -> List[Fault]:
         "returns the list of faults"
         return self.faults
 
@@ -89,13 +89,20 @@ class KalmanBank:
 
     def step_filters(self, measured_data: MeasurementData):
         "Calls the step function for each filter with each fault"
+        self.kalman_bank[0].step(measured_data)
+        for i, f in enumerate(self.get_faults):
+            self.kalman_bank[i + 1].step(f.get_fault(measured_data))
+
+        """
         i = 0
         for k in self.kalman_bank:
             if k == self.kalman_bank[0]:
                 k.step(measured_data)
             else:
+                print(i)
                 k.step(self.faults[i].get_fault(measured_data))
                 i += 1
+        """
             
 
     def analyze_filters(self):
