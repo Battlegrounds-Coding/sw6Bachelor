@@ -111,6 +111,10 @@ class Kalman:
         return self.virtual_pond.water_level
 
     @property
+    def get_predicted_state(self) -> float:
+        return self.predict_state
+
+    @property
     def get_predict_variance(self) -> float:
         "Getter method for predict_variance"
         return self.predict_variance

@@ -1,6 +1,7 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
 import copy
 from typing import List, Callable, Self
+from .fault import Fault
 from .kalman import Kalman, MeasurementData
 from ..virtual_pond import VirtualPond
 from ..time import Time
@@ -11,7 +12,7 @@ class KalmanBank:
 
     def __init__(
         self,
-        faults: List[Callable[[MeasurementData], MeasurementData]],
+        faults: List[Fault],
         initial_variance: float,
         time: Time,
         virtual_pond: VirtualPond,
@@ -75,7 +76,7 @@ class KalmanBank:
 
     def add_faults(
         self,
-        new_faults: List[Callable[[MeasurementData], MeasurementData]],
+        new_faults: List[Fault],
     ):
         "Adds new faults and creates filters for them."
         for f in new_faults:
@@ -90,5 +91,11 @@ class KalmanBank:
         "Calls the step function for each filter with each fault"
         i = 0
         for k in self.kalman_bank:
-            k.step(self.faults[i - 1](measured_data))
+            if k == self.kalman_bank[0]:
+                k.step(measured_data)
+            else:
+                k.step(self.faults[i](measured_data))
             i += 1
+
+    def analyze_filters(self):
+        non_faulty_filter = self.kalman_bank[0]

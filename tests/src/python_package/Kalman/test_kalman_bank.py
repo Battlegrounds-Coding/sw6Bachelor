@@ -3,6 +3,7 @@ from typing import List, Callable
 from data import TestMeasurementData
 from python_package import rain
 from python_package.rain import artificial_rain
+import python_package.kalman_filter.fault as fault
 import python_package.kalman_filter.kalman_bank as b
 import python_package.kalman_filter.kalman as filter
 import python_package.time as time
@@ -10,23 +11,26 @@ import python_package.virtual_pond as virtual_pond
 import copy
 
 
-def fault_one(data: filter.MeasurementData) -> filter.MeasurementData:
-    return data
+def fault_one() -> fault.Fault:
+    return fault.Fault(
+        fault=lambda data: TestMeasurementData(data.height() - 10, data.variance_height() - 10), classification="lower"
+    )
 
 
-def fault_two(data: filter.MeasurementData) -> filter.MeasurementData:
-    return data
+def fault_two() -> fault.Fault:
+    return fault.Fault(lambda data: TestMeasurementData(data.height() + 10, data.variance_height() + 10), "higher")
 
 
-def fault_three(data: filter.MeasurementData) -> filter.MeasurementData:
-    return data
+def fault_three() -> fault.Fault:
+    return fault.Fault(lambda data: TestMeasurementData(data.height() * 1.2, data.variance_height() * 1.2), "higher")
+
+
+def fault_four() -> fault.Fault:
+    return fault.Fault(lambda data: TestMeasurementData(data.height() * 0.8, data.variance_height() * 0.8), "lower")
 
 
 def test_kalman_bank_constructor_faults():
-    faults: List[Callable[[filter.MeasurementData], filter.MeasurementData]] = [
-        lambda data: TestMeasurementData(data.height(), data.variance_height()),
-        fault_one,
-    ]
+    faults: List[fault.Fault] = [fault_one(), fault_two()]
 
     pond = virtual_pond.VirtualPond(0.59, 0.25, 0.6, 5572, 200, 100, 300, rain.Rain())
 
@@ -54,40 +58,30 @@ def test_kalman_bank_constructor_faults():
 
 
 def test_kalman_constructor_create_bank():
-    faults_one: List[Callable[[filter.MeasurementData], filter.MeasurementData]] = [
-        lambda data: TestMeasurementData(data.height(), data.variance_height()),
-        fault_one,
-    ]
+    faults: List[fault.Fault] = [fault_one(), fault_two()]
 
     bank_one = b.KalmanBank(
-        faults_one,
+        faults,
         60,
         time.Time(timedelta(seconds=2), timedelta(seconds=5)),
         virtual_pond.VirtualPond(0.69, 0.2, 0.2, 5571, 220, 103, 500, artificial_rain.ArtificialConstRain(20)),
         10,
     )
 
-    assert len(bank_one.get_kalman_bank) - len(faults_one) == 1
+    assert len(bank_one.get_kalman_bank) - len(faults) == 1
 
-    new_faults: List[Callable[[filter.MeasurementData], filter.MeasurementData]] = [
-        lambda data: TestMeasurementData(data.height() + 10, data.variance_height() + 10),
-        fault_two,
-    ]
+    new_faults: List[fault.Fault] = [fault_three(), fault_four()]
 
     bank_one.add_faults(new_faults)
-    assert (len(bank_one.get_kalman_bank) - len(faults_one)) == 3 and len(bank_one.get_faults) == 4
+    assert (len(bank_one.get_kalman_bank) - len(faults)) == 3 and len(bank_one.get_faults) == 4
 
     # Tests that the add_faults function does not create filters with existing faults
     bank_one.add_faults(new_faults)
-    assert len(bank_one.get_kalman_bank) - len(faults_one) == 3 and not len(bank_one.get_faults) == 5
+    assert len(bank_one.get_kalman_bank) - len(faults) == 3 and not len(bank_one.get_faults) == 5
 
 
 def test_step_filters():
-    faults: List[Callable[[filter.MeasurementData], filter.MeasurementData]] = [
-        lambda data: TestMeasurementData(data.height(), data.variance_height()),
-        lambda data_two: TestMeasurementData(data_two.height() + 10, data_two.variance_height() + 10),
-        lambda data_three: TestMeasurementData(data_three.height() - 10, data_three.variance_height() - 10),
-    ]
+    faults: List[fault.Fault] = [fault_one(), fault_two(), fault_three()]
 
     test_bank = b.KalmanBank(
         faults,
