@@ -5,8 +5,6 @@ from enum import Enum
 
 class exceptions(Exception, Enum):
     """Exeption class with enums for specifing error"""
-
-    #     return enu
     NO_RESPONSE = 0
     """Comunication timed oud"""
     INCORRECT_INPUT = 4

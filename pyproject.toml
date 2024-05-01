@@ -14,6 +14,7 @@ dynamic = ["version", "description"]
 dependencies = [
     "numpy >=1.24.1",
     "pyserial",
+    "h5py >=3.10.0",
 ]
 
 [project.urls]
@@ -63,7 +64,9 @@ ignore = [
     "B001",
     "W503",
     "E203",
-    "E704"
+    "E704",
+    "R914",
+    "R903",
 ]
 
 [tool.pylint]
@@ -74,6 +77,12 @@ recursive = true
 
 [tool.pylint.'MESSAGES CONTROL']
 enable="c-extension-no-member"
+disable = """
+    too-few-public-methods,
+    too-many-locals,
+    too-many-instance-attributes,
+    too-many-arguments,
+"""
 
 [tool.pylint.'REPORTS']
 evaluation="10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)"
