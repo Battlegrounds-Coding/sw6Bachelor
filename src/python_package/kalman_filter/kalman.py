@@ -2,10 +2,8 @@
 
 from abc import abstractmethod
 from typing import Self
-from datetime import timedelta
 from ..time import Time
-from ..virtual_pond import VirtualPond, PondData
-import numpy as np
+from ..virtual_pond import VirtualPond
 
 
 class MeasurementData:
@@ -28,6 +26,53 @@ class MeasurementData:
     def variance_height(self) -> float:
         "Returns the variance of the measurements"
         return self._variance
+
+    def __add__(self, other: float | tuple[float, float]) -> "MeasurementData":
+        if other is tuple[float, float]:
+            return MeasurementData(
+                self.height() + other[0],
+                self.variance_height() + other[1])
+        elif other is float:
+            return MeasurementData(
+                self.height() + other,
+                self.variance_height())
+        return self
+
+    def __sub__(self, other: float | tuple[float, float]) -> "MeasurementData":
+        if other is tuple[float, float]:
+            return MeasurementData(
+                self.height() - other[0],
+                self.variance_height() - other[1])
+        elif other is float:
+            return MeasurementData(
+                self.height() - other,
+                self.variance_height())
+        return self
+
+    def __mul__(self, other: float | tuple[float, float]) -> "MeasurementData":
+        if other is tuple[float, float]:
+            return MeasurementData(
+                self.height() - other[0],
+                self.variance_height() - other[1])
+        elif other is float:
+            return MeasurementData(
+                self.height() - other,
+                self.variance_height())
+        return self
+
+    def __div__(self, other: float | tuple[float, float]) -> "MeasurementData":
+        if other is tuple[float, float]:
+            return MeasurementData(
+                self.height() / other[0],
+                self.variance_height() / other[1])
+        elif other is float:
+            return MeasurementData(
+                self.height() / other,
+                self.variance_height())
+        return self
+
+
+
 
 
 class Kalman:
@@ -119,6 +164,10 @@ class Kalman:
     def get_state(self) -> float:
         "Getter method for the current state of the filter"
         return self.virtual_pond.water_level
+
+    @property
+    def get_predicted_state(self) -> float:
+        return self.predict_state
 
     @property
     def get_predict_variance(self) -> float:

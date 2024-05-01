@@ -2,9 +2,9 @@
 
 from python_package.log import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
-from python_package.kalman_filter.kalman_bank import KalmanBank
-from python_package.kalman_filter.kalman import MeasurementData
 from python_package.serial.headless import Headless
+from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
+from python_package.kalman_filter.kalman import MeasurementData
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
 from python_package.rain.artificial_rain import ArtificialConstRain
@@ -15,11 +15,10 @@ from python_package.args import ARGS, Mode
 
 LOGGER = PrintLogger()
 FAULTS = [
-    lambda x: x,
-    lambda x: x + 10,
-    lambda x: x - 10,
-    lambda _: 10,
-    lambda _: -10
+    Fault(lambda x: x + 10, "lower"),
+    Fault(lambda x: x - 10, "lower"),
+    Fault(lambda _: MeasurementData(10, 0), "lower"),
+    Fault(lambda _: MeasurementData(-10, 0), "lower"),
 ]
 
 # -- POND DATA
