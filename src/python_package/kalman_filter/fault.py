@@ -35,4 +35,5 @@ class Fault:
 
     @property
     def get_fault(self) -> Callable[[MeasurementData], MeasurementData]:
+        "Returns the fault function"
         return self._fault

@@ -112,6 +112,7 @@ class Kalman:
 
     @property
     def get_predicted_state(self) -> float:
+        "Getter method for the predicted state of the kalman filter"
         return self.predict_state
 
     @property
