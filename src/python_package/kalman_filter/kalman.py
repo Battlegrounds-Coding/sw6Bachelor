@@ -2,10 +2,8 @@
 
 from abc import abstractmethod
 from typing import Self
-from datetime import timedelta
 from ..time import Time
-from ..virtual_pond import VirtualPond, PondData
-import numpy as np
+from ..virtual_pond import VirtualPond
 
 
 class MeasurementData:
@@ -119,6 +117,10 @@ class Kalman:
     def get_state(self) -> float:
         "Getter method for the current state of the filter"
         return self.virtual_pond.water_level
+
+    @property
+    def get_predicted_state(self) -> float:
+        return self.predict_state
 
     @property
     def get_predict_variance(self) -> float:

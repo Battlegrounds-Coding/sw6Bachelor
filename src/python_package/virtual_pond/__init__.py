@@ -43,7 +43,7 @@ class VirtualPond:
 
     def __eq__(self, other: Self):
         """
-        Checks if all field variables are the same.
+        Checks if all field variables have the same value.
         """
         return (
             self.urban_catchment_area == other.urban_catchment_area

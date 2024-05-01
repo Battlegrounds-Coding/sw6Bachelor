@@ -1,5 +1,4 @@
 "THIS FILE CONTAINS MOCKCLASSES USED TO SAVE MOCKDATA FOR UNIT TESTS"
-import numpy as np
 import python_package.kalman_filter.kalman as f
 
 
