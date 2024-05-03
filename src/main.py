@@ -19,14 +19,13 @@ from python_package.args import ARGS, Mode
 def plotting(rain_file:str, data:str, data_control:str):
     plt.figure()
     plt.subplot(211)
-    p1 = plot(rain_file, "red", "Rain", 1)
+    plot_rain = plot(rain_file, "red", "Rain", 1)
     plt.ylabel("Rain mm")
 
     plt.subplot(212)
-    p2 = plot(virtual_pond_file, "blue", "virtual pond test", 1)
-    
-    p3 = plot(data, "red", "Control fixed", 1)
-    p4 = plot(data_control, "green", "Control optimal", 1)
+    plot_virrtual_pond = plot(virtual_pond_file, "blue", "virtual pond test", 1)
+    plot_control = plot(data, "red", "Control fixed", 1)
+    plot_fixed = plot(data_control, "green", "Control optimal", 1)
 
     plt.ylabel("Water level cm")
 
