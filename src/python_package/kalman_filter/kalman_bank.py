@@ -72,6 +72,7 @@ class KalmanBank:
             filter_report_string = "Waterlevel threshold exceeded in filters: \n"
             for f in faulty_filters:
                 filter_report_string += f.print_kalman_filter() + "\n"
+            filter_report_string += "Kalman filter without arbitrary measurement data faults: \n" + self.kalman_bank[0].print_kalman_filter()
             raise ValueError(
                 "The measured water level exceeded the threshold in"
                 + str(len(faulty_filters))
