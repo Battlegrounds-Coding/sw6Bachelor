@@ -26,12 +26,12 @@ FAULTS = [
 ]
 
 # -- POND DATA
-URBAN_CATCHMENT_AREA = 0.59
+URBAN_CATCHMENT_AREA = 1.85
 SURFACE_REACTION_FACTOR = 0.25
 DISCHARGE_COEFICENT = 0.6
 POND_AREA = 5572
 WATER_LEVEL_MIN = 100
-WATER_LEVEL_MAX = 300
+WATER_LEVEL_MAX = 850
 
 """
 def handle_controler_exeption(exception: serial_exceptions.exceptions):
@@ -52,13 +52,18 @@ def handle_controler_exeption(exception: serial_exceptions.exceptions):
 
 if __name__ == "__main__":
 
+    folder_to_test = 1
+
     time = timedelta(seconds=10)
 
-    water_level = 200
+    water_level = 700
 
-    rain_file = "data\\RainData.csv"
+    rain_file = f"data\\OfflineControlExperiment{folder_to_test}\\data\\fixed\\RainData.csv"
     virtual_pond_file = "data\\VirtualPondData.csv"
 
+    f = open(virtual_pond_file, "w")
+    f.truncate()
+    f.close()
 
     with open(rain_file, "r", encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile, delimiter="\t")
@@ -78,11 +83,11 @@ if __name__ == "__main__":
                 rain_data,
             )
 
-            virtual_pond.set_orifice("max")
+            virtual_pond.set_orifice("med")
 
             pond_data = virtual_pond.generate_virtual_sensor_reading(time)
 
-            print(f"in: {pond_data.volume_in}, out: {pond_data.volume_out}")
+            #print(f"in: {pond_data.volume_in}, out: {pond_data.volume_out}")
             water_level = pond_data.height
     
 
@@ -92,11 +97,15 @@ if __name__ == "__main__":
     
     plt.figure()
     plt.subplot(211)
-    p1 = plot(rain_file, "red", "Rain", 1)
+    p1 = plot(f"data\\OfflineControlExperiment{folder_to_test}\\data\\fixed\\RainData.csv", "red", "Rain", 1)
     plt.ylabel("Rain mm")
 
     plt.subplot(212)
     p2 = plot(virtual_pond_file, "blue", "virtual pond test", 1)
+    
+    p3 = plot(f"data\\OfflineControlExperiment{folder_to_test}\\data\\fixed\\DepthDataFixed.csv", "red", f"Control fixed {folder_to_test}", 1)
+    p4 = plot(f"data\\OfflineControlExperiment{folder_to_test}\\data\\optimal\\DepthDataOptimal.csv", "green", f"Control optimal {folder_to_test}", 1)
+
     plt.ylabel("Water level cm")
 
     plt.xlabel("Time sec")
