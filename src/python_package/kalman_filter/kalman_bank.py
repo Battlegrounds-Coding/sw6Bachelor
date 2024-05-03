@@ -72,13 +72,21 @@ class KalmanBank:
             filter_report_string = "Waterlevel threshold exceeded in filters: \n"
             for f in faulty_filters:
                 filter_report_string += f.print_kalman_filter() + "\n"
-            raise ValueError("The measured water level exceeded the threshold in" + str(len(faulty_filters)) +  " kalman filters.\n"\
-                             + "Measured water level: " + str(measured_data.height()) + "\n" + filter_report_string)
-            
+            raise ValueError(
+                "The measured water level exceeded the threshold in"
+                + str(len(faulty_filters))
+                + " kalman filters.\n"
+                + "Measured water level: "
+                + str(measured_data.height())
+                + "\n"
+                + filter_report_string
+            )
 
     def analyze_filters(self, measured_data: MeasurementData, faulty_filters: List[Kalman]) -> bool:
         "Analyses filters in the KalmanBank. If measured_data goes past thresholds returns false, else return true"
-        return self._analyze_higher_filters(measured_data, faulty_filters) and self._analyze_lower_filters(measured_data, faulty_filters)
+        return self._analyze_higher_filters(measured_data, faulty_filters) and self._analyze_lower_filters(
+            measured_data, faulty_filters
+        )
 
     def _analyze_higher_filters(self, measured_data: MeasurementData, faulty_filters: List[Kalman]) -> bool:
         """
@@ -105,7 +113,7 @@ class KalmanBank:
         """
         lower_filters: List[Kalman] = []
         free_of_faults = True
-        for i, k in enumerate(self.kalman_bank):                
+        for i, k in enumerate(self.kalman_bank):
             if self.faults[i - 1].get_classification == "lower" and not k == self.kalman_bank[0]:
                 lower_filters.append(self.kalman_bank[i])
         for f in lower_filters:
@@ -113,7 +121,7 @@ class KalmanBank:
                 faulty_filters.append(f)
                 free_of_faults = False
         return free_of_faults
-        
+
     @property
     def get_kalman_bank(self) -> List[Kalman]:
         "returns the List of Kalman filters"
