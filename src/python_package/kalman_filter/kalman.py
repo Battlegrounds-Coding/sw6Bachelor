@@ -68,27 +68,16 @@ class Kalman:
         self.variance = variance
         self.predict_variance = predict_variance
 
-    def print_kalman_filter(self) -> None:
+    def print_kalman_filter(self) -> str:
         "Prints all properties of a Kalman class"
-        print(
-            "State: "
-            + str(self.get_state)
-            + ", "
-            + "Variance: "
-            + str(self.variance)
-            + ", "
-            + "Delta: "
-            + str(self.time.get_delta)
-            + ", "
-            + "Noice: "
-            + str(self.noice)
-            + ", "
-            + "Predict_state: "
-            + str(self.predict_state)
-            + ", "
-            + "Predict_variance: "
-            + str(self.predict_variance)
-        )
+        print_string = "State: " + str(self.get_state) + ", " + "Variance: " \
+            + str(self.variance) + ", " + "Delta: " + str(self.time.get_delta) + ", " \
+            + "Noice: " + str(self.noice) + ", " + "Predict_state: " + str(self.predict_state)\
+            + ", " + "Predict_variance: " + str(self.predict_variance)
+        print(print_string)
+        return print_string
+
+        
 
     @property
     def get_variance(self) -> float:
