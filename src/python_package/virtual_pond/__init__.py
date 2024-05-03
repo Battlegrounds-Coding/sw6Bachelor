@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from python_package.rain import Rain
 from python_package.rain import area
 from python_package.rain.artificial_rain import ArtificialConstRain
+from python_package.time import Time
 
 
 
@@ -34,6 +35,7 @@ class VirtualPond:
         water_level_cm: float,
         water_level_min_cm: float,
         water_level_max_cm: float,
+        time: Time,
         rain_data_mm: Rain,
     ):
         self.urban_catchment_area = urban_catchment_area_ha
@@ -44,6 +46,7 @@ class VirtualPond:
         self.water_level_min = water_level_min_cm
         self.water_level_max = water_level_max_cm
         self.rain_data = rain_data_mm
+        self.time = time
         self.orifice = 17.5
 
     def __eq__(self, other:Self):
@@ -89,7 +92,7 @@ class VirtualPond:
 
         return water_volume, volume_in, volume_out
 
-    def generate_virtual_sensor_reading(self, time: timedelta) -> PondData:
+    def generate_virtual_sensor_reading(self) -> PondData:
         """
         Genereate the virtual value of expected water level.
         Returns height in cm, overflow bool, volume_in avrage and volume_out avrage.
@@ -97,7 +100,8 @@ class VirtualPond:
         volume_in_avg = 0
         volume_out_avg = 0
 
-        for x in range(int(time.total_seconds())):
+        delta = int(self.time.get_delta.total_seconds())
+        for x in range(delta):
             
             water_volume, volume_in, volume_out = self.calculate_water_volume()
 
@@ -121,13 +125,15 @@ class VirtualPond:
 
             x = x + 1
 
-        volume_in_avg = volume_in_avg / int(time.total_seconds())
-        volume_out_avg = volume_out_avg / int(time.total_seconds())
+        volume_in_avg = volume_in_avg / delta
+        volume_out_avg = volume_out_avg / delta
 
         pond_data = PondData(height_cm, overflow, volume_in_avg, volume_out_avg)
 
+       
+
         water_level_csv = [self.water_level]
-        time_csv = [float(time.total_seconds())]
+        time_csv = [float(self.time.get_delta.total_seconds())]
         self.save_csv(time_csv, water_level_csv)
        
         return pond_data
@@ -201,14 +207,15 @@ class VirtualPond:
         """
 
         rain_mm = self.rain_data.get_rain_fall(
-            area.EmptyArea(self.urban_catchment_area * 10000), datetime.now(), datetime.now() + timedelta(seconds=1)
-        )
+            area.EmptyArea(self.urban_catchment_area * 10000), 
+            start_time=self.time.get_current_datetime, 
+            end_time=self.time.get_current_datetime_delta)
 
         return rain_mm
 
     def save_csv(self, time_csv: list, water_level_csv: list):
         """Save virtual pond data in csv"""
-
+        
         virtual_pond_csv = "data\\VirtualPondData.csv"
 
         with open(virtual_pond_csv, "r", encoding="utf-8") as csvfile:

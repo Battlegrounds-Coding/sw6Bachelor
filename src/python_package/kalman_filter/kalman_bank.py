@@ -62,15 +62,13 @@ class KalmanBank:
         "Calls the step function for each filter with each fault"
         faulty_filters: List[Kalman] = []
         fault_detection = self.analyze_filters(measured_data, faulty_filters)
-        i = 0
-        for k in self.kalman_bank:
+
+        for i,k in enumerate(self.kalman_bank):
             if k == self.kalman_bank[0]:
                 k.step(pond_state, measured_data)
             else:
-                k.step(pond_state, self.faults[i].get_fault(measured_data))
-                i += 1
-<<<<<<< HEAD
-=======
+                k.step(pond_state, self.faults[i - 1].get_fault(measured_data))
+
         if not fault_detection:
             filter_report_string = "Waterlevel threshold exceeded in filters: \n"
             for f in faulty_filters:
@@ -153,5 +151,4 @@ class KalmanBank:
     def get_noice(self) -> float:
         "Returns the noice as a float"
         return self.noice
->>>>>>> origin/create-main-fn
 

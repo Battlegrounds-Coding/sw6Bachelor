@@ -1,8 +1,8 @@
 "THIS IS THE MAIN FILE"
 
 from python_package.log import LogLevel, PrintLogger
-#from python_package.serial import SerialCom, serial_exceptions
-#from python_package.serial.headless import Headless
+from python_package.serial import SerialCom, serial_exceptions
+from python_package.serial.headless import Headless
 from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
 from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
@@ -13,9 +13,27 @@ from datetime import timedelta, datetime
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
-#import pause
+import pause
 from python_package.args import ARGS, Mode
 
+def plotting(rain_file:str, data:str, data_control:str):
+    plt.figure()
+    plt.subplot(211)
+    p1 = plot(rain_file, "red", "Rain", 1)
+    plt.ylabel("Rain mm")
+
+    plt.subplot(212)
+    p2 = plot(virtual_pond_file, "blue", "virtual pond test", 1)
+    
+    p3 = plot(data, "red", "Control fixed", 1)
+    p4 = plot(data_control, "green", "Control optimal", 1)
+
+    plt.ylabel("Water level cm")
+
+    plt.xlabel("Time sec")
+
+    plt.legend()
+    plt.show()
 
 LOGGER = PrintLogger()
 FAULTS = [
@@ -33,7 +51,7 @@ POND_AREA = 5572
 WATER_LEVEL_MIN = 100
 WATER_LEVEL_MAX = 850
 
-"""
+
 def handle_controler_exeption(exception: serial_exceptions.exceptions):
     match exception:
         case serial_exceptions.exceptions.NO_RESPONSE:
@@ -48,77 +66,22 @@ def handle_controler_exeption(exception: serial_exceptions.exceptions):
             LOGGER.log("Failed to communicate with device", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.CONVERSION_ERROR:
             LOGGER.log("Could not parse the data form sensor", level=LogLevel.ERROR)
-"""
-
+    
 if __name__ == "__main__":
-
-    folder_to_test = 1
-
-    time = timedelta(seconds=10)
-
-    water_level = 700
-
-    rain_file = f"data\\OfflineControlExperiment{folder_to_test}\\data\\fixed\\RainData.csv"
-    virtual_pond_file = "data\\VirtualPondData.csv"
-
-    f = open(virtual_pond_file, "w")
-    f.truncate()
-    f.close()
-
-    with open(rain_file, "r", encoding="utf-8") as csvfile:
-        reader = csv.reader(csvfile, delimiter="\t")
-        for _, line in enumerate(reader):
-            line = str(line[0]).split(",")
-            
-            rain_data = ArtificialConstRain(float(line[1]))
-
-            virtual_pond = VirtualPond(
-                URBAN_CATCHMENT_AREA,
-                SURFACE_REACTION_FACTOR,
-                DISCHARGE_COEFICENT,
-                POND_AREA,
-                water_level,
-                WATER_LEVEL_MIN,
-                WATER_LEVEL_MAX,
-                rain_data,
-            )
-
-            virtual_pond.set_orifice("med")
-
-            pond_data = virtual_pond.generate_virtual_sensor_reading(time)
-
-            #print(f"in: {pond_data.volume_in}, out: {pond_data.volume_out}")
-            water_level = pond_data.height
-    
-
-    
-
-    # Plotting
-    
-    plt.figure()
-    plt.subplot(211)
-    p1 = plot(f"data\\OfflineControlExperiment{folder_to_test}\\data\\fixed\\RainData.csv", "red", "Rain", 1)
-    plt.ylabel("Rain mm")
-
-    plt.subplot(212)
-    p2 = plot(virtual_pond_file, "blue", "virtual pond test", 1)
-    
-    p3 = plot(f"data\\OfflineControlExperiment{folder_to_test}\\data\\fixed\\DepthDataFixed.csv", "red", f"Control fixed {folder_to_test}", 1)
-    p4 = plot(f"data\\OfflineControlExperiment{folder_to_test}\\data\\optimal\\DepthDataOptimal.csv", "green", f"Control optimal {folder_to_test}", 1)
-
-    plt.ylabel("Water level cm")
-
-    plt.xlabel("Time sec")
-
-    plt.legend()
-    plt.show()
-    
-    """
     try:
+        LOGGER.log("SETUP")
         # SETUP
         # -- TIME
-        TIME = Time(current_time=timedelta(seconds=0), delta=timedelta(seconds=10))
         START = datetime.now()
+        TIME = Time(
+            start=START,
+            current_time=timedelta(seconds=0), 
+            delta=timedelta(seconds=10))
+
+        virtual_pond_file = "data\\VirtualPondData.csv"
+        vp_file = open(virtual_pond_file, "w")
+        vp_file.truncate()
+        vp_file.close()
 
         # -- ARGUMENTS
         args = ARGS(START)
@@ -144,10 +107,13 @@ if __name__ == "__main__":
             surface_reaction_factor=SURFACE_REACTION_FACTOR,
             discharge_coeficent=DISCHARGE_COEFICENT,
             pond_area_m2=POND_AREA,
-            water_level_cm=100,
+            water_level_cm=700,
             water_level_min_cm=WATER_LEVEL_MIN,
             water_level_max_cm=WATER_LEVEL_MAX,
+            time=TIME,
             rain_data_mm=rain)
+        virtual_pond.set_orifice("med")
+
 
         # -- KALMAN BANK
         kalman_bank = KalmanBank(
@@ -158,19 +124,20 @@ if __name__ == "__main__":
             noice=0.1)
 
         # LOOP
-        while True:
+        while TIME.get_current_time.total_seconds() < 1000:
             try:
                 # READ SENSOR
                 avg_dist, invariance = controler.read_sensor()
 
                 # STEP VIRTUAL POND
-                pond_data = virtual_pond.generate_virtual_sensor_reading(TIME.get_delta)
+                pond_data = virtual_pond.generate_virtual_sensor_reading()
+                virtual_pond.water_level = pond_data.height
 
                 # STEP FILTERS
                 kalman_bank.step_filters(
                     PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
                     MeasurementData(avg_dist, invariance))
-
+                
                 # Analyze
                 # TODO: analyze the filters
             except serial_exceptions.exceptions as e:
@@ -178,9 +145,12 @@ if __name__ == "__main__":
 
             # STEP TIME AND WAIT
             TIME.step()
-            pause.until(START + TIME.get_current_time)
+            if args.mode == Mode.SERIEL:
+                pause.until(START + TIME.get_current_time)
     except Exception as e:
         print(e)
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e
-    """
+    plotting(args.rain_file, args.data, args.data_control)
+
+
