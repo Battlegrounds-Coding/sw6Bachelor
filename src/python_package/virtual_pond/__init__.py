@@ -46,8 +46,7 @@ class VirtualPond:
         self.rain_data = rain_data_mm
         self.orifice = 17.5
 
-
-    def __eq__(self, other: Self):
+    def __eq__(self, other:Self):
         """
         Checks if all field variables have the same value.
         """

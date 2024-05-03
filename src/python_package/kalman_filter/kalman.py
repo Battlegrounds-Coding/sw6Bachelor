@@ -5,6 +5,12 @@ from typing import Self
 from ..time import Time
 from ..virtual_pond import VirtualPond
 
+class PondState:
+    def __init__(self, q_in: float, q_out: float, ap: float):
+        self.q_in = q_in
+        self.q_out = q_out
+        self.ap = ap
+
 
 class MeasurementData:
     "An abstract class for defining measurements, implements Data and adds a variance function"
@@ -61,52 +67,51 @@ class Kalman:
 
     def __init__(
         self,
+        initial_state: float,
         initial_variance: float,
         time: Time,
-        virtual_pond: VirtualPond,
         noice: float = float(0.0),
     ):
         "Constructor for Kalman filter class"
+        self.state = initial_state
+        self.predict_state = initial_state
         self.variance = initial_variance
+        self.predict_variance = self.variance
         self.time = time
         self.noice = noice
-        self.predict_state = virtual_pond.water_level
-        self.predict_variance = self.variance
-        self.virtual_pond = virtual_pond
 
     def __eq__(self, other) -> bool:
         "Equals function. Checks if all the data between two filters are the same"
         if other is not Self:
             return False
-        return (
-            self.variance == other.get_variance
-            and self.get_time.get_current_time == other.get_time.get_current_time
-            and self.get_time.get_delta == other.get_time.get_delta
-            and self.noice == other.get_noice
-            and self.get_state == other.get_state
+        return self.variance == other.get_variance \
+            and self.get_time.get_current_time == other.get_time.get_current_time \
+            and self.get_time.get_delta == other.get_time.get_delta \
+            and self.noice == other.get_noice \
+            and self.get_state == other.get_state \
             and self.predict_variance == other.get_predict_variance
-            and self.virtual_pond == other.virtual_pond
-        )
 
-    def step(self, messured_data: MeasurementData):
+    def step(self, pond_state: PondState, messured_data: MeasurementData):
         "Steps a kalman filter using pridicted data and measured data"
         # Update
         kalman_gain = self.predict_variance / (self.predict_variance + messured_data.variance_height())
-
         variance = (1 - kalman_gain) * self.variance
-
-        s = self.virtual_pond.generate_virtual_sensor_reading(self.time.get_delta).height
-        state = s + kalman_gain * (messured_data.height() - s)
+        state = self.predict_state + kalman_gain * (messured_data.height() - self.predict_state)
 
         # Predict
+        t = self.time.get_delta.total_seconds()
+        predict_state = t * (pond_state.q_in - pond_state.q_out) / pond_state.ap + state
         predict_variance = variance + self.noice
-        self.virtual_pond.water_level = state
+
+        # Set Values
+        self.state = state
+        self.predict_state = predict_state
         self.variance = variance
         self.predict_variance = predict_variance
 
-    def print_kalman_filter(self) -> None:
+    def print_kalman_filter(self) -> str:
         "Prints all properties of a Kalman class"
-        print(
+        print_string = (
             "State: "
             + str(self.get_state)
             + ", "
@@ -125,6 +130,8 @@ class Kalman:
             + "Predict_variance: "
             + str(self.predict_variance)
         )
+        print(print_string)
+        return print_string
 
     @property
     def get_variance(self) -> float:
@@ -144,10 +151,11 @@ class Kalman:
     @property
     def get_state(self) -> float:
         "Getter method for the current state of the filter"
-        return self.virtual_pond.water_level
+        return self.state
 
     @property
     def get_predicted_state(self) -> float:
+        "Getter method for the predicted state of the kalman filter"
         return self.predict_state
 
     @property

@@ -4,7 +4,9 @@ from .kalman import MeasurementData
 
 
 class Fault:
-    "Fault class contains a fault function and a classification of whether the fault adds or subtracts to the sensor reading"
+    """
+    Fault class contains a fault function and a classification if the fault adds or subtracts to the sensor reading.
+    """
 
     def __init__(self, fault: Callable[[MeasurementData], MeasurementData], classification: str) -> None:
         self._fault = fault
@@ -14,7 +16,7 @@ class Fault:
             case "lower":
                 self._classification = "lower"
             case _:
-                raise Exception("Bad input exception. Classification must be set to 'higher' or 'lower'")
+                raise ValueError("Bad input exception. Classification must be set to 'higher' or 'lower'")
 
     def set_classification(self, assesment: str) -> None:
         "Sets the classification of the fault to either be strings 'higher' or 'lower'"
@@ -24,7 +26,7 @@ class Fault:
             case "lower":
                 self._classification = "lower"
             case _:
-                raise Exception("Bad input exception. Classification must be set to 'higher' or 'lower'")
+                raise ValueError("Bad input exception. Classification must be set to 'higher' or 'lower'")
 
     @property
     def get_classification(self) -> str:
@@ -33,4 +35,5 @@ class Fault:
 
     @property
     def get_fault(self) -> Callable[[MeasurementData], MeasurementData]:
+        "Returns the fault function"
         return self._fault
