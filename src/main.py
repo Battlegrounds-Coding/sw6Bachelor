@@ -4,7 +4,7 @@ from python_package.log import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
 from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
-from python_package.kalman_filter.kalman import MeasurementData
+from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
 from python_package.rain.artificial_rain import ArtificialConstRain
@@ -82,21 +82,27 @@ if __name__ == '__main__':
         # -- CASHE
         # TODO: INIT CASHE
 
+        # -- RAIN
+        rain = args.rain
+
+        # -- VIRTUAL POND
+        virtual_pond = VirtualPond(
+            urban_catchment_area_ha=URBAN_CATCHMENT_AREA,
+            surface_reaction_factor=SURFACE_REACTION_FACTOR,
+            discharge_coeficent=DISCHARGE_COEFICENT,
+            pond_area_m2=POND_AREA,
+            water_level_cm=100,
+            water_level_min_cm=WATER_LEVEL_MIN,
+            water_level_max_cm=WATER_LEVEL_MAX,
+            rain_data_mm=rain)
+
         # -- KALMAN BANK
         kalman_bank = KalmanBank(
             faults=FAULTS,
             time=TIME,
+            initial_state=100,
             initial_variance=10,
-            noice=0.1,
-            virtual_pond=VirtualPond(
-                urban_catchment_area_ha=URBAN_CATCHMENT_AREA,
-                surface_reaction_factor=SURFACE_REACTION_FACTOR,
-                discharge_coeficent=DISCHARGE_COEFICENT,
-                pond_area_m2=POND_AREA,
-                water_level_cm=100,
-                water_level_min_cm=WATER_LEVEL_MIN,
-                water_level_max_cm=WATER_LEVEL_MAX,
-                rain_data_mm=ArtificialConstRain(20)))
+            noice=0.1)
 
         # LOOP
         while True:
@@ -104,10 +110,13 @@ if __name__ == '__main__':
                 # READ SENSOR
                 avg_dist, invariance = controler.read_sensor()
 
+                # STEP VIRTUAL POND
+                pond_data = virtual_pond.generate_virtual_sensor_reading(TIME.get_delta)
+
                 # STEP FILTERS
-                print(len(kalman_bank.get_kalman_bank))
-                print(len(kalman_bank.get_faults))
-                kalman_bank.step_filters(MeasurementData(avg_dist, invariance))
+                kalman_bank.step_filters(
+                    PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
+                    MeasurementData(avg_dist, invariance))
 
                 # Analyze
                 # TODO: analyze the filters
