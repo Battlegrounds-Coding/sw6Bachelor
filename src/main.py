@@ -7,7 +7,6 @@ from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
 from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
-from python_package.rain.artificial_rain import ArtificialConstRain
 from datetime import timedelta, datetime
 import pause
 from python_package.args import ARGS, Mode
