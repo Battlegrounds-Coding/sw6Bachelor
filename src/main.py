@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 import pause
 from python_package.args import ARGS, Mode
 
-def plotting(rain_file:str, data:str, data_control:str):
+
+def plotting(rain_file: str, data: str, data_control: str):
     plt.figure()
     plt.subplot(211)
     plot_rain = plot(rain_file, "red", "Rain", 1)
@@ -30,6 +31,7 @@ def plotting(rain_file:str, data:str, data_control:str):
 
     plt.legend()
     plt.show()
+
 
 LOGGER = PrintLogger()
 FAULTS = [
@@ -62,7 +64,8 @@ def handle_controler_exeption(exception: serial_exceptions.exceptions):
             LOGGER.log("Failed to communicate with device", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.CONVERSION_ERROR:
             LOGGER.log("Could not parse the data form sensor", level=LogLevel.ERROR)
-    
+
+
 if __name__ == "__main__":
     try:
         LOGGER.log("SETUP")
@@ -71,7 +74,7 @@ if __name__ == "__main__":
         START = datetime.now()
         TIME = Time(
             start=START,
-            current_time=timedelta(seconds=0), 
+            current_time=timedelta(seconds=0),
             delta=timedelta(seconds=10))
 
         virtual_pond_file = "data\\VirtualPondData.csv"
@@ -110,7 +113,6 @@ if __name__ == "__main__":
             rain_data_mm=rain)
         virtual_pond.set_orifice("med")
 
-
         # -- KALMAN BANK
         kalman_bank = KalmanBank(
             faults=FAULTS,
@@ -120,7 +122,7 @@ if __name__ == "__main__":
             noice=0.1)
 
         # LOOP
-        while TIME.get_current_time.total_seconds() < 1000:
+        while TIME.get_current_time.total_seconds() < args.time:
             try:
                 # READ SENSOR
                 avg_dist, invariance = controler.read_sensor()
@@ -133,11 +135,13 @@ if __name__ == "__main__":
                 kalman_bank.step_filters(
                     PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
                     MeasurementData(avg_dist, invariance))
-                
+
                 # Analyze
                 # TODO: analyze the filters
             except serial_exceptions.exceptions as e:
                 handle_controler_exeption(e)
+            except Exception as e:
+                print(e)
 
             # STEP TIME AND WAIT
             TIME.step()

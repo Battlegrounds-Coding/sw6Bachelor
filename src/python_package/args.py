@@ -7,6 +7,7 @@ from .rain import artificial_rain as ar, rain_data as rd
 
 
 DEFAULT_RAIN = 10
+DEFAULT_TIME = 100
 DEFAULT_FILTER_CACHE = f"{tempfile.gettempdir()}/filter.cache"
 DEFAULT_CONTROLER_CACHE = f"{tempfile.gettempdir()}/controler.cache"
 
@@ -28,6 +29,9 @@ HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
                                                 (default=seriel)
     [-d  | --data]=/path/to/file             -- Location of the file that contains the moched data from the sensor,
                                                 If mode is headless, otherwise this is ignored
+    [-dc | --data-control]=/path/to/file     -- Location of the file that contains the control data from a project.
+    [-t  | --time]=time                      -- For how long should the simmulation run in seconds.
+                                                (default={DEFAULT_TIME})
     """
 
 
@@ -61,6 +65,8 @@ class ARGS:
                         self._mode = value
                     case "-dc" | "--data-control":
                         self._data_control = value
+                    case "-t" | "--time":
+                        self._time = int(value)
         except Exception as e:
             print(e)
             print("\n" + HELP)
@@ -103,6 +109,13 @@ class ARGS:
             return self._controler_cache
         else:
             return DEFAULT_CONTROLER_CACHE
+
+    @property
+    def time(self):
+        if self._time:
+            return self._time
+        else:
+            return DEFAULT_TIME
 
     @property
     def mode(self):
