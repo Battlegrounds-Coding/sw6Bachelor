@@ -10,8 +10,7 @@ DEFAULT_RAIN = 10
 DEFAULT_FILTER_CACHE = f"{tempfile.gettempdir()}/filter.cache"
 DEFAULT_CONTROLER_CACHE = f"{tempfile.gettempdir()}/controler.cache"
 
-HELP = \
-    f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
+HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-r  | --rain]=/path/to/file             -- Location of the file that contains the raindata at a specific time
     [-cr | --constant-rain]=number           -- Specify a constant amount of rain in mm
                                                 (default={DEFAULT_RAIN})
@@ -47,6 +46,7 @@ class ARGS:
                     case "-r" | "--rain":
                         rain_data = rd.save_rain_data(value)
                         self._rain = ar.ArtificialVariableRain(start, rain_data)
+                        self._rain_file = value
                     case "-cr" | "--constant-rain":
                         self._rain = ar.ArtificialConstRain(int(value))
                     case "-s" | "--strategy":
@@ -59,6 +59,8 @@ class ARGS:
                         self._controler_cache = value
                     case "-m" | "--mode":
                         self._mode = value
+                    case "-dc" | "--data-control":
+                        self._data_control = value
         except Exception as e:
             print(e)
             print("\n" + HELP)
@@ -66,9 +68,13 @@ class ARGS:
 
     @property
     def rain(self):
-        if not self.rain:
+        if not self._rain:
             return ar.ArtificialConstRain(DEFAULT_RAIN)
         return self._rain
+
+    @property
+    def rain_file(self):
+        return self._rain_file
 
     @property
     def strategy(self):
@@ -104,12 +110,10 @@ class ARGS:
             return Mode.SERIEL
         return Mode.HEADLESS
 
+    @property
+    def data_control(self):
+        return self._data_control
 
 class Mode(Enum):
-    SERIEL = 0,
+    SERIEL = 0
     HEADLESS = 1
-
-
-
-
-

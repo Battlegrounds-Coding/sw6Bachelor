@@ -16,6 +16,7 @@ dependencies = [
     "pyserial",
     "h5py >=3.10.0",
     "pause >= 0.3"
+    "matplotlib",
 ]
 
 [project.urls]
