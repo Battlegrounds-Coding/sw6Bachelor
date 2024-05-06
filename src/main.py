@@ -72,10 +72,7 @@ if __name__ == "__main__":
         # SETUP
         # -- TIME
         START = datetime.now()
-        TIME = Time(
-            start=START,
-            current_time=timedelta(seconds=0),
-            delta=timedelta(seconds=10))
+        TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=10))
 
         virtual_pond_file = "data\\VirtualPondData.csv"
         vp_file = open(virtual_pond_file, "w")
@@ -110,16 +107,12 @@ if __name__ == "__main__":
             water_level_min_cm=WATER_LEVEL_MIN,
             water_level_max_cm=WATER_LEVEL_MAX,
             time=TIME,
-            rain_data_mm=rain)
+            rain_data_mm=rain,
+        )
         virtual_pond.set_orifice("med")
 
         # -- KALMAN BANK
-        kalman_bank = KalmanBank(
-            faults=FAULTS,
-            time=TIME,
-            initial_state=100,
-            initial_variance=10,
-            noice=0.1)
+        kalman_bank = KalmanBank(faults=FAULTS, time=TIME, initial_state=100, initial_variance=10, noice=0.1)
 
         # LOOP
         while TIME.get_current_time.total_seconds() < args.time:
@@ -134,7 +127,8 @@ if __name__ == "__main__":
                 # STEP FILTERS
                 kalman_bank.step_filters(
                     PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
-                    MeasurementData(avg_dist, invariance))
+                    MeasurementData(avg_dist, invariance),
+                )
 
                 # Analyze
                 # TODO: analyze the filters
@@ -152,5 +146,3 @@ if __name__ == "__main__":
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e
     plotting(args.rain_file, args.data, args.data_control)
-
-

@@ -5,6 +5,7 @@ from typing import Self
 from ..time import Time
 from ..virtual_pond import VirtualPond
 
+
 class PondState:
     def __init__(self, q_in: float, q_out: float, ap: float):
         self.q_in = q_in
@@ -84,12 +85,14 @@ class Kalman:
         "Equals function. Checks if all the data between two filters are the same"
         if other is not Self:
             return False
-        return self.variance == other.get_variance \
-            and self.get_time.get_current_time == other.get_time.get_current_time \
-            and self.get_time.get_delta == other.get_time.get_delta \
-            and self.noice == other.get_noice \
-            and self.get_state == other.get_state \
+        return (
+            self.variance == other.get_variance
+            and self.get_time.get_current_time == other.get_time.get_current_time
+            and self.get_time.get_delta == other.get_time.get_delta
+            and self.noice == other.get_noice
+            and self.get_state == other.get_state
             and self.predict_variance == other.get_predict_variance
+        )
 
     def step(self, pond_state: PondState, messured_data: MeasurementData):
         "Steps a kalman filter using pridicted data and measured data"

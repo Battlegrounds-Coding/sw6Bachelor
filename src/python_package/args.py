@@ -127,6 +127,7 @@ class ARGS:
     def data_control(self):
         return self._data_control
 
+
 class Mode(Enum):
     SERIEL = 0
     HEADLESS = 1
