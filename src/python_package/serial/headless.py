@@ -31,7 +31,6 @@ class Headless(serial.Serial):
     def in_waiting(self) -> int:
         i = 0
         for time, _ in self.buffer:
-            print(self._time.get_current_time, time)
             if self._time.get_current_time < time:
                 break
             i += 2
