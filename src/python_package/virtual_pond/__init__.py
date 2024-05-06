@@ -20,6 +20,8 @@ class PondData:
 class VirtualPond:
     """Virtual pond class"""
 
+    default_orifce = 17.5
+
     def __init__(
         self,
         urban_catchment_area_ha: float,
@@ -39,7 +41,7 @@ class VirtualPond:
         self.water_level_min = water_level_min_cm
         self.water_level_max = water_level_max_cm
         self.rain_data = rain_data_mm
-        self.orifice = 17.5
+        self.orifice = self.default_orifce
 
     def __eq__(self, other: Self):
         """
@@ -167,17 +169,15 @@ class VirtualPond:
         Return orifice diameter in cm
         """
 
-        orifice_max = 17.5
-
         match orifice_state:
             case "max":
-                self.orifice = orifice_max
+                self.orifice = self.default_orifce
             case "med":
-                self.orifice = orifice_max * (4 / 7)
+                self.orifice = self.default_orifce * (4 / 7)
             case "min":
-                self.orifice = orifice_max * (1 / 7)
+                self.orifice = self.default_orifce * (1 / 7)
             case _:
-                self.orifice = orifice_max
+                self.orifice = self.default_orifce
 
         return self.orifice
 
