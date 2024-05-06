@@ -35,5 +35,3 @@ def plot(file: str, color: str, label: str, scale: float):
     plots = plt.plot(cords[0], cords[1], color, label=label)
 
     return plots
-
-

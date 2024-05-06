@@ -1,9 +1,7 @@
 "THIS FILE CONTAINS THE IMPLEMENTATION OF THE KALMAN FILTER"
 
-from abc import abstractmethod
 from typing import Self
 from ..time import Time
-from ..virtual_pond import VirtualPond
 
 
 class PondState:

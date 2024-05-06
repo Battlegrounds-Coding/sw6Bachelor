@@ -11,7 +11,6 @@ from python_package.rain.artificial_rain import ArtificialConstRain
 from python_package.time import Time
 
 
-
 class PondData:
     """Data from the virtual pond"""
 
@@ -24,7 +23,6 @@ class PondData:
 
 class VirtualPond:
     """Virtual pond class"""
-
 
     def __init__(
         self,
@@ -49,7 +47,7 @@ class VirtualPond:
         self.time = time
         self.orifice = 17.5
 
-    def __eq__(self, other:Self):
+    def __eq__(self, other: Self):
         """
         Checks if all field variables have the same value.
         """
@@ -102,7 +100,7 @@ class VirtualPond:
 
         delta = int(self.time.get_delta.total_seconds())
         for x in range(delta):
-            
+
             water_volume, volume_in, volume_out = self.calculate_water_volume()
 
             volume_in_avg = volume_in_avg + volume_in
@@ -130,12 +128,10 @@ class VirtualPond:
 
         pond_data = PondData(height_cm, overflow, volume_in_avg, volume_out_avg)
 
-       
-
         water_level_csv = [self.water_level]
         time_csv = [float(self.time.get_delta.total_seconds())]
         self.save_csv(time_csv, water_level_csv)
-       
+
         return pond_data
 
     def water_in(self, k: float, s: float, a_uc: float) -> float:
@@ -184,13 +180,12 @@ class VirtualPond:
         Return orifice diameter in cm
         """
 
-        #orifice_max = 17.5
+        # orifice_max = 17.5
         orifice_max = 75
 
-        
         match orifice_state:
             case "max":
-                self.orifice = orifice_max 
+                self.orifice = orifice_max
             case "med":
                 self.orifice = self.default_orifce * (4 / 7)
             case "min":
@@ -207,15 +202,16 @@ class VirtualPond:
         """
 
         rain_mm = self.rain_data.get_rain_fall(
-            area.EmptyArea(self.urban_catchment_area * 10000), 
-            start_time=self.time.get_current_datetime, 
-            end_time=self.time.get_current_datetime_delta)
+            area.EmptyArea(self.urban_catchment_area * 10000),
+            start_time=self.time.get_current_datetime,
+            end_time=self.time.get_current_datetime_delta,
+        )
 
         return rain_mm
 
     def save_csv(self, time_csv: list, water_level_csv: list):
         """Save virtual pond data in csv"""
-        
+
         virtual_pond_csv = "data\\VirtualPondData.csv"
 
         with open(virtual_pond_csv, "r", encoding="utf-8") as csvfile:
@@ -227,23 +223,13 @@ class VirtualPond:
                 temp_level = []
                 with open(virtual_pond_csv, "r", encoding="utf-8") as csvfile:
                     reader = csv.reader(csvfile, delimiter="\t")
-                    for _, line in enumerate(reader): 
+                    for _, line in enumerate(reader):
                         line = str(line[0]).split(",")
                         temp_sec.append(float(line[0]))
                         temp_level.append(float(line[1]))
 
                 prev_sec = max(temp_sec)
-                time_csv = [x + prev_sec for x in time_csv]                    
+                time_csv = [x + prev_sec for x in time_csv]
                 time_csv = temp_sec + time_csv
                 water_level_csv = temp_level + water_level_csv
                 np.savetxt(virtual_pond_csv, [p for p in zip(time_csv, water_level_csv)], delimiter=",", fmt="%s")
-              
-                                                            
-                                    
-           
-            
-
-         
-                    
-
-
