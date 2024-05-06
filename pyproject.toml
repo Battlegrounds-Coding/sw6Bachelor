@@ -13,7 +13,10 @@ dynamic = ["version", "description"]
 
 dependencies = [
     "numpy >=1.24.1",
+    "pyserial",
     "h5py >=3.10.0",
+    "pause >= 0.3",
+    "matplotlib",
 ]
 
 [project.urls]

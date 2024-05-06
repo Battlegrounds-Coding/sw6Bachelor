@@ -1,0 +1,5 @@
+tikz/offlinecontrol2-figure0.pdf: data/optimal/optimalcontrol_w_1.ttt
+tikz/offlinecontrol2-figure0.pdf: data/optimal/optimalcontrol_30PumpSpeed_1.ttt
+tikz/offlinecontrol2-figure0.pdf: data/fixed/staticcontrol_w_1.ttt
+tikz/offlinecontrol2-figure0.pdf: data/fixed/staticcontrol_30PumpSpeed_1.ttt
+tikz/offlinecontrol2-figure0.pdf: data/optimal/optimalcontrol_rain_1.ttt
