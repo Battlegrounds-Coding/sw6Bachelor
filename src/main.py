@@ -14,16 +14,16 @@ import pause
 from python_package.args import ARGS, Mode
 
 
-def plotting(rain_file: str, data: str, data_control: str):
+def plotting(args: ARGS):
     plt.figure()
     plt.subplot(211)
-    plot_rain = plot(rain_file, "red", "Rain", 1)
+    plot(args.rain_file, "red", "Rain", 1)
     plt.ylabel("Rain mm")
 
     plt.subplot(212)
-    plot_virrtual_pond = plot(virtual_pond_file, "blue", "virtual pond test", 1)
-    plot_control = plot(data, "red", "Control fixed", 1)
-    plot_fixed = plot(data_control, "green", "Control optimal", 1)
+    plot(args.out, "blue", "virtual pond test", 1)
+    plot(args.data, "red", "Control fixed", 1)
+    plot(args.data_control, "green", "Control optimal", 1)
 
     plt.ylabel("Water level cm")
 
@@ -77,13 +77,12 @@ if __name__ == "__main__":
             current_time=timedelta(seconds=0),
             delta=timedelta(seconds=10))
 
-        virtual_pond_file = "data\\VirtualPondData.csv"
-        vp_file = open(virtual_pond_file, "w")
-        vp_file.truncate()
-        vp_file.close()
-
         # -- ARGUMENTS
         args = ARGS(START)
+
+        # -- TRUNCATE OUTPUT
+        with open(args.out, "w") as f:
+            f.truncate()
 
         # -- CONTROLER
         match args.mode:
@@ -143,6 +142,10 @@ if __name__ == "__main__":
             except Exception as e:
                 print(e)
 
+            # OUTPUT
+            with open(args.out, "a") as f:
+                f.write(f"{TIME.get_current_time.total_seconds()},{virtual_pond.water_level}\n")
+
             # STEP TIME AND WAIT
             TIME.step()
             if args.mode == Mode.SERIEL:
@@ -151,6 +154,7 @@ if __name__ == "__main__":
         print(e)
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e
-    plotting(args.rain_file, args.data, args.data_control)
+
+    plotting(args)
 
 

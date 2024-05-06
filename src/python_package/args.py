@@ -10,6 +10,7 @@ DEFAULT_RAIN = 10
 DEFAULT_TIME = 100
 DEFAULT_FILTER_CACHE = f"{tempfile.gettempdir()}/filter.cache"
 DEFAULT_CONTROLER_CACHE = f"{tempfile.gettempdir()}/controler.cache"
+DEFAULT_OUT = f"{tempfile.gettempdir()}/out.csv"
 
 HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-r  | --rain]=/path/to/file             -- Location of the file that contains the raindata at a specific time
@@ -32,6 +33,8 @@ HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-dc | --data-control]=/path/to/file     -- Location of the file that contains the control data from a project.
     [-t  | --time]=time                      -- For how long should the simmulation run in seconds.
                                                 (default={DEFAULT_TIME})
+    [-o  | --output]=/path/to/file           -- Specifies the output file of the system
+                                                (default={DEFAULT_OUT})
     """
 
 
@@ -67,6 +70,8 @@ class ARGS:
                         self._data_control = value
                     case "-t" | "--time":
                         self._time = int(value)
+                    case "-o" | "--output":
+                        self._out = value
         except Exception as e:
             print(e)
             print("\n" + HELP)
@@ -126,6 +131,14 @@ class ARGS:
     @property
     def data_control(self):
         return self._data_control
+
+    @property
+    def out(self):
+        try:
+            return self._out
+        except Exception as e:
+            return DEFAULT_OUT
+
 
 class Mode(Enum):
     SERIEL = 0
