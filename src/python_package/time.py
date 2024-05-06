@@ -23,11 +23,11 @@ class Time:
     def get_delta(self) -> timedelta:
         "Getter method for the change in time."
         return self._delta
-    
+
     @property
     def get_current_datetime(self) -> datetime:
         return self._start + self._current_time
-    
+
     @property
     def get_current_datetime_delta(self) -> datetime:
         return self._start + self._current_time + self._delta

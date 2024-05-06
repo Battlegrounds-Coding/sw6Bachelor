@@ -1,5 +1,7 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
 import copy
+import numpy as np
+import csv
 from typing import List, Self
 from .fault import Fault
 from .kalman import Kalman, MeasurementData, PondState
@@ -17,6 +19,7 @@ class KalmanBank:
         initial_variance: float,
         time: Time,
         noice: float,
+        out_file: str,
     ):
         self.faults = []
         self.initial_state = initial_state
@@ -24,19 +27,24 @@ class KalmanBank:
         self.initial_variance = initial_variance
         self.time = time
         self.noice = noice
+        self.out_file = out_file
+
+        with open(self.out_file, "w"):
+            pass
 
         self.add_faults(faults)
 
     def __eq__(self, other) -> bool:
         "Equals function. If all properties of two KalmanBanks are equals, they are considered equal banks"
         if other is KalmanBank:
-            return \
-                self.faults == other.get_faults \
-                and self.kalman_bank == other.get_kalman_bank \
-                and self.initial_variance == other.get_initial_variance \
-                and self.time.get_current_time == other.get_time.get_current_time \
-                and self.time.get_delta == other.get_time.get_delta \
+            return (
+                self.faults == other.get_faults
+                and self.kalman_bank == other.get_kalman_bank
+                and self.initial_variance == other.get_initial_variance
+                and self.time.get_current_time == other.get_time.get_current_time
+                and self.time.get_delta == other.get_time.get_delta
                 and self.noice == other.get_noice
+            )
 
         return False
 
@@ -54,22 +62,21 @@ class KalmanBank:
             if f not in self.faults:
                 self.faults.append(f)
                 # create kalman filter with f and append in kalman_bank
-                self.kalman_bank.append(
-                    Kalman(self.initial_state, self.initial_variance, self.time, self.noice)
-                )
+                self.kalman_bank.append(Kalman(self.initial_state, self.initial_variance, self.time, self.noice))
 
     def step_filters(self, pond_state: PondState, measured_data: MeasurementData):
         "Calls the step function for each filter with each fault"
         faulty_filters: List[Kalman] = []
         fault_detection = self.analyze_filters(measured_data, faulty_filters)
 
-        for i,k in enumerate(self.kalman_bank):
+        for i, k in enumerate(self.kalman_bank):
             if k == self.kalman_bank[0]:
                 k.step(pond_state, measured_data)
             else:
                 k.step(pond_state, self.faults[i - 1].get_fault(measured_data))
+        self._write_to_csv(measured_data)
 
-        if not fault_detection:
+        if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
             filter_report_string = "Waterlevel threshold exceeded in filters: \n"
             for f in faulty_filters:
                 filter_report_string += f.print_kalman_filter() + "\n"
@@ -127,6 +134,33 @@ class KalmanBank:
                 free_of_faults = False
         return free_of_faults
 
+    def _write_to_csv(self, measured_data: MeasurementData) -> None:
+        """
+        Writes kalman filter values to a csv file.
+        """
+        current_time = []
+        noice = []
+        current_state = []
+        predicted_state = []
+        variance = []
+        predicted_variance = []
+        delta_to_predicted_state = []
+
+        for f in self.kalman_bank:
+            current_time.append(f.get_time.get_current_time.total_seconds())
+            noice.append(f.get_noice)
+            current_state.append(f.get_state)
+            predicted_state.append(f.get_predicted_state)
+            variance.append(f.get_variance)
+            predicted_variance.append(f.get_predict_variance)
+            delta_to_predicted_state.append(f.get_predicted_state - measured_data.height())
+
+        with open(self.out_file, "a") as f:
+            f.write(",".join(
+                [",".join([str(x) for x in list(p)]) for p in zip(current_time, noice, current_state, predicted_state, variance, predicted_variance, delta_to_predicted_state)])
+                + '\n')
+
+
     @property
     def get_kalman_bank(self) -> List[Kalman]:
         "returns the List of Kalman filters"
@@ -151,4 +185,3 @@ class KalmanBank:
     def get_noice(self) -> float:
         "Returns the noice as a float"
         return self.noice
-

@@ -11,7 +11,6 @@ from python_package.rain.artificial_rain import ArtificialConstRain
 from python_package.time import Time
 
 
-
 class PondData:
     """Data from the virtual pond"""
 
@@ -24,7 +23,6 @@ class PondData:
 
 class VirtualPond:
     """Virtual pond class"""
-
 
     def __init__(
         self,
@@ -49,7 +47,7 @@ class VirtualPond:
         self.time = time
         self.orifice = 17.5
 
-    def __eq__(self, other:Self):
+    def __eq__(self, other: Self):
         """
         Checks if all field variables have the same value.
         """
@@ -102,7 +100,6 @@ class VirtualPond:
 
         delta = int(self.time.get_delta.total_seconds())
         for x in range(delta):
-            
             water_volume, volume_in, volume_out = self.calculate_water_volume()
 
             volume_in_avg = volume_in_avg + volume_in
@@ -178,13 +175,12 @@ class VirtualPond:
         Return orifice diameter in cm
         """
 
-        #orifice_max = 17.5
+        # orifice_max = 17.5
         orifice_max = 75
 
-        
         match orifice_state:
             case "max":
-                self.orifice = orifice_max 
+                self.orifice = orifice_max
             case "med":
                 self.orifice = orifice_max * (4 / 7)
             case "min":
@@ -201,11 +197,9 @@ class VirtualPond:
         """
 
         rain_mm = self.rain_data.get_rain_fall(
-            area.EmptyArea(self.urban_catchment_area * 10000), 
-            start_time=self.time.get_current_datetime, 
-            end_time=self.time.get_current_datetime_delta)
+            area.EmptyArea(self.urban_catchment_area * 10000),
+            start_time=self.time.get_current_datetime,
+            end_time=self.time.get_current_datetime_delta,
+        )
 
         return rain_mm
-
-
-
