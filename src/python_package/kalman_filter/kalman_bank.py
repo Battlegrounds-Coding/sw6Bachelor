@@ -17,6 +17,7 @@ class KalmanBank:
         initial_variance: float,
         time: Time,
         noice: float,
+        out_file: str,
     ):
         self.faults = []
         self.initial_state = initial_state
@@ -24,6 +25,10 @@ class KalmanBank:
         self.initial_variance = initial_variance
         self.time = time
         self.noice = noice
+        self.out_file = out_file
+
+        with open(self.out_file, "w"):
+            pass
 
         self.add_faults(faults)
 
@@ -126,64 +131,33 @@ class KalmanBank:
                 faulty_filters.append(f)
                 free_of_faults = False
         return free_of_faults
-    
+
     def _write_to_csv(self, measured_data: MeasurementData) -> None:
         """
         Writes kalman filter values to a csv file.
         """
-        kalman_bank_csv = "data\\KalmanBankData.csv"
+        current_time = []
+        noice = []
+        current_state = []
+        predicted_state = []
+        variance = []
+        predicted_variance = []
+        delta_to_predicted_state = []
 
-        with open(kalman_bank_csv, "r", encoding="utf-8") as csvfile:
-            if len(csvfile.readlines()) <= 0:
-                current_time = []
-                noice = []
-                current_state = []
-                predicted_state = []
-                variance = []
-                predicted_variance = []
-                delta_to_predicted_state = []
-                for f in self.kalman_bank:
-                    current_time.append(f.get_time.get_current_time.seconds)
-                    noice.append(f.get_noice)
-                    current_state.append(f.get_state)
-                    predicted_state.append(f.get_predicted_state)
-                    variance.append(f.get_variance)
-                    predicted_variance.append(f.get_predict_variance)
-                    delta_to_predicted_state.append(f.get_predicted_state - measured_data.height())
+        for f in self.kalman_bank:
+            current_time.append(f.get_time.get_current_time.total_seconds())
+            noice.append(f.get_noice)
+            current_state.append(f.get_state)
+            predicted_state.append(f.get_predicted_state)
+            variance.append(f.get_variance)
+            predicted_variance.append(f.get_predict_variance)
+            delta_to_predicted_state.append(f.get_predicted_state - measured_data.height())
 
-                np.savetxt(kalman_bank_csv, \
-                           [p for p in zip(current_time, noice, current_state, predicted_state, variance, predicted_variance, delta_to_predicted_state)], \
-                           delimiter=",", fmt="%s")
-            else:
-                current_time = []
-                noice = []
-                current_state = []
-                predicted_state = []
-                variance = []
-                predicted_variance = []
-                delta_to_predicted_state = []
-                with open(kalman_bank_csv, "r", encoding="utf-8") as csvfile:
-                    reader = csv.reader(csvfile, delimiter="\t")
-                    for _, line in enumerate(reader): 
-                        line = str(line[0]).split(",")
-                        current_time.append(float(line[0]))
-                        noice.append(float(line[1]))
-                        current_state.append(float(line[2]))
-                        predicted_variance.append(float(line[3]))
-                        variance.append(float(line[4]))
-                        predicted_variance.append(float(line[5]))
-                        delta_to_predicted_state.append(float(line[6]))
-                for f in self.kalman_bank:
-                    current_time.append(f.get_time.get_current_time)
-                    noice.append(f.get_noice)
-                    current_state.append(f.get_state)
-                    predicted_state.append(f.get_predicted_state)
-                    variance.append(f.get_variance)
-                    predicted_variance.append(f.get_predict_variance)
-                    delta_to_predicted_state.append(f.get_predicted_state - measured_data.height())
-                np.savetxt(kalman_bank_csv,
-                           [p for p in zip(current_time, noice, current_state, predicted_state, variance, predicted_variance, delta_to_predicted_state)],
-                           delimiter=",", fmt="%s")
+        with open(self.out_file, "a") as f:
+            f.write(",".join(
+                [",".join([str(x) for x in list(p)]) for p in zip(current_time, noice, current_state, predicted_state, variance, predicted_variance, delta_to_predicted_state)])
+                + '\n')
+
 
     @property
     def get_kalman_bank(self) -> List[Kalman]:

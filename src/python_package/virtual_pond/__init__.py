@@ -100,7 +100,6 @@ class VirtualPond:
 
         delta = int(self.time.get_delta.total_seconds())
         for x in range(delta):
-
             water_volume, volume_in, volume_out = self.calculate_water_volume()
 
             volume_in_avg = volume_in_avg + volume_in
@@ -127,10 +126,6 @@ class VirtualPond:
         volume_out_avg = volume_out_avg / delta
 
         pond_data = PondData(height_cm, overflow, volume_in_avg, volume_out_avg)
-
-        water_level_csv = [self.water_level]
-        time_csv = [float(self.time.get_delta.total_seconds())]
-        self.save_csv(time_csv, water_level_csv)
 
         return pond_data
 
@@ -187,11 +182,11 @@ class VirtualPond:
             case "max":
                 self.orifice = orifice_max
             case "med":
-                self.orifice = self.default_orifce * (4 / 7)
+                self.orifice = orifice_max * (4 / 7)
             case "min":
-                self.orifice = self.default_orifce * (1 / 7)
+                self.orifice = orifice_max * (1 / 7)
             case _:
-                self.orifice = self.default_orifce
+                self.orifice = orifice_max
 
         return self.orifice
 
@@ -208,28 +203,3 @@ class VirtualPond:
         )
 
         return rain_mm
-
-    def save_csv(self, time_csv: list, water_level_csv: list):
-        """Save virtual pond data in csv"""
-
-        virtual_pond_csv = "data\\VirtualPondData.csv"
-
-        with open(virtual_pond_csv, "r", encoding="utf-8") as csvfile:
-
-            if len(csvfile.readlines()) <= 0:
-                np.savetxt(virtual_pond_csv, [p for p in zip(time_csv, water_level_csv)], delimiter=",", fmt="%s")
-            else:
-                temp_sec = []
-                temp_level = []
-                with open(virtual_pond_csv, "r", encoding="utf-8") as csvfile:
-                    reader = csv.reader(csvfile, delimiter="\t")
-                    for _, line in enumerate(reader):
-                        line = str(line[0]).split(",")
-                        temp_sec.append(float(line[0]))
-                        temp_level.append(float(line[1]))
-
-                prev_sec = max(temp_sec)
-                time_csv = [x + prev_sec for x in time_csv]
-                time_csv = temp_sec + time_csv
-                water_level_csv = temp_level + water_level_csv
-                np.savetxt(virtual_pond_csv, [p for p in zip(time_csv, water_level_csv)], delimiter=",", fmt="%s")
