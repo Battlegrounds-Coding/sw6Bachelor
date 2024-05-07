@@ -176,7 +176,7 @@ class VirtualPond:
         """
 
         # orifice_max = 17.5
-        orifice_max = 75
+        orifice_max = 2.43/4*7 #75
 
         match orifice_state:
             case "max":
