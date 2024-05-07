@@ -1,6 +1,4 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
-import numpy as np
-import csv
 from typing import List
 from .fault import Fault
 from .kalman import Kalman, MeasurementData, PondState
@@ -66,7 +64,7 @@ class KalmanBank:
         "Calls the step function for each filter with each fault"
         faulty_filters: List[Kalman] = []
         fault_detection = self.analyze_filters(measured_data, faulty_filters)
-        #save old predict data, feed to _write_to_csv
+        # save old predict data, feed to _write_to_csv
         predict_before_step = []
 
         for i, k in enumerate(self.kalman_bank):
@@ -157,10 +155,23 @@ class KalmanBank:
             delta_to_predicted_state.append(predicted_data[i] - measured_data.height())
 
         with open(self.out_file, "a") as f:
-            f.write(",".join(
-                [",".join([str(x) for x in list(p)]) for p in zip(current_time, noice, current_state, predicted_state, variance, predicted_variance, delta_to_predicted_state)])
-                + '\n')
-
+            f.write(
+                ",".join(
+                    [
+                        ",".join([str(x) for x in list(p)])
+                        for p in zip(
+                            current_time,
+                            noice,
+                            current_state,
+                            predicted_state,
+                            variance,
+                            predicted_variance,
+                            delta_to_predicted_state,
+                        )
+                    ]
+                )
+                + "\n"
+            )
 
     @property
     def get_kalman_bank(self) -> List[Kalman]:
