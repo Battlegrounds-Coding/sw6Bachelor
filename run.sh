@@ -10,8 +10,8 @@ if [ -d $dir ]; then
     python  $source/src/main.py \
         --rain=$dir/data/fixed/RainData.csv \
         --mode=headless \
-        --data=$dir/data/fixed/DepthDataFixed.csv \
-        --data-control=$dir/data/optimal/DepthDataOptimal.csv \
+        --data=$dir/data/fixed/DepthData.csv \
+        --data-control=$dir/data/optimal/DepthData.csv \
         --time=7000
 else
     echo "'$dir' is not a directory"
