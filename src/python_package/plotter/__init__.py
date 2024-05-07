@@ -27,11 +27,11 @@ def find_cords(file: list, scale: float) -> list:
     return [cords_x, cords_y]
 
 
-def plot(file: str, color: str, label: str, scale: float):
+def plot(file: str, color: str, label: str, scale: float, ax):
     """Plot csv file"""
     data = read_csv(file)
     cords = find_cords(data, scale)
 
-    plots = plt.plot(cords[0], cords[1], color, label=label)
+    plots = ax.plot(cords[0], cords[1], color, label=label)
 
     return plots
