@@ -21,9 +21,9 @@ def plotting(args: ARGS):
     plt.ylabel("Rain mm")
 
     plt.subplot(212)
-    plot(args.out, "blue", "virtual pond test", 1)
-    plot(args.data, "red", "Control fixed", 1)
-    plot(args.data_control, "green", "Control optimal", 1)
+    plot(args.out, "blue", "Virtual pond", 1)
+    plot(args.data, "red", "Sensor", 1)
+    plot(args.data_control, "green", "Control, fixed orifice", 1)
 
     plt.ylabel("Water level cm")
 
