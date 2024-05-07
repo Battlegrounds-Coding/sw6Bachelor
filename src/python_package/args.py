@@ -10,8 +10,7 @@ DEFAULT_RAIN = 10
 DEFAULT_FILTER_CACHE = f"{tempfile.gettempdir()}/filter.cache"
 DEFAULT_CONTROLER_CACHE = f"{tempfile.gettempdir()}/controler.cache"
 
-HELP = \
-    f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
+HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-r  | --rain]=/path/to/file             -- Location of the file that contains the raindata at a specific time
     [-cr | --constant-rain]=number           -- Specify a constant amount of rain in mm
                                                 (default={DEFAULT_RAIN})
@@ -30,7 +29,6 @@ HELP = \
     [-d  | --data]=/path/to/file             -- Location of the file that contains the moched data from the sensor,
                                                 If mode is headless, otherwise this is ignored
     """
-
 
 
 class ARGS:
@@ -107,10 +105,5 @@ class ARGS:
 
 
 class Mode(Enum):
-    SERIEL = 0,
+    SERIEL = (0,)
     HEADLESS = 1
-
-
-
-
-

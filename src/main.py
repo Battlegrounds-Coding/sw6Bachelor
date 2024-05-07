@@ -33,38 +33,26 @@ WATER_LEVEL_MAX = 300
 def handle_controler_exeption(exception: serial_exceptions.exceptions):
     match exception:
         case serial_exceptions.exceptions.NO_RESPONSE:
-            LOGGER.log(
-                "No responce from device",
-                level=LogLevel.ERROR)
+            LOGGER.log("No responce from device", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.INCORRECT_INPUT:
-            LOGGER.log(
-                "Incorrect input to physical setup",
-                level=LogLevel.ERROR)
+            LOGGER.log("Incorrect input to physical setup", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.PUMP_VALUE_OUT_OF_BOUNDS:
-            LOGGER.log(
-                "Pump value was out of bounds",
-                level=LogLevel.ERROR)
+            LOGGER.log("Pump value was out of bounds", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.NO_SENSOR_READINGS:
-            LOGGER.log(
-                "No readings from the sensor in the physical setup",
-                level=LogLevel.ERROR)
+            LOGGER.log("No readings from the sensor in the physical setup", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.COMUNICATION_ERROR:
             LOGGER.log(
-                "Failed to communicate with device", #TODO: This is error with transmitted data
-                level=LogLevel.ERROR)
+                "Failed to communicate with device", level=LogLevel.ERROR  # TODO: This is error with transmitted data
+            )
         case serial_exceptions.exceptions.CONVERSION_ERROR:
-            LOGGER.log(
-                "Could not parse the data form sensor",
-                level=LogLevel.ERROR)
+            LOGGER.log("Could not parse the data form sensor", level=LogLevel.ERROR)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         # SETUP
         # -- TIME
-        TIME = Time(
-            current_time=timedelta(seconds=0),
-            delta=timedelta(seconds=10))
+        TIME = Time(current_time=timedelta(seconds=0), delta=timedelta(seconds=10))
         START = datetime.now()
 
         # -- ARGUMENTS
@@ -96,7 +84,9 @@ if __name__ == '__main__':
                 water_level_cm=100,
                 water_level_min_cm=WATER_LEVEL_MIN,
                 water_level_max_cm=WATER_LEVEL_MAX,
-                rain_data_mm=ArtificialConstRain(20)))
+                rain_data_mm=ArtificialConstRain(20),
+            ),
+        )
 
         # LOOP
         while True:
@@ -117,7 +107,5 @@ if __name__ == '__main__':
             pause.until(START + TIME.get_current_time)
     except Exception as e:
         print(e)
-        LOGGER.log(
-            "Fatal error shutting down",
-            level=LogLevel.CRITICAL_ERROR)
+        LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e

@@ -61,7 +61,6 @@ class Error(Result):
         self._logger.log(self.message(), level)
 
 
-
 class ValveError(Error):
     "A Valve Error"
 
