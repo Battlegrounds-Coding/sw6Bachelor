@@ -133,7 +133,7 @@ class Kalman:
             + "Predict_variance: "
             + str(self.predict_variance)
         )
-        print(print_string)
+        # print(print_string)
         return print_string
 
     @property

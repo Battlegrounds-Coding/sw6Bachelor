@@ -3,6 +3,13 @@ from typing import List
 from .fault import Fault
 from .kalman import Kalman, MeasurementData, PondState
 from ..time import Time
+from enum import Enum
+
+
+class KalmanError(Exception, Enum):
+    "Exception class for Kalman Filters"
+    LOWER_THRESHOLD_EXCEEDED = 1
+    HIGHER_THRESHOLD_EXCEEDED = 2
 
 
 class KalmanBank:
@@ -63,7 +70,8 @@ class KalmanBank:
     def step_filters(self, pond_state: PondState, measured_data: MeasurementData):
         "Calls the step function for each filter with each fault"
         faulty_filters: List[Kalman] = []
-        fault_detection = self.analyze_filters(measured_data, faulty_filters)
+        failed_faults: List[str] = []
+        fault_detection = self.analyze_filters(measured_data, faulty_filters, failed_faults)
         # save old predict data, feed to _write_to_csv
         predict_before_step = []
 
@@ -77,8 +85,8 @@ class KalmanBank:
 
         if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
             filter_report_string = "Waterlevel threshold exceeded in filters: \n"
-            for f in faulty_filters:
-                filter_report_string += f.print_kalman_filter() + "\n"
+            for i, f in enumerate(faulty_filters):
+                filter_report_string += f.print_kalman_filter() + " Expected filter to be: " + failed_faults[i] + "\n"
             filter_report_string += (
                 "Kalman filter without arbitrary measurement data faults: \n"
                 + self.kalman_bank[0].print_kalman_filter()
@@ -93,44 +101,22 @@ class KalmanBank:
                 + filter_report_string
             )
 
-    def analyze_filters(self, measured_data: MeasurementData, faulty_filters: List[Kalman]) -> bool:
+    def analyze_filters(
+        self, measured_data: MeasurementData, faulty_filters: List[Kalman], failed_faults: List[str]
+    ) -> bool:
         "Analyses filters in the KalmanBank. If measured_data goes past thresholds returns false, else return true"
-        return self._analyze_higher_filters(measured_data, faulty_filters) and self._analyze_lower_filters(
-            measured_data, faulty_filters
-        )
-
-    def _analyze_higher_filters(self, measured_data: MeasurementData, faulty_filters: List[Kalman]) -> bool:
-        """
-        Analyses the filters that are supposed to have a higher water height than the measured data.
-        If measured data height is higher than the predicted data from the filters, return False. Else return True
-        """
-        higher_filters: List[Kalman] = []
         free_of_faults = True
         for i, k in enumerate(self.kalman_bank):
-            if k == self.kalman_bank[0]:
-                break
-            if self.faults[i - 1].get_classification == "higher":
-                higher_filters.append(self.kalman_bank[i])
-        for f in higher_filters:
-            if f.get_predicted_state < measured_data.height():
-                faulty_filters.append(f)
-                free_of_faults = False
-        return free_of_faults
-
-    def _analyze_lower_filters(self, measured_data: MeasurementData, faulty_filters: List[Kalman]) -> bool:
-        """
-        Analyses the filters that are supposed to have a lower water height than the measured data.
-        If measured data height is lower than the predicted hight from any filter, return False, else return True
-        """
-        lower_filters: List[Kalman] = []
-        free_of_faults = True
-        for i, k in enumerate(self.kalman_bank):
+            if self.faults[i - 1].get_classification == "higher" and not k == self.kalman_bank[0]:
+                if k.get_predicted_state < measured_data.height():
+                    faulty_filters.append(k)
+                    free_of_faults = False
+                    failed_faults.append(self.faults[i - 1].get_classification)
             if self.faults[i - 1].get_classification == "lower" and not k == self.kalman_bank[0]:
-                lower_filters.append(self.kalman_bank[i])
-        for f in lower_filters:
-            if f.get_predicted_state > measured_data.height():
-                faulty_filters.append(f)
-                free_of_faults = False
+                if k.get_predicted_state > measured_data.height():
+                    faulty_filters.append(k)
+                    free_of_faults = False
+                    failed_faults.append(self.faults[i - 1].get_classification)
         return free_of_faults
 
     def _write_to_csv(self, measured_data: MeasurementData, predicted_data: List[float]) -> None:
