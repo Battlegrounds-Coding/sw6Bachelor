@@ -77,7 +77,7 @@ class KalmanBank:
 
         for i, k in enumerate(self.kalman_bank):
             predict_before_step.append(k.get_predicted_state)
-            if k == self.kalman_bank[0]:
+            if i == 0:
                 k.step(pond_state, measured_data)
             else:
                 k.step(pond_state, self.faults[i - 1].get_fault(measured_data))

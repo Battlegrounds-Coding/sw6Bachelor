@@ -25,6 +25,13 @@ def plotting(args: ARGS):
     plot(args.data, "red", "Control fixed", 1)
     plot(args.data_control, "green", "Control optimal", 1)
 
+    
+
+    plt.ylabel("Water level cm")
+
+    plt.xlabel("Time sec")
+
+    plt.subplot(313)
     color_label_tuples = [
         ("blue", "Main filter"),
         ("red", "Constant offset 10"),
@@ -33,10 +40,12 @@ def plotting(args: ARGS):
         ("purple", "Measurementdata(0,0)"),
     ]
     plot_kalman_filters(args.kalman, color_label_tuples, 1)
-
-    plt.ylabel("Water level cm")
+    
+    plt.ylabel("Delta to predicted")
 
     plt.xlabel("Time sec")
+
+    
 
     plt.legend()
     plt.show()
@@ -46,8 +55,8 @@ LOGGER = PrintLogger()
 FAULTS = [
     Fault(lambda x: x + 10, "lower"),
     Fault(lambda x: x - 10, "lower"),
-    Fault(lambda _: MeasurementData(10, 0), "lower"),
-    Fault(lambda _: MeasurementData(0, 0), "lower"),
+    Fault(lambda x: x * 1.1, "lower"),
+    Fault(lambda x: x * 0.9, "lower"),
 ]
 
 # -- POND DATA

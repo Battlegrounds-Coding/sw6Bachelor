@@ -62,11 +62,50 @@ def read_kalman_csv(file: str) -> list:
     return data
 
 
+def find_kalman_cords(file: list, scale: float) -> list:
+    """Find coordinates"""
+    cords_one = []
+    cords_two = []
+    cords_three = []
+    cords_four = []
+    cords_five = []
+    cords_six = []
+    cords_seven = []
+    cords_eight = []
+    cords_nine = []
+    cords_ten = []
+    for i in range(len(file)):
+        cords_one.append(file[i][0])
+        cords_two.append(file[i][1] * scale)
+        cords_three.append(file[i][2])
+        cords_four.append(file[i][3] * scale)
+        cords_five.append(file[i][4])
+        cords_six.append(file[i][5] * scale)
+        cords_seven.append(file[i][6])
+        cords_eight.append(file[i][7] * scale)
+        cords_nine.append(file[i][8])
+        cords_ten.append(file[i][9] * scale)
+
+    return [
+        cords_one,
+        cords_two,
+        cords_three,
+        cords_four,
+        cords_five,
+        cords_six,
+        cords_seven,
+        cords_eight,
+        cords_nine,
+        cords_ten,
+    ]
+
+
 def plot_kalman_filters(file: str, color_label_tuples: list[tuple[str, str]], scale: float) -> list:
     """ "Plot kalman csv file"""
     data = read_kalman_csv(file)
+    cords = find_kalman_cords(data, scale)
 
     plots = []
     for i, f in enumerate(color_label_tuples):
-        plots.append(plt.plot(data[2 * i], data[2 * i + 1] * scale, f[0], f[1]))
+        plots.append(plt.plot(cords[2 * i], cords[2 * i + 1], f[0], label=f[1]))
     return plots
