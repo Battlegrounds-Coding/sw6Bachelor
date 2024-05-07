@@ -1,11 +1,7 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
-import copy
-import numpy as np
-import csv
-from typing import List, Self
+from typing import List
 from .fault import Fault
 from .kalman import Kalman, MeasurementData, PondState
-from ..virtual_pond import VirtualPond
 from ..time import Time
 
 
@@ -29,7 +25,7 @@ class KalmanBank:
         self.noice = noice
         self.out_file = out_file
 
-        with open(self.out_file, "w"):
+        with open(self.out_file, "w", encoding="utf-8"):
             pass
 
         self.add_faults(faults)
@@ -68,13 +64,16 @@ class KalmanBank:
         "Calls the step function for each filter with each fault"
         faulty_filters: List[Kalman] = []
         fault_detection = self.analyze_filters(measured_data, faulty_filters)
+        # save old predict data, feed to _write_to_csv
+        predict_before_step = []
 
         for i, k in enumerate(self.kalman_bank):
+            predict_before_step.append(k.get_predicted_state)
             if k == self.kalman_bank[0]:
                 k.step(pond_state, measured_data)
             else:
                 k.step(pond_state, self.faults[i - 1].get_fault(measured_data))
-        self._write_to_csv(measured_data)
+        self._write_to_csv(measured_data, predict_before_step)
 
         if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
             filter_report_string = "Waterlevel threshold exceeded in filters: \n"
@@ -134,7 +133,7 @@ class KalmanBank:
                 free_of_faults = False
         return free_of_faults
 
-    def _write_to_csv(self, measured_data: MeasurementData) -> None:
+    def _write_to_csv(self, measured_data: MeasurementData, predicted_data: List[float]) -> None:
         """
         Writes kalman filter values to a csv file.
         """
@@ -146,20 +145,33 @@ class KalmanBank:
         predicted_variance = []
         delta_to_predicted_state = []
 
-        for f in self.kalman_bank:
+        for i, f in enumerate(self.kalman_bank):
             current_time.append(f.get_time.get_current_time.total_seconds())
             noice.append(f.get_noice)
             current_state.append(f.get_state)
             predicted_state.append(f.get_predicted_state)
             variance.append(f.get_variance)
             predicted_variance.append(f.get_predict_variance)
-            delta_to_predicted_state.append(f.get_predicted_state - measured_data.height())
+            delta_to_predicted_state.append(predicted_data[i] - measured_data.height())
 
-        with open(self.out_file, "a") as f:
-            f.write(",".join(
-                [",".join([str(x) for x in list(p)]) for p in zip(current_time, noice, current_state, predicted_state, variance, predicted_variance, delta_to_predicted_state)])
-                + '\n')
-
+        with open(self.out_file, "a", encoding="utf-8") as f:
+            f.write(
+                ",".join(
+                    [
+                        ",".join([str(x) for x in list(p)])
+                        for p in zip(
+                            current_time,
+                            noice,
+                            current_state,
+                            predicted_state,
+                            variance,
+                            predicted_variance,
+                            delta_to_predicted_state,
+                        )
+                    ]
+                )
+                + "\n"
+            )
 
     @property
     def get_kalman_bank(self) -> List[Kalman]:
