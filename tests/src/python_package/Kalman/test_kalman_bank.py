@@ -1,6 +1,6 @@
 from datetime import timedelta
 from typing import List, Callable
-from data import TestMeasurementData
+from .data import TestMeasurementData
 from python_package import rain
 from python_package.rain import artificial_rain
 import python_package.kalman_filter.fault as fault

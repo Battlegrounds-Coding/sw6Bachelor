@@ -50,7 +50,7 @@ def handle_controler_exeption(exception: serial_exceptions.exceptions):
                 level=LogLevel.ERROR)
         case serial_exceptions.exceptions.COMUNICATION_ERROR:
             LOGGER.log(
-                "Failed to communicate with device",
+                "Failed to communicate with device", #TODO: This is error with transmitted data
                 level=LogLevel.ERROR)
         case serial_exceptions.exceptions.CONVERSION_ERROR:
             LOGGER.log(

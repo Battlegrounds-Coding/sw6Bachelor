@@ -56,14 +56,10 @@ class Error(Result):
         """Returns the method"""
         return self.msg
 
-    def log(self) -> None:
+    def log(self, level: LogLevel) -> None:
         """Logs the method using the provided logger"""
-        self._logger.log(self.message())
+        self._logger.log(self.message(), level)
 
-    def set_log_level(self, level: LogLevel):
-        """Sets the log level of the error"""
-        self._logger.level = level
-        return self
 
 
 class ValveError(Error):
