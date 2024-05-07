@@ -5,6 +5,8 @@ from ..time import Time
 
 
 class PondState:
+    "A class that stores incoming and outgoing water, as well as area of the pond"
+
     def __init__(self, q_in: float, q_out: float, ap: float):
         self.q_in = q_in
         self.q_out = q_out
@@ -35,28 +37,28 @@ class MeasurementData:
     def __add__(self, other: float | tuple[float, float]) -> "MeasurementData":
         if other is tuple[float, float]:
             return MeasurementData(self.height() + other[0], self.variance_height() + other[1])
-        elif other is float:
+        if other is float:
             return MeasurementData(self.height() + other, self.variance_height())
         return self
 
     def __sub__(self, other: float | tuple[float, float]) -> "MeasurementData":
         if other is tuple[float, float]:
             return MeasurementData(self.height() - other[0], self.variance_height() - other[1])
-        elif other is float:
+        if other is float:
             return MeasurementData(self.height() - other, self.variance_height())
         return self
 
     def __mul__(self, other: float | tuple[float, float]) -> "MeasurementData":
         if other is tuple[float, float]:
             return MeasurementData(self.height() - other[0], self.variance_height() - other[1])
-        elif other is float:
+        if other is float:
             return MeasurementData(self.height() - other, self.variance_height())
         return self
 
     def __div__(self, other: float | tuple[float, float]) -> "MeasurementData":
         if other is tuple[float, float]:
             return MeasurementData(self.height() / other[0], self.variance_height() / other[1])
-        elif other is float:
+        if other is float:
             return MeasurementData(self.height() / other, self.variance_height())
         return self
 

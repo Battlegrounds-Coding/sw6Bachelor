@@ -25,7 +25,7 @@ class KalmanBank:
         self.noice = noice
         self.out_file = out_file
 
-        with open(self.out_file, "w"):
+        with open(self.out_file, "w", encoding="utf-8"):
             pass
 
         self.add_faults(faults)
@@ -154,7 +154,7 @@ class KalmanBank:
             predicted_variance.append(f.get_predict_variance)
             delta_to_predicted_state.append(predicted_data[i] - measured_data.height())
 
-        with open(self.out_file, "a") as f:
+        with open(self.out_file, "a", encoding="utf-8") as f:
             f.write(
                 ",".join(
                     [
