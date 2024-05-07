@@ -1,0 +1,289 @@
+\documentclass[notheorems,aspectratio=169]{beamer}
+\usetheme[compress]{Singapore}
+\setbeamertemplate{footline}[frame number]
+\usenavigationsymbolstemplate{}
+% \usepackage{beamerthemesplit} // Activate for custom appearance
+
+\title{Online control of lab pond setup - change control period}
+\subtitle{Experiment design and results}
+%\author{Martijn Goorden}
+\date{\today}
+
+%\usepackage{etex} % Resolves dim error with pgfplots
+\usepackage{subcaption}
+\usepackage{appendixnumberbeamer}
+\usepackage{relsize}
+\usepackage{array}
+\usepackage{multicol}
+\usepackage{tabu}
+\usepackage{bm} % Bold math
+\usepackage{dsfont} % provides the blackboard 1.
+\usepackage{algpseudocode} % Will also load algorithmic package
+\usepackage{algorithm} % Make sure that it is called with \begin{algorithm}[H]
+%\usepackage{tikz}
+%\usetikzlibrary{positioning}
+%\usetikzlibrary{arrows}
+%\usetikzlibrary{backgrounds}
+%\usetikzlibrary{calc}
+%\usetikzlibrary{decorations.pathmorphing}
+%\usetikzlibrary{shapes}
+%\usetikzlibrary{automata}
+\usepackage{pgfplots} % makes plotting data easier
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{dateplot}
+\usepgfplotslibrary{external} % expert graphs as pdf or eps for faster building
+\tikzexternalize[prefix=tikz/]% activate the externalization.
+
+% Attach video files in pdf
+\usepackage{luatex85} % Only needed if LuaLaTeX is used, can be omitted if pdfLaTeX is used.
+\usepackage{attachfile}
+
+\definecolor{bl}{RGB}{22, 66, 115}
+\definecolor{lbl}{RGB}{55, 124, 223}
+
+\colorlet{back}{white}
+\tikzset{every picture/.style={>=stealth}}
+\tikzset{proc/.style={circle,draw,minimum size=2em,inner sep=0pt}}
+\def\a{15} % Bending degree for automaton drawings
+
+% Correct indentation possible when lines are split in algorithm
+\makeatletter
+\let\OldStatex\Statex
+\renewcommand{\Statex}[1][3]{%
+	\setlength\@tempdima{\algorithmicindent}%
+	\OldStatex\hskip\dimexpr#1\@tempdima\relax}
+\makeatother
+
+\hypersetup{pdfpagemode=UseNone} % opens pdf without any toolbar open
+
+%\usepackage{showframe} % show frame boundaries
+
+\begin{document}
+%
+\begin{frame}
+	\titlepage
+\end{frame}
+%
+
+\begin{frame}{Experiment design}
+	\small
+	\begin{itemize}
+		\item Online control: i.e., a strategy is synthesized periodically where the model is re-calibrated to the latest water level sensor reading.
+		\item Experiment duration: 120 minutes.
+		\item Rainfall data: first 120 minutes of the data.
+		\item Initial water level: 700 mm.
+		\item Physical water limit of setup: 850 mm.
+		\item Duration single control period: \textbf{20 minutes} (used to be 10 minutes).
+		\item Optimization cost function: $\min\  \mathbb{E}(o)$, where $o$ is the accumulated overflow duration.
+		\item Fixed outflow is setting 2 (approx.\ 50\% of pump capacity).
+		\item Learning budget parameters: --good-runs 100 --total-runs 200 --runs-pr-state 100 --eval-runs 100 
+		\item Discretization: 0.03.
+	\end{itemize}
+\end{frame}
+
+%\begin{frame}{Simulation results}
+%	\centering
+%	\begin{tikzpicture}
+%		% To plot figure with multiple ordinates, see section 4.9.11 of the pgfplot manual.
+%		pgfplotsset{set layers}
+%		\begin{axis}[
+%			scale only axis,
+%			xlabel={Time [min]},
+%			ylabel={Water level [mm]},
+%			xmin=0, xmax=120,
+%			ymin=600, ymax=1000,
+%			axis y line*=left,  %'*' avoids arrow heads
+%			axis x line*=bottom, %'*' avoids arrow heads
+%			width=12cm,
+%			height=5cm,
+%			%			xtick distance=360,
+%			xmajorgrids=true,
+%			ymajorgrids=true,
+%			grid style=dashed,
+%			yticklabel style={
+%				/pgf/number format/precision=0,
+%				/pgf/number format/fixed,
+%				/pgf/number format/fixed zerofill,
+%			},
+%			legend style={
+%				at={(0.99,0.03)},
+%				anchor=south east,
+%				nodes={scale=0.7, transform shape}},
+%			]	
+%			
+%			\addplot[
+%			color=blue,
+%			]
+%			table[x expr=\thisrowno{0},y expr=\thisrowno{1} * 10, col sep=comma]{data/optimal/optimalcontrol_w_1.ttt};
+%			\addlegendentry{Optimal control}
+%			
+%			\addplot[
+%			color=blue,
+%			dashed,
+%			]
+%			table[x expr=\thisrowno{0},y expr=\thisrowno{1} * 3 + 600, col sep=comma]{data/optimal/optimalcontrol_30PumpSpeed_1.ttt};
+%			\addlegendentry{Optimal control setting}
+%			
+%			\addplot[
+%			color=red,
+%			]
+%			table[x expr=\thisrowno{0},y expr=\thisrowno{1} * 10, col sep=comma]{data/fixed/staticcontrol_w_1.ttt};
+%			\addlegendentry{Fixed control}
+%			
+%			\addplot[
+%			color=red,
+%			dashed,
+%			]
+%			table[x expr=\thisrowno{0},y expr=\thisrowno{1} * 3 + 600, col sep=comma]{data/fixed/staticcontrol_30PumpSpeed_1.ttt};
+%			\addlegendentry{Fixed control setting}
+%			
+%			\addplot[
+%			color=green,
+%			domain=0:120
+%			]
+%			{850};
+%			\addlegendentry{Physical limit}
+%		\end{axis}
+%		
+%		\begin{axis}[
+%			scale only axis,
+%			ylabel={Rain intensity [my-m/s]},
+%			xmin=0, xmax=120,
+%			ymin=0, ymax=4,
+%			axis y line*=right,
+%			axis x line=none,
+%			y dir=reverse,
+%			width=12cm,
+%			height=5cm,
+%			%			xtick distance=360,
+%			xmajorgrids=true,
+%			%			ymajorgrids=true,
+%			grid style=dashed,
+%			yticklabel style={
+%				/pgf/number format/precision=0,
+%				/pgf/number format/fixed,
+%				/pgf/number format/fixed zerofill,
+%			},
+%			]
+%			
+%			\addplot[
+%			color=black,
+%			]
+%			table[x expr=\thisrowno{0},y index = 1, col sep=comma]{data/optimal/optimalcontrol_rain_1.ttt};
+%		\end{axis}	
+%	\end{tikzpicture}
+%\end{frame}
+	
+\begin{frame}{Experimental results}
+	\centering
+	\begin{tikzpicture}
+		% To plot figure with multiple ordinates, see section 4.9.11 of the pgfplot manual.
+		pgfplotsset{set layers}
+		\begin{axis}[
+			scale only axis,
+			xlabel={Time [min]},
+			ylabel={Water level [mm]},
+			xmin=0, xmax=120,
+			ymin=600, ymax=1000,
+			axis y line*=left,  %'*' avoids arrow heads
+			axis x line*=bottom, %'*' avoids arrow heads
+			width=12cm,
+			height=5cm,
+%			xtick distance=360,
+			xmajorgrids=true,
+			ymajorgrids=true,
+			grid style=dashed,
+			yticklabel style={
+				/pgf/number format/precision=0,
+				/pgf/number format/fixed,
+				/pgf/number format/fixed zerofill,
+			},
+			legend style={
+			at={(0.99,0.23)},
+			anchor=south east},
+			nodes={scale=0.7, transform shape}
+			]	
+			
+			
+			\addplot[
+			color=blue,
+			]
+			table[x expr=\thisrowno{0} / 60,y index = 1, col sep=comma]{data/optimal/DepthData.csv};
+			\addlegendentry{Optimal control}
+						
+			\addplot[
+			color=blue,
+			dashed,
+			]
+			table[x expr=\thisrowno{0} / 60,y expr=\thisrowno{1} * 30 + 600, col sep=comma]{data/optimal/Control_stateData.csv};
+			\addlegendentry{Optimal control setting}
+			
+			\addplot[
+			color=red,
+			]
+			table[x expr=\thisrowno{0} / 60,y index = 1, col sep=comma]{data/fixed/DepthData.csv};
+			\addlegendentry{Fixed control}
+			
+			\addplot[
+			color=red,
+			dashed,
+			]
+			table[x expr=\thisrowno{0} / 60,y expr=\thisrowno{1} * 30 + 600, col sep=comma]{data/fixed/Control_stateData.csv};
+			\addlegendentry{Fixed control setting}			
+			
+			\addplot[
+			color=green,
+			domain=0:120
+			]
+			{850};
+			\addlegendentry{Physical limit}
+		\end{axis}
+		
+		\begin{axis}[
+			scale only axis,
+			ylabel={Rain intensity [my-m/s]},
+			xmin=0, xmax=120,
+			ymin=0, ymax=4,
+			axis y line*=right,
+			axis x line=none,
+			y dir=reverse,
+			width=12cm,
+			height=5cm,
+%			xtick distance=360,
+			xmajorgrids=true,
+%			ymajorgrids=true,
+			grid style=dashed,
+			yticklabel style={
+				/pgf/number format/precision=0,
+				/pgf/number format/fixed,
+				/pgf/number format/fixed zerofill,
+			},
+			]
+			
+			\addplot[
+			color=black,
+			]
+			table[x expr=\thisrowno{0} / 60,y index = 1, col sep=comma]{data/optimal/RainData.csv};
+		\end{axis}	
+	\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Analysis}
+	\begin{block}{Possible explanations for `bad' results}
+		\begin{itemize}
+			\item Learning took about 1,5 minutes, so the new control action was applied 2 minutes after learning has started.
+			\item Increase in control period results in less number of decisions to be made. On local laptop, this resulted in (more or less) consistent strategies with same learning budget.
+			\item Results from server were still inconsistent.
+			\item Identified an error in unit conversion. Original pond model had water level in cm, while setup works in mm. I converted model on local machine, but not on server.
+		\end{itemize}
+	\end{block}
+	
+	\begin{block}{Idea for next experiment}
+		\begin{itemize}
+			\item Fix model on server and rerun the experiment.
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+
+\end{document}
