@@ -45,7 +45,7 @@ class VirtualPond:
         self.water_level_max = water_level_max_cm
         self.rain_data = rain_data_mm
         self.time = time
-        self.orifice = 17.5
+        self.orifice = 75
 
     def __eq__(self, other: Self):
         """
@@ -176,7 +176,7 @@ class VirtualPond:
         """
 
         # orifice_max = 17.5
-        orifice_max = 2.43/4*7 #75
+        orifice_max = 75
 
         match orifice_state:
             case "max":
