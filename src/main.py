@@ -7,7 +7,7 @@ from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
 from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
-from python_package.plotter import plot
+from python_package.plotter import plot, plot_kalman_filters
 from datetime import timedelta, datetime
 import matplotlib.pyplot as plt
 import pause
@@ -24,6 +24,15 @@ def plotting(args: ARGS):
     plot(args.out, "blue", "virtual pond test", 1)
     plot(args.data, "red", "Control fixed", 1)
     plot(args.data_control, "green", "Control optimal", 1)
+
+    color_label_tuples = [
+        ("blue", "Main filter"),
+        ("red", "Constant offset 10"),
+        ("yellow", "Constant offset -10"),
+        ("green", "MeasurementData(10, 0)"),
+        ("purple", "Measurementdata(0,0)"),
+    ]
+    plot_kalman_filters(args.kalman, color_label_tuples, 1)
 
     plt.ylabel("Water level cm")
 
@@ -112,7 +121,7 @@ if __name__ == "__main__":
 
         # -- KALMAN BANK
         kalman_bank = KalmanBank(
-            faults=FAULTS, time=TIME, initial_state=100, initial_variance=10, noice=0.1, out_file=args.kalman
+            faults=FAULTS, time=TIME, initial_state=700, initial_variance=10, noice=0.1, out_file=args.kalman
         )
 
         # LOOP

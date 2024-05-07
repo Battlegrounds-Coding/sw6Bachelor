@@ -5,10 +5,12 @@ from .kalman import Kalman, MeasurementData, PondState
 from ..time import Time
 from enum import Enum
 
+
 class KalmanError(Exception, Enum):
     "Exception class for Kalman Filters"
     LOWER_THRESHOLD_EXCEEDED = 1
     HIGHER_THRESHOLD_EXCEEDED = 2
+
 
 class KalmanBank:
     "A bank of Kalman filters with faults defined by the user. When initialized, all filters are identical."
@@ -99,7 +101,9 @@ class KalmanBank:
                 + filter_report_string
             )
 
-    def analyze_filters(self, measured_data: MeasurementData, faulty_filters: List[Kalman], failed_faults: List[str]) -> bool:
+    def analyze_filters(
+        self, measured_data: MeasurementData, faulty_filters: List[Kalman], failed_faults: List[str]
+    ) -> bool:
         "Analyses filters in the KalmanBank. If measured_data goes past thresholds returns false, else return true"
         free_of_faults = True
         for i, k in enumerate(self.kalman_bank):
@@ -114,7 +118,6 @@ class KalmanBank:
                     free_of_faults = False
                     failed_faults.append(self.faults[i - 1].get_classification)
         return free_of_faults
-    
 
     def _write_to_csv(self, measured_data: MeasurementData, predicted_data: List[float]) -> None:
         """
