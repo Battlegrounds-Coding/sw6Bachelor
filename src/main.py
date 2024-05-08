@@ -30,10 +30,13 @@ def plotting(args: ARGS):
     test_file = os.environ["dir"]
     test_file = "_".join(str(test_file).split("\\")[2:])
 
-    fig, axs = plt.subplots(2, 1, figsize=(10, 5), gridspec_kw={'height_ratios': [1, 2]})
+    fig, axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={'height_ratios': [1, 2]})
+
+    plt.suptitle(f"File: {test_file}")
 
     plot(args.rain_file, "red", "Rain", 1, axs[0])
     axs[0].set_ylabel("Rain mm")
+    axs[0].legend()
 
     plot(args.out, "blue", "Estimated height", 1, axs[1])
     plot(args.data, "red", "Sensor height", 1, axs[1])
@@ -41,10 +44,7 @@ def plotting(args: ARGS):
     axs[1].set_ylim(0,900)
     axs[1].set_ylabel("Water level cm")
     axs[1].set_xlabel("Time sec")
-
-    axs[0].legend()
     axs[1].legend()
-
 
     plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches='tight')
     plt.show()
