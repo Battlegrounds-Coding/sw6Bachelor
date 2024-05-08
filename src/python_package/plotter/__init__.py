@@ -53,6 +53,7 @@ def read_kalman_csv_delta(file: str, number_of_filters: int) -> list:
             data.append(temp_list)
     return data
 
+
 def read_kalman_csv_state_measured(file: str, number_of_filters: int) -> list:
     """Read kalman csv file"""
     data = []
@@ -64,7 +65,7 @@ def read_kalman_csv_state_measured(file: str, number_of_filters: int) -> list:
             i = 0
             while i < number_of_filters:
                 temp_list.append(float(line[7 * i]))
-                temp_list.append(float(line[7 * i + 2]))
+                temp_list.append(float(line[7 * i + 3]))
                 i += 1
             temp_list.append(temp_list[0])
             temp_list.append(float(line[7 * i]))
@@ -92,7 +93,7 @@ def find_kalman_cords(file: list, scale: float, number_of_filters: int) -> list:
 
 def plot_kalman_filters_delta(file: str, color_label_tuples: list[tuple[str, str]], scale: float, axis) -> list:
     """
-    Plot kalman csv file.
+    Plot the delta between predicted values and the measured values for each filter.
     This function assumes that the length of color_label_tuples == number of kalman filters
     """
     data = read_kalman_csv_delta(file, len(color_label_tuples))
@@ -103,9 +104,12 @@ def plot_kalman_filters_delta(file: str, color_label_tuples: list[tuple[str, str
         plots.append(axis.plot(coords[2 * i], coords[2 * i + 1], f[0], label=f[1]))
     return plots
 
-def plot_kalman_filters_state_measured(file: str, color_label_tuples: list[tuple[str, str]], scale: float, axis) -> list:
+
+def plot_kalman_filters_state_measured(
+    file: str, color_label_tuples: list[tuple[str, str]], scale: float, axis
+) -> list:
     """
-    Plot kalman csv file.
+    Plot the measured value and the predicted state for each filter.
     This function assumes that the length of color_label_tuples == number of kalman filters
     """
     data = read_kalman_csv_state_measured(file, len(color_label_tuples))
@@ -114,6 +118,9 @@ def plot_kalman_filters_state_measured(file: str, color_label_tuples: list[tuple
     plots = []
     for i, f in enumerate(color_label_tuples):
         plots.append(axis.plot(coords[2 * i], coords[2 * i + 1], f[0], label=f[1]))
-    plots.append(axis.plot(coords[len(color_label_tuples) + 1], coords[len(color_label_tuples) + 2], "orange", label = "Measured height"))
+    plots.append(
+        axis.plot(
+            coords[len(color_label_tuples) + 1], coords[len(color_label_tuples) + 2], "orange", label="Measured height"
+        )
+    )
     return plots
-

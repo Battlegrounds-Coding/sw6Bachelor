@@ -83,7 +83,7 @@ class KalmanBank:
                 k.step(pond_state, self.faults[i - 1].get_fault(measured_data))
         self._write_to_csv(measured_data, predict_before_step)
 
-        #error reporting
+        # error reporting
         """ if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
             filter_report_string = "Waterlevel threshold exceeded in filters: \n"
             for i, f in enumerate(faulty_filters):

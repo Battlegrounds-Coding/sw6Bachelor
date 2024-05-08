@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 from python_package.args import ARGS, Mode
 
+
 class OutMode(Enum):
     SENSOR = 0
     VIRTUAL = 1
@@ -28,7 +29,7 @@ def plotting(args: ARGS):
     test_file = os.environ["dir"]
     test_file = "_".join(str(test_file).split("\\")[2:])
 
-    fig, axs = plt.subplots(4, 1, figsize=(10, 5), gridspec_kw={'height_ratios': [1, 1, 2, 2]})
+    fig, axs = plt.subplots(4, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1, 2, 2]})
 
     plot(args.rain_file, "red", "Rain", 1, axs[0])
     axs[0].set_ylabel("Rain mm")
@@ -43,7 +44,7 @@ def plotting(args: ARGS):
     plot(args.out, "blue", "Estimated height", 1, axs[1])
     plot(args.data, "red", "Sensor height", 1, axs[1])
     plot(args.data_control, "green", "Control, fixed orifice", 1, axs[1])
-    axs[1].set_ylim(0,900)
+    axs[1].set_ylim(0, 900)
     axs[1].set_ylabel("Water level cm")
     axs[1].set_xlabel("Time sec")
 
@@ -57,16 +58,13 @@ def plotting(args: ARGS):
     plot_kalman_filters_delta(args.kalman, color_label_tuples, 1, axs[2])
     plot_kalman_filters_state_measured(args.kalman, color_label_tuples, 1, axs[3])
 
-
     plt.xlabel("Time sec")
 
     axs[0].legend()
     axs[1].legend()
     axs[2].legend()
 
-
-
-    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches='tight')
+    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches="tight")
     plt.show()
 
 
