@@ -21,8 +21,8 @@ def plotting(args: ARGS):
     plot(args.rain_file, "red", "Rain", 1, axs[0])
     axs[0].set_ylabel("Rain mm")
 
-    plot(args.out, "blue", "Virtual pond", 1, axs[1])
-    plot(args.data, "red", "Sensor", 1, axs[1])
+    plot(args.out, "blue", "Estimated height", 1, axs[1])
+    plot(args.data, "red", "Sensor height", 1, axs[1])
     plot(args.data_control, "green", "Control, fixed orifice", 1, axs[1])
     axs[1].set_ylim(0,900)
     axs[1].set_ylabel("Water level cm")
