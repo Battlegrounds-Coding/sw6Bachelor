@@ -13,6 +13,9 @@ from python_package.plotter import plot, plot_kalman_filters
 from datetime import timedelta, datetime
 import matplotlib.pyplot as plt
 import pause
+import os
+import sys
+from pathlib import Path
 from python_package.args import ARGS, Mode
 
 class OutMode(Enum):
@@ -22,7 +25,10 @@ class OutMode(Enum):
 
 def plotting(args: ARGS):
 
-    fig, axs = plt.subplots(3, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1, 2]})
+    test_file = os.environ["dir"]
+    test_file = "_".join(str(test_file).split("\\")[2:])
+
+    fig, axs = plt.subplots(2, 1, figsize=(10, 5), gridspec_kw={'height_ratios': [1, 2]})
 
     plot(args.rain_file, "red", "Rain", 1, axs[0])
     axs[0].set_ylabel("Rain mm")
@@ -58,6 +64,9 @@ def plotting(args: ARGS):
     axs[1].legend()
     axs[2].legend()
 
+
+
+    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches='tight')
     plt.show()
 
 
