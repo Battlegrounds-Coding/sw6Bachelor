@@ -15,10 +15,11 @@ COM = "COM3"  # <-----
 class SerialCom:
     """Serial comunication class"""
 
-    def __init__(self, port=COM, debug=False) -> None:
+    def __init__(self, log_folder: str, port=COM, debug=False) -> None:
         self.debug = debug
         self.port = port
         self.arduino = serial.Serial()
+        self.log_folder = log_folder
 
     def begin(self) -> None:
         """Starts serial connection"""
@@ -116,15 +117,16 @@ class SerialCom:
 
     def log_error(self, error: serial_exceptions.exceptions, msg: str):
         """Write error and communication buffer to file, before throwing exception"""
-        time_now = datetime.now()
-        file = FileCache("Error-log " + error.name + " " + str(time_now).replace(":", ".."))
+        now = datetime.now()
+        time_now = str(now).replace(":", "..")
+        file = FileCache(f"{self.log_folder}/Error-log {error.name} {time_now}")
 
         data_arr = [msg]
-        data = CacheData(0, time_now, data_arr)
+        data = CacheData(0, now, data_arr)
         file.insert(data)
         while self.arduino.in_waiting:
             string = self.arduino.read_until(b"\r").decode().removesuffix("\r")
             data_arr.append(string)
-            data = CacheData(0, time_now, data_arr)
+            data = CacheData(0, now, data_arr)
             file.insert(data)
         raise error

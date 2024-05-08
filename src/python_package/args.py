@@ -4,16 +4,17 @@ from datetime import datetime
 from enum import Enum
 import sys
 import tempfile
+import os
 
 from .rain import artificial_rain as ar, rain_data as rd
 
 
 DEFAULT_RAIN = 10
 DEFAULT_TIME = 100
-DEFAULT_FILTER_CACHE = f"{tempfile.gettempdir()}/filter.cache"
-DEFAULT_CONTROLER_CACHE = f"{tempfile.gettempdir()}/controler.cache"
-DEFAULT_OUT = f"{tempfile.gettempdir()}/out.csv"
-DEFAULT_KALMAN = f"{tempfile.gettempdir()}/kalman.csv"
+DEFAULT_FILTER_CACHE = os.path.join(tempfile.gettempdir(), "filter.cache")
+DEFAULT_CONTROLER_CACHE = os.path.join(tempfile.gettempdir(), "virtual-pond-controler-errors")
+DEFAULT_OUT = os.path.join(tempfile.gettempdir(), "out.csv")
+DEFAULT_KALMAN = os.path.join(tempfile.gettempdir(), "kalman.csv")
 
 HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-r  | --rain]=/path/to/file             -- Location of the file that contains the raindata at a specific time
@@ -131,9 +132,10 @@ class ARGS:
         """Getter for controler cache
         if not defined, returns 'DEFAULT_CONTROLER_CACHE'"""
         if self._controler_cache:
+        try:
             return self._controler_cache
-
-        return DEFAULT_CONTROLER_CACHE
+        except Exception as _:
+            return DEFAULT_CONTROLER_CACHE
 
     @property
     def time(self):

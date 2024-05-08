@@ -1,5 +1,7 @@
 "THIS IS THE MAIN FILE"
 
+import os
+from enum import Enum
 from datetime import timedelta, datetime
 import matplotlib.pyplot as plt
 import pause
@@ -13,13 +15,28 @@ from python_package.virtual_pond import VirtualPond
 from python_package.plotter import plot
 from python_package.args import ARGS, Mode
 
+class OutMode(Enum):
+    SENSOR = 0
+    VIRTUAL = 1
+
 
 def plotting(plot_args: ARGS):
     """Function for plotting data"""
-    axs = plt.subplots(2, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 2]})[1]
 
-    plot(plot_args.rain_file, "red", "Rain", 1, axs[0])
+    directory = "experiment_data_results"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    test_file = os.environ["dir"]
+    test_file = "_".join(str(test_file).split("\\")[2:])
+
+    axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={'height_ratios': [1, 2]})[1]
+
+    plt.suptitle(f"File: {test_file}")
+
+    plot(args.rain_file, "red", "Rain", 1, axs[0])
     axs[0].set_ylabel("Rain mm")
+    axs[0].legend()
 
     plot(plot_args.out, "blue", "Estimated height", 1, axs[1])
     plot(plot_args.data, "red", "Sensor height", 1, axs[1])
@@ -27,9 +44,9 @@ def plotting(plot_args: ARGS):
     axs[1].set_ylim(0, 900)
     axs[1].set_ylabel("Water level cm")
     axs[1].set_xlabel("Time sec")
-
-    axs[0].legend()
     axs[1].legend()
+
+    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches='tight')
     plt.show()
 
 
@@ -85,12 +102,12 @@ if __name__ == "__main__":
             f.truncate()
 
         # -- CONTROLER
+        os.makedirs(args.controler_cache, exist_ok=True)
+        controler = SerialCom(args.controler_cache)
         match args.mode:
             case Mode.SERIEL:
-                controler = SerialCom()
                 controler.begin()
             case Mode.HEADLESS:
-                controler = SerialCom()
                 controler.arduino = Headless(args.data, TIME)
 
         # -- CASHE
@@ -118,34 +135,43 @@ if __name__ == "__main__":
             faults=FAULTS, time=TIME, initial_state=100, initial_variance=10, noice=0.1, out_file=args.kalman
         )
 
+        avg_dist = 0
+        out = 0
+
+        out_mode = OutMode.SENSOR
+
         # LOOP
         while TIME.get_current_time.total_seconds() < args.time:
-
             # STEP VIRTUAL POND
             pond_data = virtual_pond.generate_virtual_sensor_reading()
             virtual_pond.water_level = pond_data.height
             if pond_data.overflow:
                 LOGGER.log("Pond is overflowing", LogLevel.ERROR)
 
-            try:
-                # READ SENSOR
-                avg_dist, invariance = controler.read_sensor()
+            if out_mode is OutMode.SENSOR:
+                try:
+                    # READ SENSOR
+                    avg_dist, invariance = controler.read_sensor()
+                    out = avg_dist
 
-                # STEP FILTERS
-                kalman_bank.step_filters(
-                    PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
-                    MeasurementData(avg_dist, invariance),
-                )
+                    # STEP FILTERS
+                    kalman_bank.step_filters(
+                        PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
+                        MeasurementData(avg_dist, invariance),
+                    )
+                except serial_exceptions.exceptions as e:
+                    out_mode = OutMode.VIRTUAL
+                    handle_controler_exeption(e)
+                except Exception as e:
+                    out_mode = OutMode.VIRTUAL
+                    print(e)
 
-            except serial_exceptions.exceptions as e:
-                handle_controler_exeption(e)
-
-            except Exception as e:
-                print(e)
+            if out_mode is OutMode.VIRTUAL:
+                out = virtual_pond.water_level
 
             # OUTPUT
             with open(args.out, "a", -1, "UTF-8") as f:
-                f.write(f"{TIME.get_current_time.total_seconds()},{virtual_pond.water_level}\n")
+                f.write(f"{TIME.get_current_time.total_seconds()},{out}\n")
 
             # STEP TIME AND WAIT
             TIME.step()
