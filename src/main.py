@@ -1,6 +1,6 @@
 "THIS IS THE MAIN FILE"
 
-from python_package.log import LogLevel, PrintLogger
+from python_package.logger import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
 from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
