@@ -15,47 +15,46 @@ from python_package.args import ARGS, Mode
 
 
 def plotting(args: ARGS):
-    plt.figure()
-    plt.subplot(211)
-    plot(args.rain_file, "red", "Rain", 1)
-    plt.ylabel("Rain mm")
 
-    plt.subplot(212)
-    plot(args.out, "blue", "virtual pond test", 1)
-    plot(args.data, "red", "Control fixed", 1)
-    plot(args.data_control, "green", "Control optimal", 1)
+    fig, axs = plt.subplots(3, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1, 2]})
 
-    
+    plot(args.rain_file, "red", "Rain", 1, axs[0])
+    axs[0].set_ylabel("Rain mm")
+
+    plot(args.out, "blue", "Virtual pond", 1, axs[1])
+    plot(args.data, "red", "Sensor", 1, axs[1])
+    plot(args.data_control, "green", "Control, fixed orifice", 1, axs[1])
+    axs[1].set_ylim(0, 900)
+    axs[1].set_ylabel("Water level cm")
+    axs[1].set_xlabel("Time sec")
 
     plt.ylabel("Water level cm")
 
-    plt.xlabel("Time sec")
-
-    plt.subplot(313)
     color_label_tuples = [
         ("blue", "Main filter"),
         ("red", "Constant offset 10"),
         ("yellow", "Constant offset -10"),
-        ("green", "MeasurementData(10, 0)"),
-        ("purple", "Measurementdata(0,0)"),
+        ("green", "10 Percent over"),
+        ("purple", "10 percent under"),
     ]
-    plot_kalman_filters(args.kalman, color_label_tuples, 1)
-    
+    plot_kalman_filters(args.kalman, color_label_tuples, 1, axs[2])
+
     plt.ylabel("Delta to predicted")
 
     plt.xlabel("Time sec")
 
-    
+    axs[0].legend()
+    axs[1].legend()
+    axs[2].legend()
 
-    plt.legend()
     plt.show()
 
 
 LOGGER = PrintLogger()
 FAULTS = [
-    Fault(lambda x: x + 10, "lower"),
+    Fault(lambda x: x + 10, "higher"),
     Fault(lambda x: x - 10, "lower"),
-    Fault(lambda x: x * 1.1, "lower"),
+    Fault(lambda x: x * 1.1, "higher"),
     Fault(lambda x: x * 0.9, "lower"),
 ]
 
@@ -135,13 +134,14 @@ if __name__ == "__main__":
 
         # LOOP
         while TIME.get_current_time.total_seconds() < args.time:
+
+            # STEP VIRTUAL POND
+            pond_data = virtual_pond.generate_virtual_sensor_reading()
+            virtual_pond.water_level = pond_data.height
+
             try:
                 # READ SENSOR
                 avg_dist, invariance = controler.read_sensor()
-
-                # STEP VIRTUAL POND
-                pond_data = virtual_pond.generate_virtual_sensor_reading()
-                virtual_pond.water_level = pond_data.height
 
                 # STEP FILTERS
                 kalman_bank.step_filters(
@@ -151,6 +151,7 @@ if __name__ == "__main__":
 
             except serial_exceptions.exceptions as e:
                 handle_controler_exeption(e)
+
             except Exception as e:
                 print(e)
 

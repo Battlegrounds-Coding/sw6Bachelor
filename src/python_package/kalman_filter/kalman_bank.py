@@ -156,6 +156,8 @@ class KalmanBank:
                         )
                     ]
                 )
+                + ","
+                + str(measured_data.height())
                 + "\n"
             )
 
