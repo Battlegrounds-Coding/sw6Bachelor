@@ -25,6 +25,10 @@ class OutMode(Enum):
 
 def plotting(args: ARGS):
 
+    directory = "experiment_data_results"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     test_file = os.environ["dir"]
     test_file = "_".join(str(test_file).split("\\")[2:])
 
