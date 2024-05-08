@@ -1,12 +1,10 @@
 """Virtual pond module"""
 
 import math
-import numpy as np
-import csv
 from typing import Self
 from datetime import datetime, timedelta
-from python_package.rain import Rain
-from python_package.rain import area
+import numpy as np
+from python_package.rain import Rain, area
 from python_package.rain.artificial_rain import ArtificialConstRain
 from python_package.time import Time
 
@@ -112,7 +110,6 @@ class VirtualPond:
             height_cm = max(height_cm, 0)
 
             if height_cm > self.water_level_max:
-                # TODO: call alarm
                 overflow = True
                 height_cm = self.water_level_max
             elif height_cm <= self.water_level_min:

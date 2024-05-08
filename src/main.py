@@ -2,6 +2,9 @@
 
 import os
 from enum import Enum
+from datetime import timedelta, datetime
+import matplotlib.pyplot as plt
+import pause
 from python_package.logger import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
@@ -10,10 +13,6 @@ from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
 from python_package.plotter import plot
-from datetime import timedelta, datetime
-import matplotlib.pyplot as plt
-import pause
-import os
 from python_package.args import ARGS, Mode
 
 class OutMode(Enum):
@@ -21,17 +20,19 @@ class OutMode(Enum):
     VIRTUAL = 1
 
 
-def plotting(args: ARGS):
+def plotting(plot_args: ARGS):
+    """Function for plotting data"""
 
     directory = "experiment_data_results"
     if not os.path.exists(directory):
         os.makedirs(directory)
     
 
-    test_file = os.environ["dir"]
-    test_file = "_".join(str(test_file).split("\\")[2:])
-
-    fig, axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={'height_ratios': [1, 2]})
+    test_file = "bob"
+    
+    
+    #test_file = "hej"
+    axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={'height_ratios': [1, 2]})[1]
 
     plt.suptitle(f"File: {test_file}")
 
@@ -39,10 +40,10 @@ def plotting(args: ARGS):
     axs[0].set_ylabel("Rain mm")
     axs[0].legend()
 
-    plot(args.out, "blue", "Estimated height", 1, axs[1])
-    plot(args.data, "red", "Sensor height", 1, axs[1])
-    plot(args.data_control, "green", "Control, fixed orifice", 1, axs[1])
-    axs[1].set_ylim(0,900)
+    plot(plot_args.out, "blue", "Estimated height", 1, axs[1])
+    plot(plot_args.data, "red", "Sensor height", 1, axs[1])
+    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[1])
+    axs[1].set_ylim(0, 900)
     axs[1].set_ylabel("Water level cm")
     axs[1].set_xlabel("Time sec")
     axs[1].legend()
@@ -69,6 +70,7 @@ WATER_LEVEL_MAX = 850
 
 
 def handle_controler_exeption(exception: serial_exceptions.exceptions):
+    """Function for itteration over serial module exceptions"""
     match exception:
         case serial_exceptions.exceptions.NO_RESPONSE:
             LOGGER.log("No responce from device", level=LogLevel.ERROR)
@@ -98,7 +100,7 @@ if __name__ == "__main__":
         args = ARGS(START)
 
         # -- TRUNCATE OUTPUT
-        with open(args.out, "w") as f:
+        with open(args.out, "w", -1, "UTF-8") as f:
             f.truncate()
 
         # -- CONTROLER
@@ -145,6 +147,8 @@ if __name__ == "__main__":
             # STEP VIRTUAL POND
             pond_data = virtual_pond.generate_virtual_sensor_reading()
             virtual_pond.water_level = pond_data.height
+            if pond_data.overflow:
+                LOGGER.log("Pond is overflowing", LogLevel.ERROR)
 
             if out_mode is OutMode.SENSOR:
                 try:
@@ -168,7 +172,7 @@ if __name__ == "__main__":
                 out = virtual_pond.water_level
 
             # OUTPUT
-            with open(args.out, "a") as f:
+            with open(args.out, "a", -1, "UTF-8") as f:
                 f.write(f"{TIME.get_current_time.total_seconds()},{out}\n")
 
             # STEP TIME AND WAIT

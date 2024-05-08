@@ -12,6 +12,7 @@ class Time:
         self._start = start
 
     def step(self):
+        """step time"""
         self._current_time += self._delta
 
     @property
@@ -26,8 +27,10 @@ class Time:
 
     @property
     def get_current_datetime(self) -> datetime:
+        """returns the current timestamp"""
         return self._start + self._current_time
 
     @property
     def get_current_datetime_delta(self) -> datetime:
+        """Returns delta time"""
         return self._start + self._current_time + self._delta

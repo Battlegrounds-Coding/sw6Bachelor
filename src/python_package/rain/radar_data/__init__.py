@@ -20,7 +20,6 @@ class Radar(Rain):
         return self
 
     def get_rain_fall(self, area: Area, start_time: datetime, end_time: datetime) -> float:
-        # TODO: PETER?
         return 0.0
 
 
