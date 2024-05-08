@@ -15,7 +15,7 @@ from python_package.args import ARGS, Mode
 
 
 def plotting(args: ARGS):
-
+    
     fig, axs = plt.subplots(2, 1, figsize=(10, 5), gridspec_kw={'height_ratios': [1, 2]})
 
     plot(args.rain_file, "red", "Rain", 1, axs[0])
