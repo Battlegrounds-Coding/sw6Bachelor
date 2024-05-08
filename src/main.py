@@ -27,9 +27,10 @@ def plotting(plot_args: ARGS):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    test_file = os.environ["dir"]
-    test_file = "_".join(str(test_file).split("\\")[2:])
-
+    test_file = "bob"
+    
+    
+    #test_file = "hej"
     axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={'height_ratios': [1, 2]})[1]
 
     plt.suptitle(f"File: {test_file}")

@@ -131,7 +131,6 @@ class ARGS:
     def controler_cache(self):
         """Getter for controler cache
         if not defined, returns 'DEFAULT_CONTROLER_CACHE'"""
-        if self._controler_cache:
         try:
             return self._controler_cache
         except Exception as _:
