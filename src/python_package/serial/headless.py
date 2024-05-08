@@ -16,8 +16,7 @@ class Headless(serial.Serial):
         with open(file) as f:
             reader = csv.reader(f)
             self._buffer = [
-                (timedelta(seconds=int(float(sec))), bytes(f"Rvd:{int(float(reading))}", "utf-8"))
-                for sec, reading in reader
+                (timedelta(seconds=int(float(sec))), bytes(f"Rvd:{int(float(reading))}", "utf-8")) for sec, reading in reader
             ]
 
     @property

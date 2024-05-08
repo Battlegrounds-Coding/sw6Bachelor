@@ -5,7 +5,7 @@ Return Error or a class derived from it if function is a failure
 """
 
 from typing import Generic, TypeVar, Callable
-from ..log import Log, LogLevel, PrintLogger
+from ..logger import Log, LogLevel, PrintLogger
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -56,14 +56,9 @@ class Error(Result):
         """Returns the method"""
         return self.msg
 
-    def log(self) -> None:
+    def log(self, level: LogLevel) -> None:
         """Logs the method using the provided logger"""
-        self._logger.log(self.message())
-
-    def set_log_level(self, level: LogLevel):
-        """Sets the log level of the error"""
-        self._logger.level = level
-        return self
+        self._logger.log(self.message(), level)
 
 
 class ValveError(Error):

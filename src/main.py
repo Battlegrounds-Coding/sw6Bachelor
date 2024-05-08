@@ -1,6 +1,8 @@
 "THIS IS THE MAIN FILE"
 
-from python_package.log import LogLevel, PrintLogger
+import os
+from enum import Enum
+from python_package.logger import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
 from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
@@ -12,6 +14,10 @@ from datetime import timedelta, datetime
 import matplotlib.pyplot as plt
 import pause
 from python_package.args import ARGS, Mode
+
+class OutMode(Enum):
+    SENSOR = 0
+    VIRTUAL = 1
 
 
 def plotting(args: ARGS):
@@ -28,7 +34,12 @@ def plotting(args: ARGS):
     axs[1].set_ylabel("Water level cm")
     axs[1].set_xlabel("Time sec")
 
-    plt.ylabel("Water level cm")
+    plot(args.out, "blue", "Estimated height", 1, axs[1])
+    plot(args.data, "red", "Sensor height", 1, axs[1])
+    plot(args.data_control, "green", "Control, fixed orifice", 1, axs[1])
+    axs[1].set_ylim(0,900)
+    axs[1].set_ylabel("Water level cm")
+    axs[1].set_xlabel("Time sec")
 
     color_label_tuples = [
         ("blue", "Main filter"),
@@ -78,9 +89,11 @@ def handle_controler_exeption(exception: serial_exceptions.exceptions):
         case serial_exceptions.exceptions.NO_SENSOR_READINGS:
             LOGGER.log("No readings from the sensor in the physical setup", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.COMUNICATION_ERROR:
-            LOGGER.log("Failed to communicate with device", level=LogLevel.ERROR)
+            LOGGER.log("Data recieved from controller is outside specifications", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.CONVERSION_ERROR:
             LOGGER.log("Could not parse the data form sensor", level=LogLevel.ERROR)
+        case serial_exceptions.exceptions.SENSOR_READS_ZERO:
+            LOGGER.log("Distance is reading zero", level=LogLevel.ERROR)
 
 
 if __name__ == "__main__":
@@ -99,12 +112,12 @@ if __name__ == "__main__":
             f.truncate()
 
         # -- CONTROLER
+        os.makedirs(args.controler_cache, exist_ok=True)
+        controler = SerialCom(args.controler_cache)
         match args.mode:
             case Mode.SERIEL:
-                controler = SerialCom()
                 controler.begin()
             case Mode.HEADLESS:
-                controler = SerialCom()
                 controler.arduino = Headless(args.data, TIME)
 
         # -- CASHE
@@ -132,32 +145,41 @@ if __name__ == "__main__":
             faults=FAULTS, time=TIME, initial_state=700, initial_variance=10, noice=0.1, out_file=args.kalman
         )
 
+        avg_dist = 0
+        out = 0
+
+        out_mode = OutMode.SENSOR
+
         # LOOP
         while TIME.get_current_time.total_seconds() < args.time:
-
             # STEP VIRTUAL POND
             pond_data = virtual_pond.generate_virtual_sensor_reading()
             virtual_pond.water_level = pond_data.height
 
-            try:
-                # READ SENSOR
-                avg_dist, invariance = controler.read_sensor()
+            if out_mode is OutMode.SENSOR:
+                try:
+                    # READ SENSOR
+                    avg_dist, invariance = controler.read_sensor()
+                    out = avg_dist
 
-                # STEP FILTERS
-                kalman_bank.step_filters(
-                    PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
-                    MeasurementData(avg_dist, invariance),
-                )
+                    # STEP FILTERS
+                    kalman_bank.step_filters(
+                        PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
+                        MeasurementData(avg_dist, invariance),
+                    )
+                except serial_exceptions.exceptions as e:
+                    out_mode = OutMode.VIRTUAL
+                    handle_controler_exeption(e)
+                except Exception as e:
+                    out_mode = OutMode.VIRTUAL
+                    print(e)
 
-            except serial_exceptions.exceptions as e:
-                handle_controler_exeption(e)
-
-            except Exception as e:
-                print(e)
+            if out_mode is OutMode.VIRTUAL:
+                out = virtual_pond.water_level
 
             # OUTPUT
             with open(args.out, "a") as f:
-                f.write(f"{TIME.get_current_time.total_seconds()},{virtual_pond.water_level}\n")
+                f.write(f"{TIME.get_current_time.total_seconds()},{out}\n")
 
             # STEP TIME AND WAIT
             TIME.step()
@@ -165,6 +187,7 @@ if __name__ == "__main__":
                 pause.until(START + TIME.get_current_time)
     except Exception as e:
         print(e)
+        LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e
     plotting(args)
