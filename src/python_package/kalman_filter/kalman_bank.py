@@ -1,9 +1,9 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
 from typing import List
-from .fault import Fault
 from .kalman import Kalman, MeasurementData, PondState
 from ..time import Time
 from enum import Enum
+from .fault import Fault
 
 
 class KalmanError(Exception, Enum):
@@ -24,7 +24,7 @@ class KalmanBank:
         noice: float,
         out_file: str,
     ):
-        self.faults = []
+        self.faults: List[Fault] = []
         self.initial_state = initial_state
         self.kalman_bank: List[Kalman] = [Kalman(initial_state, initial_variance, time, noice)]
         self.initial_variance = initial_variance
@@ -83,7 +83,8 @@ class KalmanBank:
                 k.step(pond_state, self.faults[i - 1].get_fault(measured_data))
         self._write_to_csv(measured_data, predict_before_step)
 
-        if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
+        #error reporting
+        """ if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
             filter_report_string = "Waterlevel threshold exceeded in filters: \n"
             for i, f in enumerate(faulty_filters):
                 filter_report_string += f.print_kalman_filter() + " Expected filter to be: " + failed_faults[i] + "\n"
@@ -99,7 +100,7 @@ class KalmanBank:
                 + str(measured_data.height())
                 + "\n"
                 + filter_report_string
-            )
+            ) """
 
     def analyze_filters(
         self, measured_data: MeasurementData, faulty_filters: List[Kalman], failed_faults: List[str]

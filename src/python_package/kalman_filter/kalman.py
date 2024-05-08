@@ -37,28 +37,28 @@ class MeasurementData:
     def __add__(self, other: float | tuple[float, float]) -> "MeasurementData":
         if other is tuple[float, float]:
             return MeasurementData(self.height() + other[0], self.variance_height() + other[1])
-        if other is float:
+        if isinstance(other, float):
             return MeasurementData(self.height() + other, self.variance_height())
         return self
 
     def __sub__(self, other: float | tuple[float, float]) -> "MeasurementData":
         if other is tuple[float, float]:
             return MeasurementData(self.height() - other[0], self.variance_height() - other[1])
-        if other is float:
+        if isinstance(other, float):
             return MeasurementData(self.height() - other, self.variance_height())
         return self
 
     def __mul__(self, other: float | tuple[float, float]) -> "MeasurementData":
         if other is tuple[float, float]:
             return MeasurementData(self.height() - other[0], self.variance_height() - other[1])
-        if other is float:
+        if isinstance(other, float):
             return MeasurementData(self.height() - other, self.variance_height())
         return self
 
     def __div__(self, other: float | tuple[float, float]) -> "MeasurementData":
         if other is tuple[float, float]:
             return MeasurementData(self.height() / other[0], self.variance_height() / other[1])
-        if other is float:
+        if isinstance(other, float):
             return MeasurementData(self.height() / other, self.variance_height())
         return self
 

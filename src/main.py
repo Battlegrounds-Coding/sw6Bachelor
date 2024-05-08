@@ -9,7 +9,7 @@ from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
 from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
-from python_package.plotter import plot, plot_kalman_filters
+from python_package.plotter import plot, plot_kalman_filters_delta, plot_kalman_filters_state_measured
 from datetime import timedelta, datetime
 import matplotlib.pyplot as plt
 import pause
@@ -28,7 +28,7 @@ def plotting(args: ARGS):
     test_file = os.environ["dir"]
     test_file = "_".join(str(test_file).split("\\")[2:])
 
-    fig, axs = plt.subplots(2, 1, figsize=(10, 5), gridspec_kw={'height_ratios': [1, 2]})
+    fig, axs = plt.subplots(4, 1, figsize=(10, 5), gridspec_kw={'height_ratios': [1, 1, 2, 2]})
 
     plot(args.rain_file, "red", "Rain", 1, axs[0])
     axs[0].set_ylabel("Rain mm")
@@ -54,9 +54,9 @@ def plotting(args: ARGS):
         ("green", "10 Percent over"),
         ("purple", "10 percent under"),
     ]
-    plot_kalman_filters(args.kalman, color_label_tuples, 1, axs[2])
+    plot_kalman_filters_delta(args.kalman, color_label_tuples, 1, axs[2])
+    plot_kalman_filters_state_measured(args.kalman, color_label_tuples, 1, axs[3])
 
-    plt.ylabel("Delta to predicted")
 
     plt.xlabel("Time sec")
 
@@ -72,8 +72,8 @@ def plotting(args: ARGS):
 
 LOGGER = PrintLogger()
 FAULTS = [
-    Fault(lambda x: x + 10, "higher"),
-    Fault(lambda x: x - 10, "lower"),
+    Fault(lambda x: x + 10.0, "higher"),
+    Fault(lambda x: x - 10.0, "lower"),
     Fault(lambda x: x * 1.1, "higher"),
     Fault(lambda x: x * 0.9, "lower"),
 ]
