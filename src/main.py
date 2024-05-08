@@ -1,5 +1,8 @@
 "THIS IS THE MAIN FILE"
 
+from datetime import timedelta, datetime
+import matplotlib.pyplot as plt
+import pause
 from python_package.logger import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
@@ -8,23 +11,20 @@ from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
 from python_package.plotter import plot
-from datetime import timedelta, datetime
-import matplotlib.pyplot as plt
-import pause
 from python_package.args import ARGS, Mode
 
 
-def plotting(args: ARGS):
-    
-    fig, axs = plt.subplots(2, 1, figsize=(10, 5), gridspec_kw={'height_ratios': [1, 2]})
+def plotting(plot_args: ARGS):
+    """Function for plotting data"""
+    axs = plt.subplots(2, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 2]})[1]
 
-    plot(args.rain_file, "red", "Rain", 1, axs[0])
+    plot(plot_args.rain_file, "red", "Rain", 1, axs[0])
     axs[0].set_ylabel("Rain mm")
 
-    plot(args.out, "blue", "Estimated height", 1, axs[1])
-    plot(args.data, "red", "Sensor height", 1, axs[1])
-    plot(args.data_control, "green", "Control, fixed orifice", 1, axs[1])
-    axs[1].set_ylim(0,900)
+    plot(plot_args.out, "blue", "Estimated height", 1, axs[1])
+    plot(plot_args.data, "red", "Sensor height", 1, axs[1])
+    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[1])
+    axs[1].set_ylim(0, 900)
     axs[1].set_ylabel("Water level cm")
     axs[1].set_xlabel("Time sec")
 
@@ -41,8 +41,8 @@ FAULTS = [
     Fault(lambda _: MeasurementData(0, 0), "lower"),
 ]
 
-# -- POND DATA 
-URBAN_CATCHMENT_AREA = 1.85 
+# -- POND DATA
+URBAN_CATCHMENT_AREA = 1.85
 SURFACE_REACTION_FACTOR = 0.25
 DISCHARGE_COEFICENT = 0.6
 POND_AREA = 5572
@@ -51,6 +51,7 @@ WATER_LEVEL_MAX = 850
 
 
 def handle_controler_exeption(exception: serial_exceptions.exceptions):
+    """Function for itteration over serial module exceptions"""
     match exception:
         case serial_exceptions.exceptions.NO_RESPONSE:
             LOGGER.log("No responce from device", level=LogLevel.ERROR)
@@ -80,7 +81,7 @@ if __name__ == "__main__":
         args = ARGS(START)
 
         # -- TRUNCATE OUTPUT
-        with open(args.out, "w") as f:
+        with open(args.out, "w", -1, "UTF-8") as f:
             f.truncate()
 
         # -- CONTROLER
@@ -123,6 +124,8 @@ if __name__ == "__main__":
             # STEP VIRTUAL POND
             pond_data = virtual_pond.generate_virtual_sensor_reading()
             virtual_pond.water_level = pond_data.height
+            if pond_data.overflow:
+                LOGGER.log("Pond is overflowing", LogLevel.ERROR)
 
             try:
                 # READ SENSOR
@@ -135,13 +138,13 @@ if __name__ == "__main__":
                 )
 
             except serial_exceptions.exceptions as e:
-                    handle_controler_exeption(e)
-            
+                handle_controler_exeption(e)
+
             except Exception as e:
                 print(e)
 
             # OUTPUT
-            with open(args.out, "a") as f:
+            with open(args.out, "a", -1, "UTF-8") as f:
                 f.write(f"{TIME.get_current_time.total_seconds()},{virtual_pond.water_level}\n")
 
             # STEP TIME AND WAIT
