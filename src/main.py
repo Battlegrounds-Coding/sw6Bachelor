@@ -61,9 +61,11 @@ def handle_controler_exeption(exception: serial_exceptions.exceptions):
         case serial_exceptions.exceptions.NO_SENSOR_READINGS:
             LOGGER.log("No readings from the sensor in the physical setup", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.COMUNICATION_ERROR:
-            LOGGER.log("Failed to communicate with device", level=LogLevel.ERROR)
+            LOGGER.log("Data recieved from controller is outside specifications", level=LogLevel.ERROR)
         case serial_exceptions.exceptions.CONVERSION_ERROR:
             LOGGER.log("Could not parse the data form sensor", level=LogLevel.ERROR)
+        case serial_exceptions.exceptions.SENSOR_READS_ZERO:
+            LOGGER.log("Distance is reading zero", level=LogLevel.ERROR)
 
 
 if __name__ == "__main__":
@@ -148,6 +150,7 @@ if __name__ == "__main__":
                 pause.until(START + TIME.get_current_time)
     except Exception as e:
         print(e)
+        LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e
     plotting(args)

@@ -86,7 +86,8 @@ class SerialCom:
                 serial_exceptions.exceptions.NO_SENSOR_READINGS,
                 f"Non-positive values in avg-dist:{avg_distance} and invariance:{invariance}",
             )
-        # TODO: check max distance based on setup
+        if avg_distance == 0:
+            self.log_error(serial_exceptions.exceptions.SENSOR_READS_ZERO, "The distance sensor reads zero")
         if avg_distance < 30 or avg_distance > 9998:
             self.log_error(
                 serial_exceptions.exceptions.COMUNICATION_ERROR, f"Distance out of bounds for sensor: {avg_distance}"

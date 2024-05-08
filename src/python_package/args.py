@@ -14,6 +14,7 @@ DEFAULT_OUT = f"{tempfile.gettempdir()}/out.csv"
 DEFAULT_KALMAN = f"{tempfile.gettempdir()}/kalman.csv"
 
 HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
+HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-r  | --rain]=/path/to/file             -- Location of the file that contains the raindata at a specific time
     [-cr | --constant-rain]=number           -- Specify a constant amount of rain in mm
                                                 (default={DEFAULT_RAIN})

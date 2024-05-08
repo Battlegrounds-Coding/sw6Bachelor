@@ -1,4 +1,5 @@
 """Create log files from cache data"""
+
 from abc import abstractmethod
 from datetime import datetime
 from typing import Any, List, Self
@@ -10,6 +11,7 @@ DATE_STRING_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 class CacheData:
     """CacheData instance"""
+
     def __init__(self, id: int, time: datetime, data_list: List[Any]):
         self.data_list = data_list
         self.time = time
