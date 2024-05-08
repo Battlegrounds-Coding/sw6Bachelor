@@ -1,7 +1,8 @@
 "THIS IS THE MAIN FILE"
 
+import os
 from enum import Enum
-from python_package.log import LogLevel, PrintLogger
+from python_package.logger import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
 from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
@@ -20,7 +21,6 @@ class OutMode(Enum):
 
 
 def plotting(args: ARGS):
-    
     fig, axs = plt.subplots(2, 1, figsize=(10, 5), gridspec_kw={'height_ratios': [1, 2]})
 
     plot(args.rain_file, "red", "Rain", 1, axs[0])
@@ -46,8 +46,8 @@ FAULTS = [
     Fault(lambda _: MeasurementData(0, 0), "lower"),
 ]
 
-# -- POND DATA 
-URBAN_CATCHMENT_AREA = 1.85 
+# -- POND DATA
+URBAN_CATCHMENT_AREA = 1.85
 SURFACE_REACTION_FACTOR = 0.25
 DISCHARGE_COEFICENT = 0.6
 POND_AREA = 5572
@@ -89,12 +89,12 @@ if __name__ == "__main__":
             f.truncate()
 
         # -- CONTROLER
+        os.makedirs(args.controler_cache, exist_ok=True)
+        controler = SerialCom(args.controler_cache)
         match args.mode:
             case Mode.SERIEL:
-                controler = SerialCom()
                 controler.begin()
             case Mode.HEADLESS:
-                controler = SerialCom()
                 controler.arduino = Headless(args.data, TIME)
 
         # -- CASHE
@@ -123,6 +123,7 @@ if __name__ == "__main__":
         )
 
         avg_dist = 0
+        out = 0
 
         out_mode = OutMode.SENSOR
 
@@ -132,25 +133,25 @@ if __name__ == "__main__":
             pond_data = virtual_pond.generate_virtual_sensor_reading()
             virtual_pond.water_level = pond_data.height
 
-            try:
-                # READ SENSOR
-                avg_dist, invariance = controler.read_sensor()
-
-                # STEP FILTERS
-                kalman_bank.step_filters(
-                    PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
-                    MeasurementData(avg_dist, invariance),
-                )
-            except serial_exceptions.exceptions as e:
-                out_mode = OutMode.VIRTUAL
-                handle_controler_exeption(e)
-            except Exception as e:
-                out_mode = OutMode.VIRTUAL
-                print(e)
-
             if out_mode is OutMode.SENSOR:
-                out = avg_dist
-            else:
+                try:
+                    # READ SENSOR
+                    avg_dist, invariance = controler.read_sensor()
+                    out = avg_dist
+
+                    # STEP FILTERS
+                    kalman_bank.step_filters(
+                        PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
+                        MeasurementData(avg_dist, invariance),
+                    )
+                except serial_exceptions.exceptions as e:
+                    out_mode = OutMode.VIRTUAL
+                    handle_controler_exeption(e)
+                except Exception as e:
+                    out_mode = OutMode.VIRTUAL
+                    print(e)
+
+            if out_mode is OutMode.VIRTUAL:
                 out = virtual_pond.water_level
 
             # OUTPUT
