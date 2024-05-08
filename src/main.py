@@ -1,6 +1,7 @@
 "THIS IS THE MAIN FILE"
 
-from python_package.logger import LogLevel, PrintLogger
+from enum import Enum
+from python_package.log import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
 from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
@@ -12,6 +13,10 @@ from datetime import timedelta, datetime
 import matplotlib.pyplot as plt
 import pause
 from python_package.args import ARGS, Mode
+
+class OutMode(Enum):
+    SENSOR = 0
+    VIRTUAL = 1
 
 
 def plotting(args: ARGS):
@@ -117,9 +122,12 @@ if __name__ == "__main__":
             faults=FAULTS, time=TIME, initial_state=100, initial_variance=10, noice=0.1, out_file=args.kalman
         )
 
+        avg_dist = 0
+
+        out_mode = OutMode.SENSOR
+
         # LOOP
         while TIME.get_current_time.total_seconds() < args.time:
-
             # STEP VIRTUAL POND
             pond_data = virtual_pond.generate_virtual_sensor_reading()
             virtual_pond.water_level = pond_data.height
@@ -133,16 +141,21 @@ if __name__ == "__main__":
                     PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
                     MeasurementData(avg_dist, invariance),
                 )
-
             except serial_exceptions.exceptions as e:
-                    handle_controler_exeption(e)
-            
+                out_mode = OutMode.VIRTUAL
+                handle_controler_exeption(e)
             except Exception as e:
+                out_mode = OutMode.VIRTUAL
                 print(e)
+
+            if out_mode is OutMode.SENSOR:
+                out = avg_dist
+            else:
+                out = virtual_pond.water_level
 
             # OUTPUT
             with open(args.out, "a") as f:
-                f.write(f"{TIME.get_current_time.total_seconds()},{virtual_pond.water_level}\n")
+                f.write(f"{TIME.get_current_time.total_seconds()},{out}\n")
 
             # STEP TIME AND WAIT
             TIME.step()
