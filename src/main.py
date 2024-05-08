@@ -14,7 +14,6 @@ from datetime import timedelta, datetime
 import matplotlib.pyplot as plt
 import pause
 import os
-import sys
 from pathlib import Path
 from python_package.args import ARGS, Mode
 
