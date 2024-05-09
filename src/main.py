@@ -15,7 +15,9 @@ from python_package.virtual_pond import VirtualPond
 from python_package.plotter import plot
 from python_package.args import ARGS, Mode
 
+
 class OutMode(Enum):
+    """Enum for defining Sensor or virtual height value"""
     SENSOR = 0
     VIRTUAL = 1
 
@@ -26,13 +28,11 @@ def plotting(plot_args: ARGS):
     directory = "experiment_data_results"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    
 
     test_file = "bob"
-    
-    
-    #test_file = "hej"
-    axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={'height_ratios': [1, 2]})[1]
+
+    # test_file = "hej"
+    axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={"height_ratios": [1, 2]})[1]
 
     plt.suptitle(f"File: {test_file}")
 
@@ -48,7 +48,7 @@ def plotting(plot_args: ARGS):
     axs[1].set_xlabel("Time sec")
     axs[1].legend()
 
-    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches='tight')
+    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches="tight")
     plt.show()
 
 
@@ -137,8 +137,8 @@ if __name__ == "__main__":
             faults=FAULTS, time=TIME, initial_state=100, initial_variance=10, noice=0.1, out_file=args.kalman
         )
 
-        avg_dist = 0
-        out = 0
+        AVG_DIST = 0
+        OUT = 0
 
         out_mode = OutMode.SENSOR
 
@@ -153,13 +153,13 @@ if __name__ == "__main__":
             if out_mode is OutMode.SENSOR:
                 try:
                     # READ SENSOR
-                    avg_dist, invariance = controler.read_sensor()
-                    out = avg_dist
+                    AVG_DIST, invariance = controler.read_sensor()
+                    OUT = AVG_DIST
 
                     # STEP FILTERS
                     kalman_bank.step_filters(
                         PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
-                        MeasurementData(avg_dist, invariance),
+                        MeasurementData(AVG_DIST, invariance),
                     )
                 except serial_exceptions.exceptions as e:
                     out_mode = OutMode.VIRTUAL
@@ -169,11 +169,11 @@ if __name__ == "__main__":
                     print(e)
 
             if out_mode is OutMode.VIRTUAL:
-                out = virtual_pond.water_level
+                OUT = virtual_pond.water_level
 
             # OUTPUT
             with open(args.out, "a", -1, "UTF-8") as f:
-                f.write(f"{TIME.get_current_time.total_seconds()},{out}\n")
+                f.write(f"{TIME.get_current_time.total_seconds()},{OUT}\n")
 
             # STEP TIME AND WAIT
             TIME.step()
