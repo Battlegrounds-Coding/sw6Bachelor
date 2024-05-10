@@ -2,11 +2,13 @@
 
 # Importing Libraries
 from datetime import datetime
+import os
 import re
 import time
 import serial
 from python_package.serial.serial_exceptions import serial_exceptions
 from python_package.cash.cash import FileCache, CacheData
+from python_package.args import ARGS as args
 
 BAUDRATE = 9600
 COM = "COM3"  # <-----
@@ -15,9 +17,11 @@ COM = "COM3"  # <-----
 class SerialCom:
     """Serial comunication class"""
 
-    def __init__(self, log_folder: str, port=COM, debug=False) -> None:
+    def __init__(self, log_folder: str= str(args.controler_cache), port=COM, debug=False) -> None:
         self.debug = debug
         self.port = port
+        if(log_folder == "def"):
+            os.path.join(os.getcwd(), "")
         self.arduino = serial.Serial()
         self.log_folder = log_folder
 
