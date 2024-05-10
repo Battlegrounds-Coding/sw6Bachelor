@@ -82,7 +82,7 @@ class ARGS:
                         self._out = value
                     case "-k" | "--kalman-bank":
                         self._kalman = value
-        except Exception as e:
+        except ValueError as e:
             print(e)
             print("\n" + HELP)
             sys.exit(1)
@@ -107,7 +107,7 @@ class ARGS:
         if self._strategy_file:
             return self._strategy_file
 
-        raise Exception("No strategy file given")
+        raise ValueError("No strategy file given")
 
     @property
     def data(self):
@@ -116,7 +116,7 @@ class ARGS:
         if self._data:
             return self._data
 
-        raise Exception("No datafile given")
+        raise ValueError("No datafile given")
 
     @property
     def filter_cache(self):
@@ -133,7 +133,7 @@ class ARGS:
         if not defined, returns 'DEFAULT_CONTROLER_CACHE'"""
         try:
             return self._controler_cache
-        except Exception as _:
+        except NameError as _:
             return DEFAULT_CONTROLER_CACHE
 
     @property
@@ -163,7 +163,7 @@ class ARGS:
         """Getter for out"""
         try:
             return self._out
-        except Exception as _:
+        except NameError as _:
             return DEFAULT_OUT
 
     @property
@@ -171,7 +171,7 @@ class ARGS:
         """Getter for kalmantfilter"""
         try:
             return self._kalman
-        except Exception as _:
+        except NameError as _:
             return DEFAULT_KALMAN
 
 

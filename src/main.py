@@ -18,6 +18,7 @@ from python_package.args import ARGS, Mode
 
 class OutMode(Enum):
     """Enum for defining Sensor or virtual height value"""
+
     SENSOR = 0
     VIRTUAL = 1
 
