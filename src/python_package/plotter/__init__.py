@@ -133,12 +133,13 @@ def plotting(plot_args: ARGS):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    axs = plt.subplots(2, 2, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1]})[1]
+    axs = plt.subplots(2, 2, figsize=(30, 10), gridspec_kw={"height_ratios": [1, 1]})[1]
 
     plt.suptitle(f"{plot_args.name}")
 
     plot(plot_args.rain_file, "red", "Rain", 1, axs[0, 0])
     axs[0, 0].set_ylabel("Rain mm")
+    axs[0, 0].set_xlabel("Time sec")
     axs[0, 0].legend()
 
     plot(plot_args.out, "blue", "Estimated height", 1, axs[0, 1])
@@ -152,13 +153,18 @@ def plotting(plot_args: ARGS):
     color_label_tuples = [
         ("blue", "Main filter"),
         ("red", "Constant offset 10"),
-        ("yellow", "Constant offset -10"),
+        ("black", "Constant offset -10"),
         ("green", "10 Percent over"),
         ("purple", "10 percent under"),
     ]
     plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[1, 0])
-    plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
+    axs[1, 0].set_ylabel("Kalman predicted measured delta")
+    axs[1, 0].set_xlabel("Time sec")
     axs[1, 0].legend()
+
+    plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
+    axs[1, 1].set_ylabel("Kalman state")
+    axs[1, 1].set_xlabel("Time sec")
     axs[1, 1].legend()
 
     if plot_args.out_image is not None:
