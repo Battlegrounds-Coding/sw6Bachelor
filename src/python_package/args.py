@@ -107,7 +107,7 @@ class ARGS:
         if self._strategy_file:
             return self._strategy_file
 
-        raise ValueError("No strategy file given")
+        raise AttributeError("No strategy file given")
 
     @property
     def data(self):
@@ -116,7 +116,7 @@ class ARGS:
         if self._data:
             return self._data
 
-        raise ValueError("No datafile given")
+        raise AttributeError("No datafile given")
 
     @property
     def filter_cache(self):
@@ -133,7 +133,7 @@ class ARGS:
         if not defined, returns 'DEFAULT_CONTROLER_CACHE'"""
         try:
             return self._controler_cache
-        except NameError as _:
+        except AttributeError:
             return DEFAULT_CONTROLER_CACHE
 
     @property
@@ -163,7 +163,7 @@ class ARGS:
         """Getter for out"""
         try:
             return self._out
-        except NameError as _:
+        except AttributeError:
             return DEFAULT_OUT
 
     @property
@@ -171,7 +171,7 @@ class ARGS:
         """Getter for kalmantfilter"""
         try:
             return self._kalman
-        except NameError as _:
+        except AttributeError:
             return DEFAULT_KALMAN
 
 

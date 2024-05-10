@@ -173,7 +173,7 @@ if __name__ == "__main__":
             pond_data = virtual_pond.generate_virtual_sensor_reading()
             virtual_pond.water_level = pond_data.height
             if pond_data.overflow:
-                LOGGER.log("Pond is overflowing", LogLevel.ERROR)
+                LOGGER.log("Pond is overflowing", LogLevel.WARNING)
 
             if out_mode is OutMode.SENSOR:
                 try:
