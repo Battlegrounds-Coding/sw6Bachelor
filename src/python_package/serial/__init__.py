@@ -17,10 +17,10 @@ COM = "COM3"  # <-----
 class SerialCom:
     """Serial comunication class"""
 
-    def __init__(self, log_folder: str= str(args.controler_cache), port=COM, debug=False) -> None:
+    def __init__(self, log_folder: str = str(args.controler_cache), port=COM, debug=False) -> None:
         self.debug = debug
         self.port = port
-        if(log_folder == "def"):
+        if log_folder == "def":
             os.path.join(os.getcwd(), "")
         self.arduino = serial.Serial()
         self.log_folder = log_folder
