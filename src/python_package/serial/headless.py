@@ -4,6 +4,7 @@ from datetime import timedelta
 import csv
 from python_package.time import Time
 from . import serial
+import copy
 
 
 class Headless(serial.Serial):  # pylint: disable=R0901
@@ -46,10 +47,18 @@ class Headless(serial.Serial):  # pylint: disable=R0901
             for i, (time, _) in enumerate(self._buffer):
                 if time <= self._time.get_current_time:
                     self._in_waiting = (i + 1) * 2
+                    self._last_fill = copy.deepcopy(self._time.get_current_time)
                     break
+            try:
+                if self._last_fill == self._time.get_current_time:
+                    return 0
+                else:
+                    self._read_before = True
+                    self._in_waiting = 2
+            except NameError:
+                pass
         else:
             self._in_waiting -= 1
-        print(self._in_waiting)
         return self._in_waiting
 
     def read_until(self, expected: bytes = b"\n", size: int | None = None) -> bytes:
