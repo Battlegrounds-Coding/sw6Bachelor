@@ -2,9 +2,9 @@
 
 from datetime import timedelta
 import csv
+import copy
 from python_package.time import Time
 from . import serial
-import copy
 
 
 class Headless(serial.Serial):  # pylint: disable=R0901
@@ -20,6 +20,7 @@ class Headless(serial.Serial):  # pylint: disable=R0901
         self._before = b"Rvd:30"
         self._rtn_none = False
         self._in_waiting = 0
+        self._last_fill = timedelta(seconds=-1)
         super(serial.Serial, self).__init__()
         with open(file, "r", -1, "UTF-8") as f:
             reader = csv.reader(f)
@@ -52,9 +53,9 @@ class Headless(serial.Serial):  # pylint: disable=R0901
             try:
                 if self._last_fill == self._time.get_current_time:
                     return 0
-                else:
-                    self._read_before = True
-                    self._in_waiting = 2
+
+                self._read_before = True
+                self._in_waiting = 2
             except NameError:
                 pass
         else:
