@@ -176,6 +176,7 @@ class ARGS:
 
     @property
     def out_image(self) -> str | None:
+        """Output path for plot png"""
         print(self._out_image)
         try:
             return self._out_image

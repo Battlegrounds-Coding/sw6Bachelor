@@ -2,8 +2,8 @@
 
 import csv
 import os
-from ..args import ARGS
 from matplotlib import pyplot as plt
+from ..args import ARGS
 
 
 def read_csv(file: str) -> list:
