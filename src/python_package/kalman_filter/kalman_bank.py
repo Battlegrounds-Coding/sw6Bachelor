@@ -1,8 +1,8 @@
 "THIS FILE CONTAINS A BANK OF KALMAN FILTERS"
 from typing import List
+from enum import Enum
 from .kalman import Kalman, MeasurementData, PondState
 from ..time import Time
-from enum import Enum
 from .fault import Fault
 
 DEBUG_MODE = False
