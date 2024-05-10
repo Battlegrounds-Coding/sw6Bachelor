@@ -44,7 +44,7 @@ class SerialCom:
         string = string.removesuffix("\r")
         if string.find("Error") != -1:
             print("Controller error " + string)
-            enum_val = serial_exceptions.Exception_enum(self.string_to_int(string)).name
+            enum_val = serial_exceptions.ExceptionEnum(self.string_to_int(string)).name
             self.log_error(
                 serial_exceptions.Exceptions[enum_val],
                 f"Controller error raised: {serial_exceptions.Exceptions[enum_val]}",

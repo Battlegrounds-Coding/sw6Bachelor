@@ -23,7 +23,7 @@ class Exceptions(Exception, Enum):
     NO_SENSOR_READINGS = 3
 
 
-class Exception_enum(Enum):
+class ExceptionEnum(Enum):
     """Enum over serial communication errors"""
 
     NO_RESPONSE = 0
