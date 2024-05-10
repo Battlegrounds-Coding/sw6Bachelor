@@ -133,23 +133,22 @@ def plotting(plot_args: ARGS):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    axs = plt.subplots(4, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1, 2, 2]})[1]
+    axs = plt.subplots(2, 2, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1]})[1]
 
     plt.suptitle(f"{plot_args.name}")
 
-    plot(plot_args.rain_file, "red", "Rain", 1, axs[0])
-    axs[0].set_ylabel("Rain mm")
-    axs[0].legend()
+    plot(plot_args.rain_file, "red", "Rain", 1, axs[0, 0])
+    axs[0, 0].set_ylabel("Rain mm")
+    axs[0, 0].legend()
 
-    plot(plot_args.out, "blue", "Estimated height", 1, axs[1])
-    plot(plot_args.data, "red", "Sensor height", 1, axs[1])
-    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[1])
-    axs[1].set_ylim(0, 900)
-    axs[1].set_ylabel("Water level cm")
-    axs[1].set_xlabel("Time sec")
-    axs[1].legend()
-    
-    
+    plot(plot_args.out, "blue", "Estimated height", 1, axs[0, 1])
+    plot(plot_args.data, "red", "Sensor height", 1, axs[0, 1])
+    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[0, 1])
+    axs[0, 1].set_ylim(0, 900)
+    axs[0, 1].set_ylabel("Water level cm")
+    axs[0, 1].set_xlabel("Time sec")
+    axs[0, 1].legend()
+
     color_label_tuples = [
         ("blue", "Main filter"),
         ("red", "Constant offset 10"),
@@ -157,13 +156,12 @@ def plotting(plot_args: ARGS):
         ("green", "10 Percent over"),
         ("purple", "10 percent under"),
     ]
-    plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[2])
-    plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[3])
-    axs[2].legend()
-    axs[3].legend()
+    plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[1, 0])
+    plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
+    axs[1, 0].legend()
+    axs[1, 1].legend()
 
     if plot_args.out_image is not None:
         print(plot_args.out_image)
         plt.savefig(plot_args.out_image, bbox_inches="tight")
     plt.show()
-    

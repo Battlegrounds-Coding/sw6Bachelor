@@ -202,5 +202,6 @@ class ARGS:
 
 class Mode(Enum):
     """Enum for defining rather to get data from virtual pond or the physical pond"""
+
     SERIEL = 0
     HEADLESS = 1
