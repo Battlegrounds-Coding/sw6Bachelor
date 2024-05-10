@@ -159,12 +159,12 @@ def plotting(plot_args: ARGS):
     ]
     plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[1, 0])
     axs[1, 0].set_ylabel("Kalman predicted measured delta")
-    axs[1, 0].set_xlabel("Time sec")
+    axs[1, 0].set_xlabel("10 Seconds intervals")
     axs[1, 0].legend()
 
     plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
     axs[1, 1].set_ylabel("Kalman state")
-    axs[1, 1].set_xlabel("Time sec")
+    axs[1, 1].set_xlabel("10 seconds intervals")
     axs[1, 1].legend()
 
     if plot_args.out_image is not None:

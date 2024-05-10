@@ -24,8 +24,8 @@ class OutMode(Enum):
 
 LOGGER = PrintLogger()
 FAULTS = [
-    Fault(lambda x: x + 300.0, "higher"),
-    Fault(lambda x: x - 300.0, "lower"),
+    Fault(lambda x: x + 50.0, "higher"),
+    Fault(lambda x: x - 50.0, "lower"),
     Fault(lambda x: x * 1.2, "higher"),
     Fault(lambda x: x * 0.80, "lower"),
 ]

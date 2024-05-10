@@ -84,9 +84,8 @@ class KalmanBank:
             else:
                 k.step(pond_state, self.faults[i - 1].get_fault(measured_data))
         self._write_to_csv(measured_data, predict_before_step)
-
         # error reporting
-        if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
+        if not fault_detection and not predict_before_step[0] == 700:
             if DEBUG_MODE:
                 filter_report_string = "Waterlevel threshold exceeded in filters: \n"
                 for i, f in enumerate(faulty_filters):
@@ -119,12 +118,12 @@ class KalmanBank:
         "Analyses filters in the KalmanBank. If measured_data goes past thresholds returns false, else return true"
         free_of_faults = True
         for i, k in enumerate(self.kalman_bank):
-            if self.faults[i - 1].get_classification == "higher" and not k == self.kalman_bank[0]:
+            if self.faults[i - 1].get_classification == "higher" and not i == 0:
                 if k.get_predicted_state < measured_data.height():
                     faulty_filters.append(k)
                     free_of_faults = False
                     failed_faults.append(self.faults[i - 1].get_classification)
-            if self.faults[i - 1].get_classification == "lower" and not k == self.kalman_bank[0]:
+            if self.faults[i - 1].get_classification == "lower" and not i == 0:
                 if k.get_predicted_state > measured_data.height():
                     faulty_filters.append(k)
                     free_of_faults = False
