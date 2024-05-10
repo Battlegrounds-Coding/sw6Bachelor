@@ -22,7 +22,6 @@ from pathlib import Path
 from python_package.args import ARGS, Mode
 
 
-
 class OutMode(Enum):
     """Enum for defining Sensor or virtual height value"""
 
@@ -40,7 +39,7 @@ def plotting(plot_args: ARGS):
     test_file = "bob"
 
     # test_file = "hej"
-    axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={"height_ratios": [1, 2]})[1]
+    axs = plt.subplots(4, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1, 2, 2]})[1]
 
     plt.suptitle(f"File: {test_file}")
 
@@ -61,6 +60,7 @@ def plotting(plot_args: ARGS):
     axs[1].set_ylim(0, 900)
     axs[1].set_ylabel("Water level cm")
     axs[1].set_xlabel("Time sec")
+    axs[1].legend()
 
     color_label_tuples = [
         ("blue", "Main filter"),
@@ -71,14 +71,8 @@ def plotting(plot_args: ARGS):
     ]
     plot_kalman_filters_delta(args.kalman, color_label_tuples, 1, axs[2])
     plot_kalman_filters_state_measured(args.kalman, color_label_tuples, 1, axs[3])
-
-    plt.xlabel("Time sec")
-
-    axs[0].legend()
-    axs[1].legend()
     axs[2].legend()
 
-    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches="tight")
     plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches="tight")
     plt.show()
 
