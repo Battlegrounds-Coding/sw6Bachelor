@@ -133,7 +133,7 @@ def plotting(plot_args: ARGS):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={"height_ratios": [1, 2]})[1]
+    axs = plt.subplots(4, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1, 2, 2]})[1]
 
     plt.suptitle(f"{plot_args.name}")
 
@@ -148,8 +148,22 @@ def plotting(plot_args: ARGS):
     axs[1].set_ylabel("Water level cm")
     axs[1].set_xlabel("Time sec")
     axs[1].legend()
+    
+    
+    color_label_tuples = [
+        ("blue", "Main filter"),
+        ("red", "Constant offset 10"),
+        ("yellow", "Constant offset -10"),
+        ("green", "10 Percent over"),
+        ("purple", "10 percent under"),
+    ]
+    plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[2])
+    plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[3])
+    axs[2].legend()
+    axs[3].legend()
 
     if plot_args.out_image is not None:
         print(plot_args.out_image)
         plt.savefig(plot_args.out_image, bbox_inches="tight")
     plt.show()
+    

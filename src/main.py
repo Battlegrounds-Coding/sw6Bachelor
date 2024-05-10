@@ -22,55 +22,6 @@ class OutMode(Enum):
     VIRTUAL = 1
 
 
-def plotting(plot_args: ARGS):
-    """Function for plotting data"""
-
-    directory = "experiment_data_results"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    test_file = "bob"
-
-    # test_file = "hej"
-    axs = plt.subplots(4, 1, figsize=(10, 5), gridspec_kw={"height_ratios": [1, 1, 2, 2]})[1]
-
-    plt.suptitle(f"File: {test_file}")
-
-    plot(args.rain_file, "red", "Rain", 1, axs[0])
-    axs[0].set_ylabel("Rain mm")
-
-    plot(args.out, "blue", "Virtual pond", 1, axs[1])
-    plot(args.data, "red", "Sensor", 1, axs[1])
-    plot(args.data_control, "green", "Control, fixed orifice", 1, axs[1])
-    axs[1].set_ylim(0, 900)
-    axs[1].set_ylabel("Water level cm")
-    axs[1].set_xlabel("Time sec")
-    axs[0].legend()
-
-    plot(plot_args.out, "blue", "Estimated height", 1, axs[1])
-    plot(plot_args.data, "red", "Sensor height", 1, axs[1])
-    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[1])
-    axs[1].set_ylim(0, 900)
-    axs[1].set_ylabel("Water level cm")
-    axs[1].set_xlabel("Time sec")
-    axs[1].legend()
-
-    color_label_tuples = [
-        ("blue", "Main filter"),
-        ("red", "Constant offset 10"),
-        ("yellow", "Constant offset -10"),
-        ("green", "10 Percent over"),
-        ("purple", "10 percent under"),
-    ]
-    plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[2])
-    plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[3])
-    axs[2].legend()
-    axs[3].legend()
-
-    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches="tight")
-    plt.show()
-
-
 LOGGER = PrintLogger()
 FAULTS = [
     Fault(lambda x: x + 300.0, "higher"),
