@@ -70,22 +70,22 @@ WATER_LEVEL_MIN = 100
 WATER_LEVEL_MAX = 850
 
 
-def handle_controler_exeption(exception: serial_exceptions.exceptions):
+def handle_controler_exeption(exception: serial_exceptions.Exceptions):
     """Function for itteration over serial module exceptions"""
     match exception:
-        case serial_exceptions.exceptions.NO_RESPONSE:
+        case serial_exceptions.Exceptions.NO_RESPONSE:
             LOGGER.log("No responce from device", level=LogLevel.ERROR)
-        case serial_exceptions.exceptions.INCORRECT_INPUT:
+        case serial_exceptions.Exceptions.INCORRECT_INPUT:
             LOGGER.log("Incorrect input to physical setup", level=LogLevel.ERROR)
-        case serial_exceptions.exceptions.PUMP_VALUE_OUT_OF_BOUNDS:
+        case serial_exceptions.Exceptions.PUMP_VALUE_OUT_OF_BOUNDS:
             LOGGER.log("Pump value was out of bounds", level=LogLevel.ERROR)
-        case serial_exceptions.exceptions.NO_SENSOR_READINGS:
+        case serial_exceptions.Exceptions.NO_SENSOR_READINGS:
             LOGGER.log("No readings from the sensor in the physical setup", level=LogLevel.ERROR)
-        case serial_exceptions.exceptions.COMUNICATION_ERROR:
+        case serial_exceptions.Exceptions.COMUNICATION_ERROR:
             LOGGER.log("Data recieved from controller is outside specifications", level=LogLevel.ERROR)
-        case serial_exceptions.exceptions.CONVERSION_ERROR:
+        case serial_exceptions.Exceptions.CONVERSION_ERROR:
             LOGGER.log("Could not parse the data form sensor", level=LogLevel.ERROR)
-        case serial_exceptions.exceptions.SENSOR_READS_ZERO:
+        case serial_exceptions.Exceptions.SENSOR_READS_ZERO:
             LOGGER.log("Distance is reading zero", level=LogLevel.ERROR)
 
 
@@ -162,7 +162,7 @@ if __name__ == "__main__":
                         PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
                         MeasurementData(AVG_DIST, invariance),
                     )
-                except serial_exceptions.exceptions as e:
+                except serial_exceptions.Exceptions as e:
                     out_mode = OutMode.VIRTUAL
                     handle_controler_exeption(e)
                 except Exception as e:

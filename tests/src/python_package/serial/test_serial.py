@@ -51,7 +51,7 @@ def test_read():
     # empty buffer
     with pytest.raises(Exception) as excinfo:
         test.read()  # will timeout
-    assert excinfo.value is serial_exceptions.exceptions.NO_RESPONSE
+    assert excinfo.value is serial_exceptions.Exceptions.NO_RESPONSE
 
 
 def test_controller_exception():
@@ -60,17 +60,17 @@ def test_controller_exception():
     ]
     with pytest.raises(Exception) as excinfo:
         test.read()
-    assert excinfo.value is serial_exceptions.exceptions.INCORECT_DISTANCE_READING
+    assert excinfo.value is serial_exceptions.Exceptions.INCORECT_DISTANCE_READING
 
     custom_serial.buffer = ["Error:2 Pump value out of bounds [0..100]: 420"]
     with pytest.raises(Exception) as excinfo:
         test.read()
-    assert excinfo.value is serial_exceptions.exceptions.PUMP_VALUE_OUT_OF_BOUNDS
+    assert excinfo.value is serial_exceptions.Exceptions.PUMP_VALUE_OUT_OF_BOUNDS
 
     custom_serial.buffer = ["Error:3 sensor did not read"]
     with pytest.raises(Exception) as excinfo:
         test.read()
-    assert excinfo.value is serial_exceptions.exceptions.NO_SENSOR_READINGS
+    assert excinfo.value is serial_exceptions.Exceptions.NO_SENSOR_READINGS
 
 
 def test_read_all():
@@ -81,7 +81,7 @@ def test_read_all():
     # empty buffer
     with pytest.raises(Exception) as excinfo:
         test.read_all()  # will timeout
-    assert excinfo.value is serial_exceptions.exceptions.NO_RESPONSE
+    assert excinfo.value is serial_exceptions.Exceptions.NO_RESPONSE
 
     custom_serial.buffer = [
         "1",
@@ -106,39 +106,39 @@ def test_read_sensor():
     custom_serial.buffer = ["Rvd:50"]
     with pytest.raises(Exception) as excinfo:
         test.read_sensor()
-    assert excinfo.value is serial_exceptions.exceptions.NO_SENSOR_READINGS
+    assert excinfo.value is serial_exceptions.Exceptions.NO_SENSOR_READINGS
 
     custom_serial.buffer = ["invariance:50"]
-    with pytest.raises(serial_exceptions.exceptions) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read_sensor()
-    assert excinfo.value is serial_exceptions.exceptions.NO_SENSOR_READINGS
+    assert excinfo.value is serial_exceptions.Exceptions.NO_SENSOR_READINGS
 
     custom_serial.buffer = ["Rvd:99999", "invariance:5"]
     with pytest.raises(Exception) as excinfo:
         test.read_sensor()
-    assert excinfo.value is serial_exceptions.exceptions.COMUNICATION_ERROR
+    assert excinfo.value is serial_exceptions.Exceptions.COMUNICATION_ERROR
 
     custom_serial.buffer = ["Rvd: abc", "invariance:5"]
     with pytest.raises(Exception) as excinfo:
         test.read_sensor()
-    assert excinfo.value is serial_exceptions.exceptions.CONVERSION_ERROR
+    assert excinfo.value is serial_exceptions.Exceptions.CONVERSION_ERROR
 
     custom_serial.buffer = ["Rvd: 1", "invariance:d"]
     with pytest.raises(Exception) as excinfo:
         test.read_sensor()
-    assert excinfo.value is serial_exceptions.exceptions.CONVERSION_ERROR
+    assert excinfo.value is serial_exceptions.Exceptions.CONVERSION_ERROR
 
 
 def test_set_pump():
     custom_serial.buffer = ["pump update: 0"]  # Exception is thrown before being validated
     with pytest.raises(Exception) as excinfo:
         test.set_pump(-5)
-    assert excinfo.value is serial_exceptions.exceptions.INCORRECT_INPUT
+    assert excinfo.value is serial_exceptions.Exceptions.INCORRECT_INPUT
 
     custom_serial.buffer = ["pump update: 0"]  # Exception is thrown before being validated
     with pytest.raises(Exception) as excinfo:
         test.set_pump(105)
-    assert excinfo.value is serial_exceptions.exceptions.INCORRECT_INPUT
+    assert excinfo.value is serial_exceptions.Exceptions.INCORRECT_INPUT
 
     custom_serial.buffer = ["pump update: 55"]
     assert test.set_pump(55) is None
@@ -152,9 +152,9 @@ def test_set_pump():
     custom_serial.buffer = ["pump update: 10"]
     with pytest.raises(Exception) as excinfo:
         test.set_pump(100)
-    assert excinfo.value is serial_exceptions.exceptions.COMUNICATION_ERROR
+    assert excinfo.value is serial_exceptions.Exceptions.COMUNICATION_ERROR
 
     custom_serial.buffer = ["pump update: 11"]
     with pytest.raises(Exception) as excinfo:
         test.set_pump(10)
-    assert excinfo.value is serial_exceptions.exceptions.COMUNICATION_ERROR
+    assert excinfo.value is serial_exceptions.Exceptions.COMUNICATION_ERROR
