@@ -20,10 +20,12 @@ def find_cords(file: list, scale: float) -> list:
     """Find coordinates"""
     cords_x = []
     cords_y = []
-    for i in range(len(file)):
-        cords_x.append(file[i][0])
-        cords_y.append(file[i][1] * scale)
-
+    # for i in range(len(file)):
+    #     cords_x.append(file[i][0])
+    #     cords_y.append(file[i][1] * scale)
+    for _, f in enumerate(file):
+        cords_x.append(f[0])
+        cords_y.append(f[1] * scale)
     return [cords_x, cords_y]
 
 

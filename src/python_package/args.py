@@ -1,3 +1,5 @@
+"""File for defining Executable file arguments"""
+
 from datetime import datetime
 from enum import Enum
 import sys
@@ -43,12 +45,14 @@ HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
 
 
 class ARGS:
+    """Class for defining executable arguments"""
+
     def __init__(self, start: datetime):
-        args = [x for x in sys.argv]
+        args = list(sys.argv)  # [x for x in sys.argv]
         args.pop(0)
         try:
             for arg in args:
-                if arg == "-h" or arg == "--help":
+                if arg in ("-h", "--help"):
                     print(HELP)
                     sys.exit(0)
 
@@ -78,81 +82,101 @@ class ARGS:
                         self._out = value
                     case "-k" | "--kalman-bank":
                         self._kalman = value
-        except Exception as e:
+        except ValueError as e:
             print(e)
             print("\n" + HELP)
             sys.exit(1)
 
     @property
     def rain(self):
+        """Getter for rain
+        if not defined, returns 'ar.ArtificialConstRain(DEFAULT_RAIN)'"""
         if not self._rain:
             return ar.ArtificialConstRain(DEFAULT_RAIN)
         return self._rain
 
     @property
     def rain_file(self):
+        """getter for rain file"""
         return self._rain_file
 
     @property
     def strategy(self):
+        """Getter for strategy
+        if not defined, raises exceotion"""
         if self._strategy_file:
             return self._strategy_file
-        else:
-            raise Exception("No strategy file given")
+
+        raise ValueError("No strategy file given")
 
     @property
     def data(self):
+        """Getter for data
+        if not defined, raises exception"""
         if self._data:
             return self._data
-        else:
-            raise Exception("No datafile given")
+
+        raise ValueError("No datafile given")
 
     @property
     def filter_cache(self):
+        """Getter for filter_cache
+        if not defined, returns 'DEFAULT_FILTER_CACHE'"""
         if self._file_cache:
             return self._file_cache
-        else:
-            return DEFAULT_FILTER_CACHE
+
+        return DEFAULT_FILTER_CACHE
 
     @property
     def controler_cache(self):
+        """Getter for controler cache
+        if not defined, returns 'DEFAULT_CONTROLER_CACHE'"""
         try:
             return self._controler_cache
-        except Exception as _:
+        except NameError as _:
             return DEFAULT_CONTROLER_CACHE
 
     @property
     def time(self):
+        """getter for time
+        if not defined, returns 'DEFAULT_TIME'"""
         if self._time:
             return self._time
-        else:
-            return DEFAULT_TIME
+
+        return DEFAULT_TIME
 
     @property
     def mode(self):
+        """getter for mode
+        returns 'Mode' enum"""
         if self._mode != "headless":
             return Mode.SERIEL
         return Mode.HEADLESS
 
     @property
     def data_control(self):
+        """getter for data control"""
         return self._data_control
 
     @property
     def out(self):
+        """Getter for out"""
         try:
             return self._out
-        except Exception as _:
+        except NameError as _:
             return DEFAULT_OUT
 
     @property
     def kalman(self):
+        """Getter for kalmantfilter"""
         try:
             return self._kalman
-        except Exception as _:
+        except NameError as _:
             return DEFAULT_KALMAN
 
 
 class Mode(Enum):
+    """Enum for defining rather to get data from virtual pond or the physical pond"""
+
     SERIEL = 0
     HEADLESS = 1
