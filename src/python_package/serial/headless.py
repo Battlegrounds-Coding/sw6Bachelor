@@ -53,9 +53,10 @@ class Headless(serial.Serial):  # pylint: disable=R0901
                 if self._last_fill == self._time.get_current_time and self._rtn_none:
                     self._rtn_none = False
                     return 0
-                self._rtn_none = True
-                self._read_before = True
-                self._in_waiting = 2
+                if self._last_fill == self._time.get_current_time and not self._rtn_none:
+                    self._rtn_none = True
+                    self._read_before = True
+                    self._in_waiting = 2
             except AttributeError:
                 pass
         else:
