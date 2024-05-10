@@ -18,6 +18,7 @@ from python_package.args import ARGS, Mode
 
 class OutMode(Enum):
     """Enum for defining Sensor or virtual height value"""
+
     SENSOR = 0
     VIRTUAL = 1
 
@@ -148,7 +149,7 @@ if __name__ == "__main__":
             pond_data = virtual_pond.generate_virtual_sensor_reading()
             virtual_pond.water_level = pond_data.height
             if pond_data.overflow:
-                LOGGER.log("Pond is overflowing", LogLevel.ERROR)
+                LOGGER.log("Pond is overflowing", LogLevel.WARNING)
 
             if out_mode is OutMode.SENSOR:
                 try:
