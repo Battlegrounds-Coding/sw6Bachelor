@@ -3,7 +3,7 @@
 from enum import Enum
 
 
-class exceptions(Exception, Enum):
+class Exceptions(Exception, Enum):
     """Exeption class with enums for specifing error"""
 
     NO_RESPONSE = 0
@@ -23,7 +23,9 @@ class exceptions(Exception, Enum):
     NO_SENSOR_READINGS = 3
 
 
-class enum(Enum):
+class ExceptionEnum(Enum):
+    """Enum over serial communication errors"""
+
     NO_RESPONSE = 0
     """Comunication timed oud"""
     INCORRECT_INPUT = 4

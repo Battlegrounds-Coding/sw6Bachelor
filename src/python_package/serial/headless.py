@@ -13,7 +13,7 @@ class Headless(serial.Serial):  # pylint: disable=R0901
     """
 
     def __init__(self, file: str, time: Time):
-
+        super(serial.Serial, self).__init__()
         self._time = time
         self._inv = False
         self._read_before = False
@@ -21,7 +21,6 @@ class Headless(serial.Serial):  # pylint: disable=R0901
         self._rtn_none = False
         self._in_waiting = 0
         self._last_fill = timedelta(seconds=-1)
-        super(serial.Serial, self).__init__()
         with open(file, "r", -1, "UTF-8") as f:
             reader = csv.reader(f)
             self._buffer = [
@@ -51,12 +50,13 @@ class Headless(serial.Serial):  # pylint: disable=R0901
                     self._last_fill = copy.deepcopy(self._time.get_current_time)
                     break
             try:
-                if self._last_fill == self._time.get_current_time:
+                if self._last_fill == self._time.get_current_time and self._rtn_none:
+                    self._rtn_none = False
                     return 0
-
+                self._rtn_none = True
                 self._read_before = True
                 self._in_waiting = 2
-            except NameError:
+            except AttributeError:
                 pass
         else:
             self._in_waiting -= 1
