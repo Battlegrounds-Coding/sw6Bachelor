@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 import csv
+import copy
 from python_package.time import Time
 from . import serial
 
@@ -18,6 +19,8 @@ class Headless(serial.Serial):  # pylint: disable=R0901
         self._read_before = False
         self._before = b"Rvd:30"
         self._rtn_none = False
+        self._in_waiting = 0
+        self._last_fill = timedelta(seconds=-1)
         super(serial.Serial, self).__init__()
         with open(file, "r", -1, "UTF-8") as f:
             reader = csv.reader(f)
@@ -41,24 +44,27 @@ class Headless(serial.Serial):  # pylint: disable=R0901
     # @serial.Serial.in_waiting.getter
     @property
     def in_waiting(self) -> int:
-        if self._inv:
-            return 1
-        if len(self._buffer) > 0:
-            time, _ = self._buffer[0]
-            if self._time.get_current_time <= time:
-                return 2
+        if self._in_waiting == 0:
+            for i, (time, _) in enumerate(self._buffer):
+                if time <= self._time.get_current_time:
+                    self._in_waiting = (i + 1) * 2
+                    self._last_fill = copy.deepcopy(self._time.get_current_time)
+                    break
+            try:
+                if self._last_fill == self._time.get_current_time:
+                    return 0
 
-        if not self._rtn_none:
-            self._rtn_none = True
-            return 0
-
-        self._rtn_none = False
-        self._read_before = True
-        return 1
+                self._read_before = True
+                self._in_waiting = 2
+            except NameError:
+                pass
+        else:
+            self._in_waiting -= 1
+        return self._in_waiting
 
     def read_until(self, expected: bytes = b"\n", size: int | None = None) -> bytes:
         self._inv = not self._inv
-        if self._inv:
+        if not self._inv:
             reading = b"invariance:3"
         elif self._read_before:
             try:

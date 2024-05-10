@@ -7,7 +7,7 @@ source $source/.venv/bin/activate
 
 if [ -d $dir ]; then
     echo "Running tests for project $dir"
-    python  $source/src/main.py \
+    dir=$dir python  $source/src/main.py \
         --rain=$dir/Rain.csv \
         --mode=headless \
         --data=$dir/DepthSensor.csv \
