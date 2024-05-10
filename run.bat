@@ -5,13 +5,14 @@ set "source=%~dp0"
 set "out_dir=%source%experiment_data_results"
 set "dir=%~f1"
 
-for /F "delims=" %%i in ("%dir%") do set "experiment_name=%%~ni"
-for /F "delims=" %%i in ("%dir%\..") do set "experiment_dataset=%%~ni"
+for /F "delims=" %%i in ("%dir%\..") do set "experiment_name=%%~ni"
+for /F "delims=" %%i in ("%dir%\.") do set "experiment_dataset=%%~ni"
+
 set "name=%experiment_name%-%experiment_dataset%"
 
-REM call "%source%\.venv\Scripts\activate"
-
 ECHO %name%
+call "%source%\.venv\Scripts\activate"
+
 
 if exist "%out_dir%\" (
     md "%out_dir%"
