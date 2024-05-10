@@ -69,9 +69,10 @@ def plotting(plot_args: ARGS):
         ("green", "10 Percent over"),
         ("purple", "10 percent under"),
     ]
-    plot_kalman_filters_delta(args.kalman, color_label_tuples, 1, axs[2])
-    plot_kalman_filters_state_measured(args.kalman, color_label_tuples, 1, axs[3])
+    plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[2])
+    plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[3])
     axs[2].legend()
+    axs[3].legend()
 
     plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches="tight")
     plt.show()
