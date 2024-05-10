@@ -5,8 +5,9 @@ set "source=%~dp0"
 set "out_dir=%source%experiment_data_results"
 set "dir=%~f1"
 
-for /F "delims=" %%i in ("%dir%") do set "experiment_name=%%~ni"
-for /F "delims=" %%i in ("%dir%\..") do set "experiment_dataset=%%~ni"
+for /F "delims=" %%i in ("%dir%\..") do set "experiment_name=%%~ni"
+for /F "delims=" %%i in ("%dir%\.") do set "experiment_dataset=%%~ni"
+
 set "name=%experiment_name%-%experiment_dataset%"
 
 ECHO %name%
