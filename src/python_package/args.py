@@ -150,7 +150,6 @@ class ARGS:
         if not defined, returns 'DEFAULT_TIME'"""
         if self._time:
             return self._time
-
         return DEFAULT_TIME
 
     @property
@@ -177,7 +176,6 @@ class ARGS:
     @property
     def out_image(self) -> str | None:
         """Output path for plot png"""
-        print(self._out_image)
         try:
             return self._out_image
         except AttributeError:
