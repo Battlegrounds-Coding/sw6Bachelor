@@ -3,8 +3,8 @@
 import os
 from enum import Enum
 from datetime import timedelta, datetime
-import matplotlib.pyplot as plt
 import pause
+from python_package.plotter import plotting
 from python_package.logger import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
@@ -12,7 +12,6 @@ from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
 from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
-from python_package.plotter import plot
 from python_package.args import ARGS, Mode
 
 
@@ -21,36 +20,6 @@ class OutMode(Enum):
 
     SENSOR = 0
     VIRTUAL = 1
-
-
-def plotting(plot_args: ARGS):
-    """Function for plotting data"""
-
-    directory = "experiment_data_results"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    test_file = "bob"
-
-    # test_file = "hej"
-    axs = plt.subplots(2, 1, figsize=(13, 7), gridspec_kw={"height_ratios": [1, 2]})[1]
-
-    plt.suptitle(f"File: {test_file}")
-
-    plot(args.rain_file, "red", "Rain", 1, axs[0])
-    axs[0].set_ylabel("Rain mm")
-    axs[0].legend()
-
-    plot(plot_args.out, "blue", "Estimated height", 1, axs[1])
-    plot(plot_args.data, "red", "Sensor height", 1, axs[1])
-    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[1])
-    axs[1].set_ylim(0, 900)
-    axs[1].set_ylabel("Water level cm")
-    axs[1].set_xlabel("Time sec")
-    axs[1].legend()
-
-    plt.savefig(f"experiment_data_results/test_{test_file}.png", bbox_inches="tight")
-    plt.show()
 
 
 LOGGER = PrintLogger()

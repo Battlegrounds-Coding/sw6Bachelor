@@ -15,6 +15,7 @@ DEFAULT_FILTER_CACHE = os.path.join(tempfile.gettempdir(), "filter.cache")
 DEFAULT_CONTROLER_CACHE = os.path.join(tempfile.gettempdir(), "virtual-pond-controler-errors")
 DEFAULT_OUT = os.path.join(tempfile.gettempdir(), "out.csv")
 DEFAULT_KALMAN = os.path.join(tempfile.gettempdir(), "kalman.csv")
+DEFAULT_NAME = "Unnamed experiment"
 
 HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-r  | --rain]=/path/to/file             -- Location of the file that contains the raindata at a specific time
@@ -39,8 +40,11 @@ HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
                                                 (default={DEFAULT_TIME})
     [-o  | --output]=/path/to/file           -- Specifies the output file of the system
                                                 (default={DEFAULT_OUT})
+    [-oi | --output-image]=/path/to/file     -- Path to the saved plotting image
     [-k  | --kalman-bank]=/path/to/file      -- Specifies the output file for the kalman banks
                                                 (default={DEFAULT_KALMAN})
+    [-n  | --name]=string                    -- The name of the experiment
+                                                (default={DEFAULT_NAME})
     """
 
 
@@ -80,8 +84,12 @@ class ARGS:
                         self._time = int(value)
                     case "-o" | "--output":
                         self._out = value
+                    case "-oi" | "--output-image":
+                        self._out_image = value
                     case "-k" | "--kalman-bank":
                         self._kalman = value
+                    case "-n" | "--name":
+                        self._name = value
         except ValueError as e:
             print(e)
             print("\n" + HELP)
@@ -167,6 +175,14 @@ class ARGS:
             return DEFAULT_OUT
 
     @property
+    def out_image(self) -> str | None:
+        print(self._out_image)
+        try:
+            return self._out_image
+        except AttributeError:
+            return None
+
+    @property
     def kalman(self):
         """Getter for kalmantfilter"""
         try:
@@ -174,9 +190,16 @@ class ARGS:
         except AttributeError:
             return DEFAULT_KALMAN
 
+    @property
+    def name(self):
+        """Getter for kalmantfilter"""
+        try:
+            return self._name
+        except AttributeError:
+            return DEFAULT_NAME
+
 
 class Mode(Enum):
     """Enum for defining rather to get data from virtual pond or the physical pond"""
-
     SERIEL = 0
     HEADLESS = 1
