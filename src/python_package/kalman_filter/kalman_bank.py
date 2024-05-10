@@ -5,6 +5,8 @@ from ..time import Time
 from enum import Enum
 from .fault import Fault
 
+DEBUG_MODE = False
+
 
 class KalmanError(Exception, Enum):
     "Exception class for Kalman Filters"
@@ -84,23 +86,32 @@ class KalmanBank:
         self._write_to_csv(measured_data, predict_before_step)
 
         # error reporting
-        """ if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
-            filter_report_string = "Waterlevel threshold exceeded in filters: \n"
-            for i, f in enumerate(faulty_filters):
-                filter_report_string += f.print_kalman_filter() + " Expected filter to be: " + failed_faults[i] + "\n"
-            filter_report_string += (
-                "Kalman filter without arbitrary measurement data faults: \n"
-                + self.kalman_bank[0].print_kalman_filter()
-            )
-            raise ValueError(
-                "The measured water level exceeded the threshold in "
-                + str(len(faulty_filters))
-                + " kalman filters.\n"
-                + "Measured water level: "
-                + str(measured_data.height())
-                + "\n"
-                + filter_report_string
-            ) """
+        if not fault_detection and not self.kalman_bank[0] == self.kalman_bank[1]:
+            if DEBUG_MODE:
+                filter_report_string = "Waterlevel threshold exceeded in filters: \n"
+                for i, f in enumerate(faulty_filters):
+                    filter_report_string += (
+                        f.print_kalman_filter() + " Expected filter to be: " + failed_faults[i] + "\n"
+                    )
+                filter_report_string += (
+                    "Kalman filter without arbitrary measurement data faults: \n"
+                    + self.kalman_bank[0].print_kalman_filter()
+                )
+                print(
+                    "The measured water level exceeded the threshold in "
+                    + str(len(faulty_filters))
+                    + " kalman filters.\n"
+                    + "Measured water level: "
+                    + str(measured_data.height())
+                    + "\n"
+                    + filter_report_string
+                )
+            for i, f in enumerate(failed_faults):
+                match f:
+                    case "higher":
+                        raise KalmanError.HIGHER_THRESHOLD_EXCEEDED
+                    case "lower": 
+                        raise KalmanError.LOWER_THRESHOLD_EXCEEDED
 
     def analyze_filters(
         self, measured_data: MeasurementData, faulty_filters: List[Kalman], failed_faults: List[str]

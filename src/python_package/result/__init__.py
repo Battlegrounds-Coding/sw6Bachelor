@@ -134,3 +134,4 @@ class SensorError(Error):
         """Sets message to "Sensor is blocked" """
         self.msg = "Sensor is blocked"
         return self
+    

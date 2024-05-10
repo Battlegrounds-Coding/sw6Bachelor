@@ -5,7 +5,7 @@ from enum import Enum
 from python_package.logger import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
-from python_package.kalman_filter.kalman_bank import KalmanBank, Fault
+from python_package.kalman_filter.kalman_bank import KalmanBank, Fault, KalmanError
 from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
@@ -70,10 +70,10 @@ def plotting(args: ARGS):
 
 LOGGER = PrintLogger()
 FAULTS = [
-    Fault(lambda x: x + 10.0, "higher"),
-    Fault(lambda x: x - 10.0, "lower"),
-    Fault(lambda x: x * 1.1, "higher"),
-    Fault(lambda x: x * 0.9, "lower"),
+    Fault(lambda x: x + 300.0, "higher"),
+    Fault(lambda x: x - 300.0, "lower"),
+    Fault(lambda x: x * 1.2, "higher"),
+    Fault(lambda x: x * 0.80, "lower"),
 ]
 
 # -- POND DATA
@@ -177,9 +177,10 @@ if __name__ == "__main__":
                 except serial_exceptions.exceptions as e:
                     out_mode = OutMode.VIRTUAL
                     handle_controler_exeption(e)
-                except Exception as e:
-                    out_mode = OutMode.VIRTUAL
-                    print(e)
+                except KalmanError as e:
+                    if(TIME.get_current_time.seconds > 100) :
+                        out_mode = OutMode.VIRTUAL
+                        print(e)
 
             if out_mode is OutMode.VIRTUAL:
                 out = virtual_pond.water_level
