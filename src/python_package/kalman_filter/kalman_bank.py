@@ -110,7 +110,7 @@ class KalmanBank:
                 match f:
                     case "higher":
                         raise KalmanError.HIGHER_THRESHOLD_EXCEEDED
-                    case "lower": 
+                    case "lower":
                         raise KalmanError.LOWER_THRESHOLD_EXCEEDED
 
     def analyze_filters(

@@ -178,7 +178,7 @@ if __name__ == "__main__":
                     out_mode = OutMode.VIRTUAL
                     handle_controler_exeption(e)
                 except KalmanError as e:
-                    if(TIME.get_current_time.seconds > 100) :
+                    if TIME.get_current_time.seconds > 100:
                         out_mode = OutMode.VIRTUAL
                         print(e)
 
