@@ -2,10 +2,7 @@
 
 import math
 from typing import Self
-from datetime import datetime, timedelta
-import numpy as np
 from python_package.rain import Rain, area
-from python_package.rain.artificial_rain import ArtificialConstRain
 from python_package.time import Time
 
 

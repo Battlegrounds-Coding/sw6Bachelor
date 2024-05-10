@@ -1,6 +1,5 @@
 import serial
 import pytest
-import time
 from python_package.serial import SerialCom
 from python_package.serial.serial_exceptions import serial_exceptions
 
@@ -142,13 +141,13 @@ def test_set_pump():
     assert excinfo.value is serial_exceptions.exceptions.INCORRECT_INPUT
 
     custom_serial.buffer = ["pump update: 55"]
-    assert test.set_pump(55) == None
+    assert test.set_pump(55) is None
 
     custom_serial.buffer = ["pump update: 0"]
-    assert test.set_pump(0) == None
+    assert test.set_pump(0) is None
 
     custom_serial.buffer = ["pump update: 100"]
-    assert test.set_pump(100) == None
+    assert test.set_pump(100) is None
 
     custom_serial.buffer = ["pump update: 10"]
     with pytest.raises(Exception) as excinfo:
