@@ -115,14 +115,18 @@ def plot_kalman_filters_state_measured(
     data = read_kalman_csv_state_measured(file, len(color_label_tuples))
     coords = find_kalman_cords(data, scale, len(color_label_tuples))
 
+    # Adds the measured data values to a list
+    measured_data_coords = []
+    with open(file, "r", encoding="utf-8") as csvfile:
+        reader = csv.reader(csvfile, delimiter="\t")
+        for _, line in enumerate(reader):
+            line = str(line[0]).split(",")
+            measured_data_coords.append(float(line[7 * len(color_label_tuples)]))
+
     plots = []
     for i, f in enumerate(color_label_tuples):
         plots.append(axis.plot(coords[2 * i], coords[2 * i + 1], f[0], label=f[1]))
-    plots.append(
-        axis.plot(
-            coords[len(color_label_tuples) + 1], coords[len(color_label_tuples) + 2], "orange", label="Measured height"
-        )
-    )
+    plots.append(axis.plot(coords[0], measured_data_coords, "orange", label="Measured height"))
     return plots
 
 
