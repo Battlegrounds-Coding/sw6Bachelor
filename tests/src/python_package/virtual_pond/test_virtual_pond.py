@@ -1,10 +1,11 @@
 """Testing of virtual pond module"""
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from python_package.virtual_pond import VirtualPond
 from python_package import rain
 from python_package.rain import artificial_rain
+from python_package.time import Time
 
 
 URBAN_CATCHMENT_AREA = 0.59
@@ -27,6 +28,9 @@ def test_water_in():
     water_level = 200
     rain_data = rain.Rain()
 
+    START = datetime.now()
+    TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=10))
+
     virtual_pond = VirtualPond(
         URBAN_CATCHMENT_AREA,
         SURFACE_REACTION_FACTOR,
@@ -35,7 +39,8 @@ def test_water_in():
         water_level,
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
-        rain_data,
+        time=TIME,
+        rain_data_mm = rain_data,
     )
 
     k = 0.25
@@ -59,6 +64,9 @@ def test_water_out():
     water_level = 200
     rain_data = rain.Rain()
 
+    START = datetime.now()
+    TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=10))
+
     virtual_pond = VirtualPond(
         URBAN_CATCHMENT_AREA,
         SURFACE_REACTION_FACTOR,
@@ -67,9 +75,9 @@ def test_water_out():
         water_level,
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
-        rain_data,
+        time=TIME,
+        rain_data_mm = rain_data,
     )
-
     # Set orifice oppening to max
     virtual_pond.set_orifice("max")
 
@@ -91,6 +99,9 @@ def test_generate_virtual_sensor_reading():
 
     rain_data = artificial_rain.ArtificialConstRain(20)
 
+    START = datetime.now()
+    TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=10))
+
     virtual_pond = VirtualPond(
         URBAN_CATCHMENT_AREA,
         SURFACE_REACTION_FACTOR,
@@ -99,16 +110,17 @@ def test_generate_virtual_sensor_reading():
         water_level,
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
-        rain_data,
+        time=TIME,
+        rain_data_mm = rain_data,
     )
 
     # Set orifice oppening to max
     virtual_pond.set_orifice("max")
 
-    pond_data = virtual_pond.generate_virtual_sensor_reading(time)
+    pond_data = virtual_pond.generate_virtual_sensor_reading()
     height = round(pond_data.height, 4)
 
-    assert height == 205.278
+    assert height == 204.9947
 
 
 def test_calculate_water_volume():
@@ -118,6 +130,9 @@ def test_calculate_water_volume():
 
     rain_data = artificial_rain.ArtificialConstRain(20)
 
+    START = datetime.now()
+    TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=10))
+
     virtual_pond = VirtualPond(
         URBAN_CATCHMENT_AREA,
         SURFACE_REACTION_FACTOR,
@@ -126,7 +141,8 @@ def test_calculate_water_volume():
         water_level,
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
-        rain_data,
+        time=TIME,
+        rain_data_mm = rain_data,
     )
 
     # Set orifice oppening to max
@@ -136,4 +152,4 @@ def test_calculate_water_volume():
 
     volume = round(volume[0], 4)
 
-    assert volume == 5601.4361
+    assert volume == 5600.3259
