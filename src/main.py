@@ -64,7 +64,7 @@ if __name__ == "__main__":
         # SETUP
         # -- TIME
         START = datetime.now()
-        TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=10))
+        TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=11))
 
         # -- ARGUMENTS
         args = ARGS(START)
@@ -81,9 +81,6 @@ if __name__ == "__main__":
                 controler.begin()
             case Mode.HEADLESS:
                 controler.arduino = Headless(args.data, TIME)
-
-        # -- CASHE
-        # TODO: INIT CASHE
 
         # -- RAIN
         rain = args.rain
@@ -104,7 +101,7 @@ if __name__ == "__main__":
 
         # -- KALMAN BANK
         kalman_bank = KalmanBank(
-            faults=FAULTS, time=TIME, initial_state=700, initial_variance=10, noice=0.1, out_file=args.kalman
+            faults=FAULTS, time=TIME, initial_state=700, initial_variance=100, noice=0.1, out_file=args.kalman
         )
 
         AVG_DIST = 0
