@@ -144,7 +144,7 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
     plot(plot_args.rain_file, "red", "Rain", 1, axs[0, 0])
     axs[0, 0].set_ylabel("Rain mm")
     axs[0, 0].set_xlabel("Time sec")
-    axs[0, 0].legend()
+    axs[0, 0].legend(loc=4)
 
     plot(plot_args.out, "blue", "Estimated height", 1, axs[0, 1])
     plot(plot_args.data, "red", "Sensor height", 1, axs[0, 1])
@@ -153,8 +153,7 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
     axs[0, 1].set_ylim(0, 900)
     axs[0, 1].set_ylabel("Water level cm")
     axs[0, 1].set_xlabel("Time sec")
-    axs[0, 1].legend()
-
+    
     pond_mode = ""
     if out_mode == out_mode.SENSOR:
         pond_mode = "Sensor"
@@ -167,6 +166,7 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
     axs[0, 1].text(
         x_position + 50, 0.5, f"Mode:  {pond_mode}", fontsize=9, ha="left", va="bottom", rotation=90, color="gray"
     )
+    axs[0, 1].legend(loc=4)
 
     color_label_tuples = [
         ("blue", "Main filter"),
@@ -177,13 +177,13 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
     ]
     plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[1, 0])
     axs[1, 0].set_ylabel("Kalman predicted measured delta")
-    axs[1, 0].set_xlabel("10 Seconds intervals")
-    axs[1, 0].legend()
+    axs[1, 0].set_xlabel("Time sec")
+    axs[1, 0].legend(loc=4)
 
     plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
     axs[1, 1].set_ylabel("Kalman state")
-    axs[1, 1].set_xlabel("10 seconds intervals")
-    axs[1, 1].legend()
+    axs[1, 1].set_xlabel("Time sec")
+    axs[1, 1].legend(loc=4)
 
     if plot_args.out_image is not None:
         print(plot_args.out_image)
