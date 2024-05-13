@@ -54,18 +54,17 @@ class Headless(serial.Serial):  # pylint: disable=R0901
                     if self._rtn_none:
                         self._rtn_none = False
                         return 0
-                    else:
-                        self._rtn_none = True
-                        self._read_before = True
-                        self._in_waiting = 2
+                    self._rtn_none = True
+                    self._read_before = True
+                    self._in_waiting = 2
             except AttributeError:
                 pass
-        else:
-            self._in_waiting -= 1
         return self._in_waiting
 
     def read_until(self, expected: bytes = b"\n", size: int | None = None) -> bytes:
         self._inv = not self._inv
+        self._in_waiting -= 1
+        self._rtn_none = True
         if not self._inv:
             reading = b"invariance:3"
         elif self._read_before:

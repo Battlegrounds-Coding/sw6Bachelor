@@ -81,12 +81,12 @@ def find_kalman_cords(file: list, scale: float, number_of_filters: int) -> list:
         coord_array.append([])
         coord_array.append([])
         i += 1
-    for l in range(len(file)):
+    for _, line in enumerate(file):  # range(len(file)):
         for n, j in enumerate(coord_array):
             if n % 2 == 0:
-                j.append(file[l][n])
+                j.append(line[n])
             else:
-                j.append(file[l][n] * scale)
+                j.append(line[n] * scale)
 
     return coord_array
 
