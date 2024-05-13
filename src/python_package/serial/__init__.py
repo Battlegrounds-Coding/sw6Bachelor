@@ -8,7 +8,7 @@ import time
 import serial
 from python_package.serial.serial_exceptions import serial_exceptions
 from python_package.cash.cash import FileCache, CacheData
-from python_package.args import DEFAULT_CONTROLER_CACHE as log_folder
+from python_package.args import DEFAULT_CONTROLER_CACHE as default_log_folder
 
 BAUDRATE = 9600
 COM = "COM3"  # <-----
@@ -17,7 +17,7 @@ COM = "COM3"  # <-----
 class SerialCom:
     """Serial comunication class"""
 
-    def __init__(self, log_folder: str = log_folder, port=COM, debug=False) -> None:
+    def __init__(self, log_folder: str = default_log_folder, port=COM, debug=False) -> None:
         self.debug = debug
         self.port = port
 
