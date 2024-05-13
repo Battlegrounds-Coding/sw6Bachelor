@@ -170,10 +170,10 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
 
     color_label_tuples = [
         ("blue", "Main filter"),
-        ("red", "Constant offset 10"),
-        ("black", "Constant offset -10"),
-        ("green", "10 Percent over"),
-        ("purple", "10 percent under"),
+        ("red", "Constant offset +50"),
+        ("black", "Constant offset -50"),
+        ("green", "20 % over"),
+        ("purple", "20 % under"),
     ]
     plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[1, 0])
     axs[1, 0].set_ylabel("Kalman predicted measured delta")
