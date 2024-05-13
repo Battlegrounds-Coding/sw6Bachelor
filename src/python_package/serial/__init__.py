@@ -8,7 +8,7 @@ import time
 import serial
 from python_package.serial.serial_exceptions import serial_exceptions
 from python_package.cash.cash import FileCache, CacheData
-from python_package.args import ARGS as args
+from python_package.args import DEFAULT_CONTROLER_CACHE as log_folder
 
 BAUDRATE = 9600
 COM = "COM3"  # <-----
@@ -17,13 +17,13 @@ COM = "COM3"  # <-----
 class SerialCom:
     """Serial comunication class"""
 
-    def __init__(self, log_folder: str = str(args.controler_cache), port=COM, debug=False) -> None:
+    def __init__(self, log_folder: str = log_folder, port=COM, debug=False) -> None:
         self.debug = debug
         self.port = port
-        if log_folder == "def":
-            os.path.join(os.getcwd(), "")
+
         self.arduino = serial.Serial()
         self.log_folder = log_folder
+        os.makedirs(log_folder, exist_ok=True)
 
     def begin(self) -> None:
         """Starts serial connection"""
@@ -103,8 +103,8 @@ class SerialCom:
     def read_all(self) -> list[str]:
         """Wait for up to 5 seconds for response from connected device,
         either throw exception or read all responses into an array"""
-        #string_array: list[str] = [self.read()]  # run initial read
-        string_array = []
+        string_array: list[str] = [self.read()]  # run initial read
+        # string_array = []
         while self.arduino.in_waiting > 0:  # Repeat read while buffer is not empty
             string_array.append(self.read())
         return string_array
@@ -124,6 +124,7 @@ class SerialCom:
         """Write error and communication buffer to file, before throwing exception"""
         now = datetime.now()
         time_now = str(now).replace(":", "..")
+        print(self.log_folder)
         file = FileCache(f"{self.log_folder}/Error-log {error.name} {time_now}")
 
         data_arr = [msg]

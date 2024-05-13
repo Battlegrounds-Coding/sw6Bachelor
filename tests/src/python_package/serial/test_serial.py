@@ -49,7 +49,7 @@ def test_read():
     assert test.read() == "2"
 
     # empty buffer
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read()  # will timeout
     assert excinfo.value is serial_exceptions.Exceptions.NO_RESPONSE
 
@@ -58,17 +58,17 @@ def test_controller_exception():
     custom_serial.buffer = [
         "Error:1 distance reading: -999",
     ]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read()
     assert excinfo.value is serial_exceptions.Exceptions.INCORECT_DISTANCE_READING
 
     custom_serial.buffer = ["Error:2 Pump value out of bounds [0..100]: 420"]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read()
     assert excinfo.value is serial_exceptions.Exceptions.PUMP_VALUE_OUT_OF_BOUNDS
 
     custom_serial.buffer = ["Error:3 sensor did not read"]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read()
     assert excinfo.value is serial_exceptions.Exceptions.NO_SENSOR_READINGS
 
@@ -79,7 +79,7 @@ def test_read_all():
     assert len(custom_serial.buffer) == 0
 
     # empty buffer
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read_all()  # will timeout
     assert excinfo.value is serial_exceptions.Exceptions.NO_RESPONSE
 
@@ -104,7 +104,7 @@ def test_read_sensor():
     assert test.read_sensor() == (200, 5)
 
     custom_serial.buffer = ["Rvd:50"]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read_sensor()
     assert excinfo.value is serial_exceptions.Exceptions.NO_SENSOR_READINGS
 
@@ -114,29 +114,29 @@ def test_read_sensor():
     assert excinfo.value is serial_exceptions.Exceptions.NO_SENSOR_READINGS
 
     custom_serial.buffer = ["Rvd:99999", "invariance:5"]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read_sensor()
     assert excinfo.value is serial_exceptions.Exceptions.COMUNICATION_ERROR
 
     custom_serial.buffer = ["Rvd: abc", "invariance:5"]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read_sensor()
     assert excinfo.value is serial_exceptions.Exceptions.CONVERSION_ERROR
 
     custom_serial.buffer = ["Rvd: 1", "invariance:d"]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.read_sensor()
     assert excinfo.value is serial_exceptions.Exceptions.CONVERSION_ERROR
 
 
 def test_set_pump():
     custom_serial.buffer = ["pump update: 0"]  # Exception is thrown before being validated
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.set_pump(-5)
     assert excinfo.value is serial_exceptions.Exceptions.INCORRECT_INPUT
 
     custom_serial.buffer = ["pump update: 0"]  # Exception is thrown before being validated
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.set_pump(105)
     assert excinfo.value is serial_exceptions.Exceptions.INCORRECT_INPUT
 
@@ -150,11 +150,11 @@ def test_set_pump():
     assert test.set_pump(100) is None
 
     custom_serial.buffer = ["pump update: 10"]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.set_pump(100)
     assert excinfo.value is serial_exceptions.Exceptions.COMUNICATION_ERROR
 
     custom_serial.buffer = ["pump update: 11"]
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(serial_exceptions.Exceptions) as excinfo:
         test.set_pump(10)
     assert excinfo.value is serial_exceptions.Exceptions.COMUNICATION_ERROR

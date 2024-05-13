@@ -79,16 +79,16 @@ class FileCache(Cache):
         with open(self.file_name, "a+", -1, "UTF-8") as file:
             file.seek(0, io.SEEK_END)
             end = file.tell()
-            if end <= 2:
+            if end <= 3:
                 return 0
 
-            file.seek(end - 2)
-
+            file.seek(end - 3)
             while file.read(1) != "\n":
                 new_pos = file.tell() - 2
                 if new_pos < 0:
                     return 1
-                file.seek(new_pos)
+                print(new_pos)
+                file.seek(new_pos, io.SEEK_SET)
             last = file.read()
             print(last.split("#")[0])
             return int(last.split("#")[0])
