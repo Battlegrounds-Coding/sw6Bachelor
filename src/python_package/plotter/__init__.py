@@ -132,28 +132,29 @@ def plot_kalman_filters_state_measured(
 
 def plotting(plot_args: ARGS, out_mode, change_mode_time):
     """Function for plotting data"""
-
     directory = "experiment_data_results"
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    _, axs = plt.subplots(2, 2, figsize=(30, 10), gridspec_kw={"height_ratios": [1, 1]})
+    _, axs = plt.subplots(2, 2, figsize=(30, 10), gridspec_kw={"height_ratios": [1, 2]})
 
     plt.suptitle(f"{plot_args.name}")
 
+    # TOP LEFT PLOT
     plot(plot_args.rain_file, "red", "Rain", 1, axs[0, 0])
     axs[0, 0].set_ylabel("Rain mm")
     axs[0, 0].set_xlabel("Time sec")
     axs[0, 0].legend(loc=4)
 
+    # TOP RIGHT PLOT
+    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[0, 1])
     plot(plot_args.out, "blue", "Estimated height", 1, axs[0, 1])
     plot(plot_args.data, "red", "Sensor height", 1, axs[0, 1])
-    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[0, 1])
 
     axs[0, 1].set_ylim(0, 900)
     axs[0, 1].set_ylabel("Water level cm")
     axs[0, 1].set_xlabel("Time sec")
-    
+
     pond_mode = ""
     if out_mode == out_mode.SENSOR:
         pond_mode = "Sensor"
@@ -164,27 +165,36 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
     x_position = change_mode_time
     axs[0, 1].axvline(x_position, linestyle="--", color="gray")
     axs[0, 1].text(
-        x_position + 50, 0.5, f"Mode:  {pond_mode}", fontsize=9, ha="left", va="bottom", rotation=90, color="gray"
+        x_position + 50, 0.5, f"  Mode:  {pond_mode}", fontsize=9, ha="left", va="bottom", rotation=90, color="gray"
     )
     axs[0, 1].legend(loc=4)
 
     color_label_tuples = [
-        ("blue", "Main filter"),
-        ("red", "Constant offset +50"),
+        ("pink", "Main filter"),
+        ("magenta", "Constant offset +50"),
         ("black", "Constant offset -50"),
-        ("green", "20 % over"),
-        ("purple", "20 % under"),
+        ("green", "15% over"),
+        ("purple", "15 % under"),
     ]
+
+    # BOT LEFT PLOT
     plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[1, 0])
+    axs[1, 0].axvline(x_position, linestyle="--", color="gray")
+    axs[1, 0].axhline(0, linestyle="--", color="gray")
     axs[1, 0].set_ylabel("Kalman predicted measured delta")
     axs[1, 0].set_xlabel("Time sec")
     axs[1, 0].legend(loc=4)
 
+    # BOT RIGHT PLOT
     plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
+    plot(plot_args.out, "blue", "Estimated height", 1, axs[1, 1])
+    plot(plot_args.data, "red", "Sensor height", 1, axs[1, 1])
     axs[1, 1].set_ylabel("Kalman state")
     axs[1, 1].set_xlabel("Time sec")
+    axs[1, 1].axvline(x_position, linestyle="--", color="gray")
     axs[1, 1].legend(loc=4)
 
+    # Save plot as png
     if plot_args.out_image is not None:
         print(plot_args.out_image)
         plt.savefig(plot_args.out_image, bbox_inches="tight")
