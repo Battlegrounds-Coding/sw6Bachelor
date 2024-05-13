@@ -12,7 +12,8 @@
 
 # def fault_one() -> fault.Fault:
 #     return fault.Fault(
-#         fault=lambda data: TestMeasurementData(data.height() - 10, data.variance_height() - 10), classification="lower"
+#         fault=lambda data: TestMeasurementData(data.height() - 10, data.variance_height() - 10), 
+#         classification="lower"
 #     )
 
 

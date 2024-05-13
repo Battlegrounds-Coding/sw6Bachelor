@@ -62,7 +62,7 @@ if __name__ == "__main__":
     try:
         LOGGER.log("SETUP")
         # SETUP
-        change_mode_time = 0 # pylint: disable=C0103
+        change_mode_time = 0  # pylint: disable=C0103
         # -- TIME
         START = datetime.now()
         TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=11))
