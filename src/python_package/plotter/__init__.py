@@ -133,7 +133,7 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    axs = plt.subplots(2, 2, figsize=(30, 10), gridspec_kw={"height_ratios": [1, 1]})[1]
+    _, axs = plt.subplots(2, 2, figsize=(30, 10), gridspec_kw={"height_ratios": [1, 1]})
 
     plt.suptitle(f"{plot_args.name}")
 
@@ -156,10 +156,12 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
         pond_mode = "Sensor"
     elif out_mode == out_mode.VIRTUAL:
         pond_mode = "Virtual"
+    elif out_mode == out_mode.SENSOR_ERROR:
+        pond_mode = "Sensor error"
     x_position = change_mode_time
     axs[0, 1].axvline(x_position, linestyle="--", color="gray")
     axs[0, 1].text(
-        x_position, 0.5, f"Mode change:  {pond_mode}", fontsize=9, ha="right", va="bottom", rotation=90, color="gray"
+        x_position + 50, 0.5, f"Mode:  {pond_mode}", fontsize=9, ha="left", va="bottom", rotation=90, color="gray"
     )
 
     color_label_tuples = [

@@ -20,6 +20,7 @@ class OutMode(Enum):
 
     SENSOR = 0
     VIRTUAL = 1
+    SENSOR_ERROR = 2
 
 
 LOGGER = PrintLogger()
@@ -118,7 +119,7 @@ if __name__ == "__main__":
             if pond_data.overflow:
                 LOGGER.log("Pond is overflowing", LogLevel.WARNING)
 
-            if out_mode is OutMode.SENSOR:
+            if out_mode is not OutMode.SENSOR_ERROR:
                 try:
                     # READ SENSOR
                     AVG_DIST, invariance = controler.read_sensor()
@@ -130,7 +131,7 @@ if __name__ == "__main__":
                         MeasurementData(AVG_DIST, invariance),
                     )
                 except serial_exceptions.Exceptions as e:
-                    out_mode = OutMode.VIRTUAL
+                    out_mode = OutMode.SENSOR_ERROR
                     change_mode_time = TIME.get_current_time.total_seconds()
                     handle_controler_exeption(e)
                 except KalmanError as e:
