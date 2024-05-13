@@ -95,7 +95,6 @@ def test_generate_virtual_sensor_reading():
     """Test generate_virtual_sensor_reading"""
     water_level = 200
 
-
     rain_data = artificial_rain.ArtificialConstRain(20)
 
     START = datetime.now()
