@@ -126,7 +126,7 @@ def plot_kalman_filters_state_measured(
     return plots
 
 
-def plotting(plot_args: ARGS):
+def plotting(plot_args: ARGS, out_mode, change_mode_time):
     """Function for plotting data"""
 
     directory = "experiment_data_results"
@@ -145,10 +145,22 @@ def plotting(plot_args: ARGS):
     plot(plot_args.out, "blue", "Estimated height", 1, axs[0, 1])
     plot(plot_args.data, "red", "Sensor height", 1, axs[0, 1])
     plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[0, 1])
+
     axs[0, 1].set_ylim(0, 900)
     axs[0, 1].set_ylabel("Water level cm")
     axs[0, 1].set_xlabel("Time sec")
     axs[0, 1].legend()
+
+    pond_mode = ""
+    if out_mode == out_mode.SENSOR:
+        pond_mode = "Sensor"
+    elif out_mode == out_mode.VIRTUAL:
+        pond_mode = "Virtual"
+    x_position = change_mode_time
+    axs[0, 1].axvline(x_position, linestyle="--", color="gray")
+    axs[0, 1].text(
+        x_position, 0.5, f"Mode change:  {pond_mode}", fontsize=9, ha="right", va="bottom", rotation=90, color="gray"
+    )
 
     color_label_tuples = [
         ("blue", "Main filter"),

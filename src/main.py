@@ -62,6 +62,7 @@ if __name__ == "__main__":
     try:
         LOGGER.log("SETUP")
         # SETUP
+        change_mode_time = 0
         # -- TIME
         START = datetime.now()
         TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=11))
@@ -130,10 +131,12 @@ if __name__ == "__main__":
                     )
                 except serial_exceptions.Exceptions as e:
                     out_mode = OutMode.VIRTUAL
+                    change_mode_time = TIME.get_current_time.total_seconds()
                     handle_controler_exeption(e)
                 except KalmanError as e:
                     if TIME.get_current_time.seconds > 100:
                         out_mode = OutMode.VIRTUAL
+                        change_mode_time = TIME.get_current_time.total_seconds()
                         print(e)
 
             if out_mode is OutMode.VIRTUAL:
@@ -152,4 +155,4 @@ if __name__ == "__main__":
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e
-    plotting(args)
+    plotting(args, out_mode, change_mode_time)
