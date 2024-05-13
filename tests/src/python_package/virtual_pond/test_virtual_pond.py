@@ -40,7 +40,7 @@ def test_water_in():
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
         time=TIME,
-        rain_data_mm = rain_data,
+        rain_data_mm=rain_data,
     )
 
     k = 0.25
@@ -76,7 +76,7 @@ def test_water_out():
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
         time=TIME,
-        rain_data_mm = rain_data,
+        rain_data_mm=rain_data,
     )
     # Set orifice oppening to max
     virtual_pond.set_orifice("max")
@@ -111,7 +111,7 @@ def test_generate_virtual_sensor_reading():
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
         time=TIME,
-        rain_data_mm = rain_data,
+        rain_data_mm=rain_data,
     )
 
     # Set orifice oppening to max
@@ -142,7 +142,7 @@ def test_calculate_water_volume():
         WATER_LEVEL_MIN,
         WATER_LEVEL_MAX,
         time=TIME,
-        rain_data_mm = rain_data,
+        rain_data_mm=rain_data,
     )
 
     # Set orifice oppening to max
