@@ -191,7 +191,7 @@ def plotting(plot_args: ARGS, out_mode, water_level_min, water_level_max, change
     axs[0, 0].legend(loc=4)
 
     # TOP RIGHT PLOT
-    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[0, 1])
+    plot(plot_args.data_control, "green", "Control height", 1, axs[0, 1])
     plot(plot_args.out, "blue", "Estimated height", 1, axs[0, 1])
     plot(plot_args.data, "red", "Sensor height", 1, axs[0, 1])
     axs[0, 1].axhline(water_level_max, linestyle="--", color="lightgray")
@@ -223,7 +223,7 @@ def plotting(plot_args: ARGS, out_mode, water_level_min, water_level_max, change
     plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
     plot(plot_args.out, "blue", "Estimated height", 1, axs[1, 1])
     plot(plot_args.data, "red", "Sensor height", 1, axs[1, 1])
-    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[1, 1])
+    plot(plot_args.data_control, "green", "Control height", 1, axs[1, 1])
     axs[1, 1].set_ylabel("Kalman state")
     axs[1, 1].set_xlabel("Time sec")
     axs[1, 1].set_xlim(0, plot_args.time)
