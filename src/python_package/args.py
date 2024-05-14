@@ -1,5 +1,6 @@
 """File for defining Executable file arguments"""
 
+from typing import Literal
 from datetime import datetime
 from enum import Enum
 import sys
@@ -7,6 +8,10 @@ import tempfile
 import os
 
 from .rain import artificial_rain as ar, rain_data as rd
+
+class OutType(Enum):
+    PNG = 0
+    PGF = 1
 
 
 DEFAULT_RAIN = 10
@@ -16,6 +21,8 @@ DEFAULT_CONTROLER_CACHE = os.path.join(tempfile.gettempdir(), "virtual-pond-cont
 DEFAULT_OUT = os.path.join(tempfile.gettempdir(), "out.csv")
 DEFAULT_KALMAN = os.path.join(tempfile.gettempdir(), "kalman.csv")
 DEFAULT_NAME = "Unnamed experiment"
+DEFAULT_OUT_SHOW = True
+DEFAULT_OUT_TYPE = OutType.PNG
 
 HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-r  | --rain]=/path/to/file             -- Location of the file that contains the raindata at a specific time
@@ -40,7 +47,10 @@ HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
                                                 (default={DEFAULT_TIME})
     [-o  | --output]=/path/to/file           -- Specifies the output file of the system
                                                 (default={DEFAULT_OUT})
-    [-oi | --output-image]=/path/to/file     -- Path to the saved plotting image
+    [-oi | --output-image]=/path/to/file     -- Path to the saved plotting image (supported: [pgf | png])
+                                                !NOTE if image type is pgf then --show is not supported
+    [-s  | --show]=boolean                   -- Should the output be shown in the end
+
     [-k  | --kalman-bank]=/path/to/file      -- Specifies the output file for the kalman banks
                                                 (default={DEFAULT_KALMAN})
     [-n  | --name]=string                    -- The name of the experiment
@@ -86,6 +96,10 @@ class ARGS:
                         self._out = value
                     case "-oi" | "--output-image":
                         self._out_image = value
+                    case "-os" | "--output-pgf":
+                        self._out_pgf= value
+                    case "-s" | "--s":
+                        self._show = bool(value)
                     case "-k" | "--kalman-bank":
                         self._kalman = value
                     case "-n" | "--name":
@@ -181,6 +195,19 @@ class ARGS:
         except AttributeError:
             return None
 
+    def out_type(self) -> OutType:
+        try:
+            match self._out_image.split('.').pop():
+                case "pgf":
+                    return OutType.PGF
+                case "png":
+                    return OutType.PNG
+                case _:
+                    return DEFAULT_OUT_TYPE
+        except AttributeError:
+            return DEFAULT_OUT_TYPE
+
+
     @property
     def kalman(self):
         """Getter for kalmantfilter"""
@@ -196,6 +223,15 @@ class ARGS:
             return self._name
         except AttributeError:
             return DEFAULT_NAME
+
+    @property
+    def show(self):
+        """Getter for kalmantfilter"""
+        try:
+            rtn = self._show
+        except AttributeError:
+            rtn = DEFAULT_OUT_SHOW
+        return rtn and self.out_type is not OutType.PGF
 
 
 class Mode(Enum):

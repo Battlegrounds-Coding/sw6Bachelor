@@ -4,7 +4,7 @@ import csv
 import os
 import matplotlib as mpl
 from matplotlib import pyplot as plt
-from ..args import ARGS
+from ..args import ARGS, OutType
 
 
 def read_csv(file: str) -> list:
@@ -133,9 +133,10 @@ def plot_kalman_filters_state_measured(
 
 def plotting(plot_args: ARGS, out_mode, change_mode_time):
     """Function for plotting data"""
-    directory = "experiment_data_results"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    out_type = plot_args.out_type
+    
+    if out_type is OutType.PGF:
+        mpl.use("pgf")
 
     _, axs = plt.subplots(2, 2, figsize=(30, 10), gridspec_kw={"height_ratios": [1, 2]})
 
@@ -195,11 +196,14 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
     axs[1, 1].axvline(x_position, linestyle="--", color="gray")
     axs[1, 1].legend(loc=4)
 
-    # Save plot as png
-    if plot_args.out_image is not None:
+    # Save plot
+    if out_type is OutType.PNG:
         print(plot_args.out_image)
         plt.savefig(plot_args.out_image, bbox_inches="tight")
-    plt.show()
+    if out_type is OutType.PGF:
+        plt.savefig(plot_args.out_image, backend="pgf")
 
-    mpl.use("pgf")
-    plt.savefig("file.pgf")
+    # Show plot 
+    if plot_args.show:
+        plt.show()
+

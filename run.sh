@@ -24,7 +24,8 @@ if [[ -d $dir ]]; then
         --time=7000 \
         --name="$name" \
         --output="$out_dir/$name.csv" \
-        --output-image="$out_dir/$name.png"
+        --output-image="$out_dir/$name.pgf" \
+        --show=true
 else
     echo "'$dir' is not a directory"
 fi
