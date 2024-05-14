@@ -132,13 +132,15 @@ if __name__ == "__main__":
                         virtual_pond.water_level,
                     )
                 except serial_exceptions.Exceptions as e:
-                    out_mode = OutMode.SENSOR_ERROR
-                    change_mode_time = TIME.get_current_time.total_seconds()
+                    if out_mode != OutMode.SENSOR_ERROR:
+                        out_mode = OutMode.SENSOR_ERROR
+                        change_mode_time = TIME.get_current_time.total_seconds()
                     handle_controler_exeption(e)
                 except KalmanError as e:
                     if TIME.get_current_time.seconds > 50:
-                        out_mode = OutMode.VIRTUAL
-                        change_mode_time = TIME.get_current_time.total_seconds()
+                        if out_mode != OutMode.VIRTUAL:
+                            change_mode_time = TIME.get_current_time.total_seconds()
+                            out_mode = OutMode.VIRTUAL
                         print(e)
 
             if out_mode is OutMode.VIRTUAL:

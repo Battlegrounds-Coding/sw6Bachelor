@@ -173,7 +173,7 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
         ("pink", "Main filter"),
         ("magenta", "Constant offset +50"),
         ("black", "Constant offset -50"),
-        ("green", "15% over"),
+        ("cyan", "15% over"),
         ("purple", "15 % under"),
     ]
 
@@ -189,6 +189,7 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
     plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
     plot(plot_args.out, "blue", "Estimated height", 1, axs[1, 1])
     plot(plot_args.data, "red", "Sensor height", 1, axs[1, 1])
+    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[1, 1])
     axs[1, 1].set_ylabel("Kalman state")
     axs[1, 1].set_xlabel("Time sec")
     axs[1, 1].axvline(x_position, linestyle="--", color="gray")
@@ -199,5 +200,3 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
         print(plot_args.out_image)
         plt.savefig(plot_args.out_image, bbox_inches="tight")
     plt.show()
-
-    plt.savefig("file.pgf")
