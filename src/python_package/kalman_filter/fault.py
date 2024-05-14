@@ -1,7 +1,7 @@
 "THIS FINE CONTAINS THE FAULT CLASS FOR THE KALMAN FILTERS"
+from enum import Enum
 from typing import Callable
 from .kalman import MeasurementData
-from enum import Enum
 
 
 class FaultType(Enum):
