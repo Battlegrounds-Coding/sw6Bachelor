@@ -64,6 +64,7 @@ if __name__ == "__main__":
         LOGGER.log("SETUP")
         # SETUP
         change_mode_time = 0  # pylint: disable=C0103
+        change_array = []
         # -- TIME
         START = datetime.now()
         TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=11))
@@ -135,15 +136,19 @@ if __name__ == "__main__":
                     if out_mode != OutMode.SENSOR_ERROR:
                         out_mode = OutMode.SENSOR_ERROR
                         change_mode_time = TIME.get_current_time.total_seconds()
+                        change_array.append([out_mode, change_mode_time])
                     handle_controler_exeption(e)
                 except KalmanError as e:
                     if TIME.get_current_time.seconds > 50:
                         if out_mode != OutMode.VIRTUAL:
-                            change_mode_time = TIME.get_current_time.total_seconds()
                             out_mode = OutMode.VIRTUAL
+                            change_mode_time = TIME.get_current_time.total_seconds()
+                            change_array.append([out_mode, change_mode_time])
                         print(e)
 
             if out_mode is OutMode.VIRTUAL:
+                OUT = virtual_pond.water_level
+            elif out_mode is OutMode.SENSOR_ERROR:
                 OUT = virtual_pond.water_level
 
             # OUTPUT
@@ -159,4 +164,4 @@ if __name__ == "__main__":
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e
-    plotting(args, out_mode, change_mode_time)
+    plotting(args, out_mode, WATER_LEVEL_MIN, WATER_LEVEL_MAX, change_array)
