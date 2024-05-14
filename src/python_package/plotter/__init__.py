@@ -2,7 +2,6 @@
 
 import csv
 import os
-import matplotlib as mpl
 from matplotlib import pyplot as plt
 from ..args import ARGS
 
@@ -201,5 +200,4 @@ def plotting(plot_args: ARGS, out_mode, change_mode_time):
         plt.savefig(plot_args.out_image, bbox_inches="tight")
     plt.show()
 
-    mpl.use("pgf")
     plt.savefig("file.pgf")
