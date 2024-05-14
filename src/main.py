@@ -27,8 +27,8 @@ LOGGER = PrintLogger()
 FAULTS = [
     Fault(lambda x: x + 50.0, "higher", FaultType.ADD),
     Fault(lambda x: x - 50.0, "lower", FaultType.SUBTRACT),
-    Fault(lambda x: x * 1.2, "higher", FaultType.MULTIPLY),
-    Fault(lambda x: x * 0.80, "lower", FaultType.MULTIPLY),
+    Fault(lambda x: x * 1.15, "higher", FaultType.MULTIPLY),
+    Fault(lambda x: x * 0.85, "lower", FaultType.MULTIPLY),
 ]
 
 # -- POND DATA
@@ -136,7 +136,7 @@ if __name__ == "__main__":
                     change_mode_time = TIME.get_current_time.total_seconds()
                     handle_controler_exeption(e)
                 except KalmanError as e:
-                    if TIME.get_current_time.seconds > 100:
+                    if TIME.get_current_time.seconds > 50:
                         out_mode = OutMode.VIRTUAL
                         change_mode_time = TIME.get_current_time.total_seconds()
                         print(e)
