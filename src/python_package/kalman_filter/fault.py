@@ -1,6 +1,16 @@
 "THIS FINE CONTAINS THE FAULT CLASS FOR THE KALMAN FILTERS"
 from typing import Callable
 from .kalman import MeasurementData
+from enum import Enum
+
+
+class FaultType(Enum):
+    "Enum class for the fault type"
+    NONE = 0
+    ADD = 1
+    SUBTRACT = 2
+    MULTIPLY = 3
+    DIVIDE = 4
 
 
 class Fault:
@@ -8,8 +18,11 @@ class Fault:
     Fault class contains a fault function and a classification if the fault adds or subtracts to the sensor reading.
     """
 
-    def __init__(self, fault: Callable[[MeasurementData], MeasurementData], classification: str) -> None:
+    def __init__(
+        self, fault: Callable[[MeasurementData], MeasurementData], classification: str, fault_type: FaultType
+    ) -> None:
         self._fault = fault
+        self._fault_type = fault_type
         match classification:
             case "higher":
                 self._classification = "higher"
@@ -37,3 +50,8 @@ class Fault:
     def get_fault(self) -> Callable[[MeasurementData], MeasurementData]:
         "Returns the fault function"
         return self._fault
+
+    @property
+    def get_fault_type(self) -> FaultType:
+        "Returns the fault type"
+        return self._fault_type
