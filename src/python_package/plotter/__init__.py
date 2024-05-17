@@ -1,9 +1,12 @@
 """Plot data"""
 
 import csv
-import os
+from typing import Any
+import matplotlib
 from matplotlib import pyplot as plt
-from ..args import ARGS
+from matplotlib.ticker import MultipleLocator
+from ..args import ARGS, OutType, OutGraph, out_graph_to_string
+from ..out_mode import OutMode
 
 
 def read_csv(file: str) -> list:
@@ -126,78 +129,205 @@ def plot_kalman_filters_state_measured(
     plots = []
     for i, f in enumerate(color_label_tuples):
         plots.append(axis.plot(coords[2 * i], coords[2 * i + 1], f[0], label=f[1]))
-    plots.append(axis.plot(coords[0], measured_data_coords, "orange", label="Measured height"))
+    plots.append(axis.plot(coords[0], measured_data_coords, "red", label="Measured height"))
     return plots
 
 
-def plotting(plot_args: ARGS, out_mode, change_mode_time):
+def plotting(plot_args: ARGS, water_level_min: int, water_level_max: int, change_array: list[tuple[OutMode, int]]):
     """Function for plotting data"""
-    directory = "experiment_data_results"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    out_type = plot_args.out_type
 
-    _, axs = plt.subplots(2, 2, figsize=(30, 10), gridspec_kw={"height_ratios": [1, 2]})
+    font = {
+        "family": "serif",
+        "color": "black",
+        "weight": "normal",
+        "size": 9,
+    }
+
+    match out_type:
+        case OutType.PGF:
+            plot_pgf(plot_args, water_level_min, water_level_max, font, change_array)
+        case OutType.PNG:
+            plot_png(plot_args, water_level_min, water_level_max, font, change_array)
+        case _:
+            return
+
+    if plot_args.show:
+        plt.show()
+
+
+def plot_png(
+    plot_args: ARGS,
+    water_level_min: float,
+    water_level_max: float,
+    font: dict[str, Any],
+    change_array: list[tuple[OutMode, int]],
+):
+    "Plot in png mode"
+    i = 1
+    _, axis = plt.subplots(2, 2, figsize=(30, 10), gridspec_kw={"height_ratios": [1, 2]})
+
+    axs: dict[OutGraph, tuple[int, Any]] = {
+        OutGraph.RAIN: (i, axis[0, 0]),
+        OutGraph.CONTROL: (i, axis[0, 1]),
+        OutGraph.KALMAN_DELTA: (i, axis[1, 0]),
+        OutGraph.KALMAN: (i, axis[1, 1]),
+    }
 
     plt.suptitle(f"{plot_args.name}")
 
+    plot_graphs(plot_args, water_level_min, water_level_max, font, change_array, axs)
+
+    for _, ax in axs.values():
+        ax.legend(loc=4)
+    if plot_args.out_image is not None:
+        plt.savefig(plot_args.out_image, bbox_inches="tight")
+
+
+def plot_pgf(
+    plot_args: ARGS,
+    water_level_min: float,
+    water_level_max: float,
+    font: dict[str, Any],
+    change_array: list[tuple[OutMode, int]],
+):
+    "Plot in pgf mode"
+    matplotlib.use("pgf")
+    golden_rasio = 2 / (1 + 5**0.5)
+
+    plt.rcParams.update(
+        {
+            "text.usetex": True,
+            "font.family": "sans-serif",
+        }
+    )
+
+    axs: dict[OutGraph, tuple[int, Any]] = {}
+    for i, graph in enumerate(plot_args.out_graph):
+        plt.figure(i, figsize=(3.4, 3.4 * golden_rasio))
+        axs[graph] = (i, plt.gcf().subplots())
+
+    plot_graphs(plot_args, water_level_min, water_level_max, font, change_array, axs)
+
+    if plot_args.out_suffix:
+        for i, graph in enumerate(plot_args.out_graph):
+            file_name = str(plot_args.out_image).split(".")
+            suffix = out_graph_to_string(graph)
+            file_name.insert(len(file_name) - 1, suffix)
+            file_name = ".".join(file_name)
+            plt.figure(i)
+            plt.tight_layout()
+            plt.gcf().savefig(file_name, backend="pgf")
+    else:
+        plt.tight_layout()
+        plt.savefig(plot_args.out_image, backend="pgf")
+
+
+def plot_graphs(
+    plot_args: ARGS,
+    water_level_min: float,
+    water_level_max: float,
+    font: dict[str, Any],
+    change_array: list[tuple[OutMode, int]],
+    axs: dict[OutGraph, tuple[int, Any]],
+):
+    "Plots all graphs"
+    fontsize = 7
+    plt.yticks(font="serif", fontsize="9")
+
     # TOP LEFT PLOT
-    plot(plot_args.rain_file, "red", "Rain", 1, axs[0, 0])
-    axs[0, 0].set_ylabel("Rain mm")
-    axs[0, 0].set_xlabel("Time sec")
-    axs[0, 0].legend(loc=4)
+    try:
+        i, ax = axs[OutGraph.RAIN]
+        plt.figure(i)
+        plot(plot_args.rain_file, "red", "Rain", 1, ax)
+        ax.set_ylabel("Rain[mm]", fontdict=font)
+        ax.set_xlabel("Time[sec]", fontdict=font)
+        ax.set_xlim(0, plot_args.time)
+    except KeyError:
+        pass
 
     # TOP RIGHT PLOT
-    plot(plot_args.data_control, "green", "Control, fixed orifice", 1, axs[0, 1])
-    plot(plot_args.out, "blue", "Estimated height", 1, axs[0, 1])
-    plot(plot_args.data, "red", "Sensor height", 1, axs[0, 1])
-
-    axs[0, 1].set_ylim(0, 900)
-    axs[0, 1].set_ylabel("Water level cm")
-    axs[0, 1].set_xlabel("Time sec")
-
-    pond_mode = ""
-    if out_mode == out_mode.SENSOR:
-        pond_mode = "Sensor"
-    elif out_mode == out_mode.VIRTUAL:
-        pond_mode = "Virtual"
-    elif out_mode == out_mode.SENSOR_ERROR:
-        pond_mode = "Sensor error"
-    x_position = change_mode_time
-    axs[0, 1].axvline(x_position, linestyle="--", color="gray")
-    axs[0, 1].text(
-        x_position + 50, 0.5, f"  Mode:  {pond_mode}", fontsize=9, ha="left", va="bottom", rotation=90, color="gray"
-    )
-    axs[0, 1].legend(loc=4)
-
-    color_label_tuples = [
-        ("pink", "Main filter"),
-        ("magenta", "Constant offset +50"),
-        ("black", "Constant offset -50"),
-        ("green", "15% over"),
-        ("purple", "15 % under"),
-    ]
+    try:
+        i, ax = axs[OutGraph.CONTROL]
+        plt.figure(i)
+        plot(plot_args.data_control, "green", "Control height", 1, ax)
+        plot(plot_args.out, "blue", "Estimated height", 1, ax)
+        plot(plot_args.data, "red", "Sensor height", 1, ax)
+        ax.axhline(water_level_max, linestyle="--", color="lightgray")
+        ax.text(700, water_level_max + 50, "Max water", fontsize=fontsize, ha="right", color="lightgray")
+        ax.axhline(water_level_min, linestyle="--", color="lightgray")
+        ax.text(700, water_level_min + 50, "Min water", fontsize=fontsize, ha="right", color="lightgray")
+        ax.set_xlim(0, plot_args.time)
+        ax.set_ylabel("Water level[mm]", fontdict=font)
+        ax.set_xlabel("Time[sec]", fontdict=font)
+    except KeyError:
+        pass
 
     # BOT LEFT PLOT
-    plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, axs[1, 0])
-    axs[1, 0].axvline(x_position, linestyle="--", color="gray")
-    axs[1, 0].axhline(0, linestyle="--", color="gray")
-    axs[1, 0].set_ylabel("Kalman predicted measured delta")
-    axs[1, 0].set_xlabel("Time sec")
-    axs[1, 0].legend(loc=4)
+
+    color_label_tuples = [
+        ("orange", "Main filter"),
+        ("magenta", "Constant offset +50"),
+        ("black", "Constant offset -50"),
+        ("cyan", "15% over"),
+        ("purple", "15 % under"),
+    ]
+    try:
+        i, ax = axs[OutGraph.KALMAN_DELTA]
+        plt.figure(i)
+        plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, ax)
+        ax.axhline(0, linestyle="--", color="gray")
+        ax.set_ylabel("Water Level[mm] - Messured Level[mm]", fontdict=font)
+        ax.set_xlabel("Time[sec]", fontdict=font)
+        ax.set_xlim(0, plot_args.time)
+    except KeyError:
+        pass
 
     # BOT RIGHT PLOT
-    plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, axs[1, 1])
-    plot(plot_args.out, "blue", "Estimated height", 1, axs[1, 1])
-    plot(plot_args.data, "red", "Sensor height", 1, axs[1, 1])
-    axs[1, 1].set_ylabel("Kalman state")
-    axs[1, 1].set_xlabel("Time sec")
-    axs[1, 1].axvline(x_position, linestyle="--", color="gray")
-    axs[1, 1].legend(loc=4)
+    try:
+        i, ax = axs[OutGraph.KALMAN]
+        plt.figure(i)
+        plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, ax)
+        plot(plot_args.out, "blue", "Estimated height", 1, ax)
+        plot(plot_args.data_control, "green", "Control height", 1, ax)
+        ax.set_ylabel("Height[mm]", fontdict=font)
+        ax.set_xlabel("Time[sec]", fontdict=font)
+        ax.set_xlim(0, plot_args.time)
+    except KeyError:
+        pass
 
-    # Save plot as png
-    if plot_args.out_image is not None:
-        print(plot_args.out_image)
-        plt.savefig(plot_args.out_image, bbox_inches="tight")
-    plt.show()
+    plot_change_lines(font, change_array, axs)
 
-    plt.savefig("file.pgf")
+
+def plot_change_lines(
+    font: dict[str, Any],
+    change_array: list[tuple[OutMode, int]],
+    axs: dict[OutGraph, tuple[int, Any]],
+):
+    "Plots the change list to all plots but RAIN"
+    # PRINT CHANGE ARRAYS
+    font["size"] = 7
+
+    for mode, pos in change_array:
+        text = {OutMode.SENSOR: "Sensor", OutMode.VIRTUAL: "Virtual", OutMode.SENSOR_ERROR: "Sensor Error"}[mode]
+
+        for key, (i, ax) in axs.items():
+            if key is OutGraph.RAIN:
+                continue
+            plt.figure(i)
+            ymin, ymax = ax.get_ylim()
+            ax.axvline(pos, linestyle="--", color="gray")
+            ax.text(
+                pos + 50,
+                ymin + (ymax - ymin) * 0.02,
+                text,
+                fontdict=font,
+                ha="left",
+                va="bottom",
+                rotation=90,
+                color="gray",
+            )
+
+    for i, ax in axs.values():
+        plt.figure(i)
+        ax.xaxis.set_minor_locator(MultipleLocator(1000))

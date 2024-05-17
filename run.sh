@@ -24,7 +24,10 @@ if [[ -d $dir ]]; then
         --time=7000 \
         --name="$name" \
         --output="$out_dir/$name.csv" \
-        --output-image="$out_dir/$name.png"
+        --kalman-bank="$out_dir/$name.kalman-bank.csv" \
+        --output-image="$out_dir/$name.pgf" \
+        --output-graph=kalman,rain,control,kalman-delta \
+        --show=true
 else
     echo "'$dir' is not a directory"
 fi

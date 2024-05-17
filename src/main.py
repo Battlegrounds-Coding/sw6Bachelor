@@ -1,34 +1,26 @@
 "THIS IS THE MAIN FILE"
 
 import os
-from enum import Enum
 from datetime import timedelta, datetime
 import pause
 from python_package.plotter import plotting
 from python_package.logger import LogLevel, PrintLogger
 from python_package.serial import SerialCom, serial_exceptions
 from python_package.serial.headless import Headless
-from python_package.kalman_filter.kalman_bank import KalmanBank, Fault, KalmanError
+from python_package.kalman_filter.kalman_bank import KalmanBank, Fault, KalmanError, FaultType
 from python_package.kalman_filter.kalman import MeasurementData, PondState
 from python_package.time import Time
 from python_package.virtual_pond import VirtualPond
 from python_package.args import ARGS, Mode
-
-
-class OutMode(Enum):
-    """Enum for defining Sensor or virtual height value"""
-
-    SENSOR = 0
-    VIRTUAL = 1
-    SENSOR_ERROR = 2
+from python_package.out_mode import OutMode
 
 
 LOGGER = PrintLogger()
 FAULTS = [
-    Fault(lambda x: x + 50.0, "higher"),
-    Fault(lambda x: x - 50.0, "lower"),
-    Fault(lambda x: x * 1.15, "higher"),
-    Fault(lambda x: x * 0.85, "lower"),
+    Fault(lambda x: x + 50.0, "higher", FaultType.ADD),
+    Fault(lambda x: x - 50.0, "lower", FaultType.SUBTRACT),
+    Fault(lambda x: x * 1.15, "higher", FaultType.MULTIPLY),
+    Fault(lambda x: x * 0.85, "lower", FaultType.MULTIPLY),
 ]
 
 # -- POND DATA
@@ -39,9 +31,12 @@ POND_AREA = 5572
 WATER_LEVEL_MIN = 100
 WATER_LEVEL_MAX = 850
 
+# -- DELAY
+KALMAN_DELAY = 50
 
-def handle_controler_exeption(exception: serial_exceptions.Exceptions):
-    """Function for itteration over serial module exceptions"""
+
+def handle_controler_exception(exception: serial_exceptions.Exceptions):
+    """Function for loggin serial module exceptions"""
     match exception:
         case serial_exceptions.Exceptions.NO_RESPONSE:
             LOGGER.log("No responce from device", level=LogLevel.ERROR)
@@ -59,11 +54,22 @@ def handle_controler_exeption(exception: serial_exceptions.Exceptions):
             LOGGER.log("Distance is reading zero", level=LogLevel.ERROR)
 
 
+def handle_kalman_exception(exception: KalmanError):
+    """Function for loggin kalman exceptions"""
+    match exception:
+        case KalmanError.LOWER_THRESHOLD_EXCEEDED:
+            LOGGER.log("Lower threshhold exceeded in filter", level=LogLevel.WARNING)
+        case KalmanError.HIGHER_THRESHOLD_EXCEEDED:
+            LOGGER.log("Higher threshhold exceeded in filter", level=LogLevel.WARNING)
+
+
 if __name__ == "__main__":
     try:
         LOGGER.log("SETUP")
         # SETUP
-        change_mode_time = 0  # pylint: disable=C0103
+        CHANGE_MODE_TIME = 0
+        change_array = []
+
         # -- TIME
         START = datetime.now()
         TIME = Time(start=START, current_time=timedelta(seconds=0), delta=timedelta(seconds=11))
@@ -129,18 +135,26 @@ if __name__ == "__main__":
                     kalman_bank.step_filters(
                         PondState(q_in=pond_data.volume_in, q_out=pond_data.volume_out, ap=POND_AREA),
                         MeasurementData(AVG_DIST, invariance),
+                        virtual_pond.water_level,
                     )
+
                 except serial_exceptions.Exceptions as e:
-                    out_mode = OutMode.SENSOR_ERROR
-                    change_mode_time = TIME.get_current_time.total_seconds()
-                    handle_controler_exeption(e)
+                    if out_mode != OutMode.SENSOR_ERROR:
+                        out_mode = OutMode.SENSOR_ERROR
+                        CHANGE_MODE_TIME = TIME.get_current_time.total_seconds()
+                        change_array.append([out_mode, CHANGE_MODE_TIME])
+                    handle_controler_exception(e)
                 except KalmanError as e:
-                    if TIME.get_current_time.seconds > 50:
-                        out_mode = OutMode.VIRTUAL
-                        change_mode_time = TIME.get_current_time.total_seconds()
-                        print(e)
+                    if TIME.get_current_time.total_seconds() > KALMAN_DELAY:
+                        handle_kalman_exception(e)
+                        if out_mode != OutMode.VIRTUAL:
+                            out_mode = OutMode.VIRTUAL
+                            change_mode_time = TIME.get_current_time.total_seconds()
+                            change_array.append([out_mode, change_mode_time])
 
             if out_mode is OutMode.VIRTUAL:
+                OUT = virtual_pond.water_level
+            elif out_mode is OutMode.SENSOR_ERROR:
                 OUT = virtual_pond.water_level
 
             # OUTPUT
@@ -151,9 +165,10 @@ if __name__ == "__main__":
             TIME.step()
             if args.mode == Mode.SERIEL:
                 pause.until(START + TIME.get_current_time)
+
+        # END LOOP
+        plotting(args, WATER_LEVEL_MIN, WATER_LEVEL_MAX, change_array)
     except Exception as e:
         print(e)
         LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
-        LOGGER.log("Fatal error shutting down", level=LogLevel.CRITICAL_ERROR)
         raise e
-    plotting(args, out_mode, change_mode_time)

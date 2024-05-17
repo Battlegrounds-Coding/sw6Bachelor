@@ -3,7 +3,7 @@ from typing import List
 from enum import Enum
 from .kalman import Kalman, MeasurementData, PondState
 from ..time import Time
-from .fault import Fault
+from .fault import Fault, FaultType
 
 DEBUG_MODE = False
 
@@ -69,11 +69,13 @@ class KalmanBank:
                 # create kalman filter with f and append in kalman_bank
                 self.kalman_bank.append(Kalman(self.initial_state, self.initial_variance, self.time, self.noice))
 
-    def step_filters(self, pond_state: PondState, measured_data: MeasurementData):
+    def step_filters(
+        self, pond_state: PondState, measured_data: MeasurementData, virtual_pond_water_level: float
+    ) -> None:
         "Calls the step function for each filter with each fault"
         faulty_filters: List[Kalman] = []
         failed_faults: List[str] = []
-        fault_detection = self.analyze_filters(measured_data, faulty_filters, failed_faults)
+        fault_detection = self.analyze_filters(measured_data, faulty_filters, failed_faults, virtual_pond_water_level)
         # save old predict data, feed to _write_to_csv
         predict_before_step = []
 
@@ -113,7 +115,11 @@ class KalmanBank:
                         raise KalmanError.LOWER_THRESHOLD_EXCEEDED
 
     def analyze_filters(
-        self, measured_data: MeasurementData, faulty_filters: List[Kalman], failed_faults: List[str]
+        self,
+        measured_data: MeasurementData,
+        faulty_filters: List[Kalman],
+        failed_faults: List[str],
+        virtual_pond_water_level: float,
     ) -> bool:
         "Analyses filters in the KalmanBank. If measured_data goes past thresholds returns false, else return true"
         free_of_faults = True
@@ -128,6 +134,26 @@ class KalmanBank:
                     faulty_filters.append(k)
                     free_of_faults = False
                     failed_faults.append(self.faults[i - 1].get_classification)
+        for i, k in enumerate(self.kalman_bank):
+            if (
+                self.faults[i - 1].get_classification == "higher"
+                and not i == 0
+                and self.faults[i - 1].get_fault_type == FaultType.MULTIPLY
+            ):
+                if k.get_predicted_state < virtual_pond_water_level:
+                    faulty_filters.append(k)
+                    free_of_faults = False
+                    failed_faults.append(self.faults[i - 1].get_classification)
+            if (
+                self.faults[i - 1].get_classification == "LOWER"
+                and not i == 0
+                and self.faults[i - 1].get_fault_type == FaultType.MULTIPLY
+            ):
+                if k.get_predicted_state > virtual_pond_water_level:
+                    faulty_filters.append(k)
+                    free_of_faults = False
+                    failed_faults.append(self.faults[i - 1].get_classification)
+
         return free_of_faults
 
     def _write_to_csv(self, measured_data: MeasurementData, predicted_data: List[float]) -> None:
