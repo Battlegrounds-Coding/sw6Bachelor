@@ -71,11 +71,12 @@ HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
                                                 (default={DEFAULT_OUT})
     [-oi | --output-image]=/path/to/file     -- Path to the saved plotting image (supported file types: [pgf | png])
                                                 !NOTE if image type is pgf then --show is not supported
-    [-og | --output-graph]=name,name,...     -- If --output-image type is pgf then what graph should be created 
+    [-og | --output-graph]=name,name,...     -- If --output-image type is pgf then what graph should be created
                                                 (supported names: [rain | control | kalman | kalman-delta])
                                                 (default={out_graph_to_string(DEFAULT_OUT_GRAPH)})
-    [-os | --output-suffix]=boolean          -- If --output-image type is pgf the should the name be suffixed with the output
-                                                graph, this is automatically enabeled if there are more output graphs.
+    [-os | --output-suffix]=boolean          -- If --output-image type is pgf the should the name be suffixed with 
+                                                the output graph, this is automatically enabeled if there are more
+                                                output graphs.
                                                 (default={DEFAULT_OUT_SUFFIX})
     [-s  | --show]=boolean                   -- Should the output be shown in the end
                                                 !NOTE if the --output-image is of type pgf then --show is not supported
@@ -83,7 +84,6 @@ HELP = f"""USAGE python <name_of_our_tool> ([ARGUMENT]=[VALUE])*
     [-k  | --kalman-bank]=/path/to/file      -- Specifies the output file for the kalman banks
                                                 (default={DEFAULT_KALMAN})
     """
-
 
 class ARGS:
     """Class for defining executable arguments"""
