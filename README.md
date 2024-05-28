@@ -1,6 +1,55 @@
 # sw6Bachelor
 
+This is a bachelor project made by studens from the 
+Software Study at Aalborg University
 
+## Run the program from cli
+
+To run an experiment do
+### Windows
+Create the virtual environment and install dependencies
+```batch
+python -m venv venv
+venv\Source\activate
+pip isntall flit
+flit install
+```
+
+Then to run an experiament do 
+```batch
+run.bat \path\to\experiment\directory
+```
+
+>[!Note]
+>To get a list of options run 
+>```batch
+>python src\main.py --help
+>```
+
+### Linux/Mac 
+Create the virtual environment
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install flit
+flit install
+```
+
+Then to run an experiemnt do
+```bash
+./run.sh /path/to/experiment/directory
+```
+or to run all experiments 
+```bash
+./run-all.sh
+```
+>[!Note]
+>To get a list of options run 
+>```bash
+>python src/main.py --help
+>```
+
+## Devinvironment 
 Run all test with:
 pytest
 
