@@ -209,6 +209,10 @@ def plot_pgf(
 
     plot_graphs(plot_args, water_level_min, water_level_max, font, change_array, axs)
 
+    for _, ax in axs.values():
+        lines = ax.get_lines()
+        plt.setp(lines, linewidth=0.7)
+
     if plot_args.out_suffix:
         for i, graph in enumerate(plot_args.out_graph):
             file_name = str(plot_args.out_image).split(".")
@@ -239,9 +243,9 @@ def plot_graphs(
     try:
         i, ax = axs[OutGraph.RAIN]
         plt.figure(i)
-        plot(plot_args.rain_file, "red", "Rain", 1, ax)
-        ax.set_ylabel("Rain[mm]", fontdict=font)
-        ax.set_xlabel("Time[sec]", fontdict=font)
+        plot(plot_args.rain_file, "brown", "Rain", 1, ax)
+        ax.set_ylabel("Rain [mm]", fontdict=font)
+        ax.set_xlabel("Time [sec]", fontdict=font)
         ax.set_xlim(0, plot_args.time)
     except KeyError:
         pass
@@ -258,8 +262,8 @@ def plot_graphs(
         ax.axhline(water_level_min, linestyle="--", color="lightgray")
         ax.text(700, water_level_min + 50, "Min water", fontsize=fontsize, ha="right", color="lightgray")
         ax.set_xlim(0, plot_args.time)
-        ax.set_ylabel("Water level[mm]", fontdict=font)
-        ax.set_xlabel("Time[sec]", fontdict=font)
+        ax.set_ylabel("Water level [mm]", fontdict=font)
+        ax.set_xlabel("Time [sec]", fontdict=font)
     except KeyError:
         pass
 
@@ -277,8 +281,8 @@ def plot_graphs(
         plt.figure(i)
         plot_kalman_filters_delta(plot_args.kalman, color_label_tuples, 1, ax)
         ax.axhline(0, linestyle="--", color="gray")
-        ax.set_ylabel("Water Level[mm] - Messured Level[mm]", fontdict=font)
-        ax.set_xlabel("Time[sec]", fontdict=font)
+        ax.set_ylabel("Water Level [mm] - Messured Level [mm]", fontdict=font)
+        ax.set_xlabel("Time [sec]", fontdict=font)
         ax.set_xlim(0, plot_args.time)
     except KeyError:
         pass
@@ -290,8 +294,8 @@ def plot_graphs(
         plot_kalman_filters_state_measured(plot_args.kalman, color_label_tuples, 1, ax)
         plot(plot_args.out, "blue", "Estimated height", 1, ax)
         plot(plot_args.data_control, "green", "Control height", 1, ax)
-        ax.set_ylabel("Height[mm]", fontdict=font)
-        ax.set_xlabel("Time[sec]", fontdict=font)
+        ax.set_ylabel("Height [mm]", fontdict=font)
+        ax.set_xlabel("Time [sec]", fontdict=font)
         ax.set_xlim(0, plot_args.time)
     except KeyError:
         pass
