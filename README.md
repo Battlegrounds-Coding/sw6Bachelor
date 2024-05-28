@@ -3,6 +3,13 @@
 This is a bachelor project made by studens from the 
 Software Study at Aalborg University
 
+## Datasets
+All datasets files are found in the folder `./experiment_data/<experiment_name>/<control-point>`. 
+The file `Rain.csv` contains the rain data.
+The file `DepthSensor.csv` contains the sensor readings.
+The file `DepthControl.csv` the original depth data.
+
+
 ## Run the program from cli
 
 To run an experiment do
@@ -11,7 +18,7 @@ Create the virtual environment and install dependencies
 ```batch
 python -m venv venv
 venv\Source\activate
-pip isntall flit
+pip install flit
 flit install
 ```
 
