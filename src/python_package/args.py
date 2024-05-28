@@ -139,9 +139,9 @@ class ARGS:
                                 case _:
                                     raise ValueError(f"{graph} is not a valid --output-graph")
                     case "-os" | "--out-suffix":
-                        self._out_suffix = bool(value)
+                        self._out_suffix =value.lower() == "true"
                     case "-s" | "--show":
-                        self._show = bool(value)
+                        self._show = value.lower() == "true"
                     case "-k" | "--kalman-bank":
                         self._kalman = value
                     case "-n" | "--name":

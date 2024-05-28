@@ -25,10 +25,10 @@ if [[ -d $dir ]]; then
         --name="$name" \
         --output="$out_dir/$name.csv" \
         --kalman-bank="$out_dir/$name.kalman-bank.csv" \
-        --output-image="$out_dir/$name.pgf" \
+        --output-image="$out_dir/$name.png" \
         --output-graph=rain,kalman-delta,kalman,control \
         --output-suffix=True \
-        --show=true
+        --show=0
 else
     echo "'$dir' is not a directory"
 fi
